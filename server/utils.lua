@@ -1,5 +1,3 @@
---local QBCore = exports['qb-core']:GetCoreObject()
-
 function GetPlayerData(source)
 	local Player = ESX.GetPlayerFromId(source)
 	if Player == nil then return end -- Player not loaded in correctly

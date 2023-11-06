@@ -1128,7 +1128,7 @@ a {
     background-color: rgba(0, 0, 0, 0);
 }
 
-.manage-cid-pic {
+.manage-identifier-pic {
     color: white;
     font-size: 16px;
     margin-left: 10px
@@ -2955,7 +2955,7 @@ span.tag-incident-input[contenteditable]:empty::before {
     height: 11vh;
 }
 
-.incidents-person-search-item-right-cid-title {
+.incidents-person-search-item-right-identifier-title {
     width: 100%;
     margin: auto;
     margin-top: 0px;
@@ -2966,7 +2966,7 @@ span.tag-incident-input[contenteditable]:empty::before {
     user-select: none;
 }
 
-.incidents-person-search-item-right-cid-input {
+.incidents-person-search-item-right-identifier-input {
     width: 100%;
     margin: auto;
     margin-top: 5px;

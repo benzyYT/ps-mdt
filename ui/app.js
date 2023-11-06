@@ -233,7 +233,7 @@ $(document).ready(() => {
     const { vehicles, tags, gallery, convictions, incidents, properties, fingerprint } = result;
 
     $(".manage-profile-editing-title").html(`You are currently editing ${result["firstname"]} ${result["lastname"]}`);
-    $(".manage-profile-identifier-input").val(result['cid']);
+    $(".manage-profile-identifier-input").val(result['identifier']);
     $(".manage-profile-name-input-1").val(result["firstname"]);
     $(".manage-profile-name-input-2").val(result["lastname"]);
     $(".manage-profile-dob-input").val(result["dob"]);
@@ -498,7 +498,7 @@ $(document).ready(() => {
   $("#gallery-upload-input").keydown(function (e) {
     if (e.keyCode === 13) {
       let URL = $("#gallery-upload-input").val();
-      let cid = $(".manage-profile-identifier-input").val();
+      let identifier = $(".manage-profile-identifier-input").val();
       if (URL !== "") {
         let randomNum = Math.ceil(Math.random() * 10).toString();
         $(".gallery-inner-container").prepend(
@@ -659,7 +659,7 @@ $(document).ready(() => {
         $(".associated-incidents-user-container").each(function (
           index
         ) {
-          var cid = $(this).data("id");
+          var identifier = $(this).data("id");
           var guilty = false;
           var warrant = false;
           var processed = false;
@@ -669,7 +669,7 @@ $(document).ready(() => {
           $(".associated-incidents-user-tags-holder")
             .children("div")
             .each(function (index) {
-              if ($(this).data("id") == cid) {
+              if ($(this).data("id") == identifier) {
                 if ($(this).hasClass("green-tag")) {
                   if ($(this).text() == "Guilty") {
                     guilty = true;
@@ -694,7 +694,7 @@ $(document).ready(() => {
                   ( $(".associated-incidents-user-holder")
                     .children()
                     .eq(index)
-                    .data("id") == cid )
+                    .data("id") == identifier )
               ) {
                 charges.push(
                   $(".associated-incidents-user-holder")
@@ -706,7 +706,7 @@ $(document).ready(() => {
             });
 
           associated.push({
-            Cid: $(this).data("id"),
+            identifier: $(this).data("id"),
             Warrant: warrant,
             Guilty: guilty,
             Processed: processed,
@@ -1035,7 +1035,7 @@ $(document).ready(() => {
     // $.post(
     //   `https://${GetParentResourceName()}/updateLicence`,
     //   JSON.stringify({
-    //     cid: $(".manage-profile-identifier-input").val(),
+    //     identifier: $(".manage-profile-identifier-input").val(),
     //     type: $(this).data("status"),
     //     status: "revoke",
     //   })
@@ -1054,7 +1054,7 @@ $(document).ready(() => {
     // $.post(
     //   `https://${GetParentResourceName()}/updateLicence`,
     //   JSON.stringify({
-    //     cid: $(".manage-profile-identifier-input").val(),
+    //     identifier: $(".manage-profile-identifier-input").val(),
     //     type: $(this).data("status"),
     //     status: "give",
     //   })
@@ -1328,7 +1328,7 @@ $(document).ready(() => {
   $("#incidents-upload-input").keydown(function (e) {
     if (e.keyCode === 13) {
       let URL = $("#incidents-upload-input").val();
-      let cid = $(".manage-profile-identifier-input").val();
+      let identifier = $(".manage-profile-identifier-input").val();
       if (URL !== "") {
         let randomNum = Math.ceil(Math.random() * 10).toString();
         $(".manage-incidents-evidence-holder").prepend(
@@ -1636,7 +1636,7 @@ $(document).ready(() => {
   $("#bolo-gallery-upload-input").keydown(function (e) {
     if (e.keyCode === 13) {
       let URL = $("#bolo-gallery-upload-input").val();
-      let cid = $(".manage-profile-identifier-input").val();
+      let identifier = $(".manage-profile-identifier-input").val();
       if (URL !== "") {
         let randomNum = Math.ceil(Math.random() * 10).toString();
         $(".bolo-gallery-inner-container").prepend(
@@ -1754,7 +1754,7 @@ $(document).ready(() => {
     let stupidasscid = $(this).data("info");
     $(".incidents-charges-table").slideDown(500);
     $(".incidents-charges-table").fadeIn(500);
-    $("#current-charges-holder").data("cid", $(this).data("info"));
+    $("#current-charges-holder").data("identifier", $(this).data("info"));
     $("#current-charges-holder").html("");
     $(".associated-incidents-user-holder")
       .children("div")
@@ -1795,26 +1795,26 @@ $(document).ready(() => {
   });
 
   $(".offenses-main-container").on("mousedown",".offense-item",function (e) {
-      const cid = $("#current-charges-holder").data("cid");
+      const identifier = $("#current-charges-holder").data("identifier");
       const newItem = $(this).find(".offense-item-offense").html();
       const Fine = +$(this).data("fine");
       const Sentence = +$(this).data("sentence");
       if (e.which == 1) {
         let randomNum = Math.ceil(Math.random() * 1000).toString();
-        $(`[data-name="${cid}"]`).prepend(`<div class="white-tag" data-link="${randomNum}"data-id="${cid}">${$(this).find(".offense-item-offense").html()}</div>`);
+        $(`[data-name="${identifier}"]`).prepend(`<div class="white-tag" data-link="${randomNum}"data-id="${identifier}">${$(this).find(".offense-item-offense").html()}</div>`);
         $("#current-charges-holder").prepend(`<div class="current-charges-tag" data-link="${randomNum}">${$(this).find(".offense-item-offense").html()}</div>`);
 
-        const CurrRfine = $(".fine-recommended-amount").filter(`[data-id="${cid}"]`).val();
+        const CurrRfine = $(".fine-recommended-amount").filter(`[data-id="${identifier}"]`).val();
         const NewFine = +CurrRfine + +Fine;
-        $(".fine-recommended-amount").filter(`[data-id="${cid}"]`).val(NewFine);
+        $(".fine-recommended-amount").filter(`[data-id="${identifier}"]`).val(NewFine);
 
-        const CurrRsentence = $(".sentence-recommended-amount").filter(`[data-id="${cid}"]`).val();
+        const CurrRsentence = $(".sentence-recommended-amount").filter(`[data-id="${identifier}"]`).val();
         const NewSentence = +CurrRsentence + +Sentence;
-        $(".sentence-recommended-amount").filter(`[data-id="${cid}"]`).val(NewSentence);
+        $(".sentence-recommended-amount").filter(`[data-id="${identifier}"]`).val(NewSentence);
 
       } else if (e.which == 3) {
         $(".associated-incidents-user-holder").children("div").each(function (index) {
-          if ($(".associated-incidents-user-holder").children().eq(index).data("id") == cid) {
+          if ($(".associated-incidents-user-holder").children().eq(index).data("id") == identifier) {
             if ($(".associated-incidents-user-holder").children().eq(index).html() == newItem) {
               const linkedId = $(".associated-incidents-user-holder").children().eq(index).data("link");
               //$(".current-charges-tag").filter(`[data-link="${linkedId}"]`).remove()
@@ -1832,13 +1832,13 @@ $(document).ready(() => {
                 }
               });
 
-              const CurrRfine = $(".fine-recommended-amount").filter(`[data-id="${cid}"]`).val();
+              const CurrRfine = $(".fine-recommended-amount").filter(`[data-id="${identifier}"]`).val();
               const NewFine = +CurrRfine - Fine;
-              $(".fine-recommended-amount").filter(`[data-id="${cid}"]`).val(NewFine);
+              $(".fine-recommended-amount").filter(`[data-id="${identifier}"]`).val(NewFine);
 
-              const CurrRsentence = $(".sentence-recommended-amount").filter(`[data-id="${cid}"]`).val();
+              const CurrRsentence = $(".sentence-recommended-amount").filter(`[data-id="${identifier}"]`).val();
               const NewSentence = +CurrRsentence - +Sentence;
-              $(".sentence-recommended-amount").filter(`[data-id="${cid}"]`).val(NewSentence);
+              $(".sentence-recommended-amount").filter(`[data-id="${identifier}"]`).val(NewSentence);
               return false;
             }
           }
@@ -2011,7 +2011,7 @@ $(document).ready(() => {
         $.post(
           `https://${GetParentResourceName()}/removeIncidentCriminal`,
           JSON.stringify({
-            cid: $(this).data("status"),
+            identifier: $(this).data("status"),
             incidentId: incidentId,
           })
         );
@@ -2076,28 +2076,28 @@ $(document).ready(() => {
         // This section handles populating the fields when you add a new associated user to the incident
         $(".incidents-ghost-holder").prepend(
           `
-            <div class="associated-incidents-user-container" data-id="${$(this).data("cid")}">
+            <div class="associated-incidents-user-container" data-id="${$(this).data("identifier")}">
                 <div class="associated-incidents-user-title">${$(this).data("info")}</div>
                 <div class="associated-incidents-user-tags-holder">
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("cid")}">Warrant</div>
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("cid")}">Guilty</div>
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("cid")}">Processed</div>
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("cid")}">Associated</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Warrant</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Guilty</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Processed</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Associated</div>
                 </div>
                 <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Right click below to add and/or modify charges.</div>
-                <div class="associated-incidents-user-holder" data-name="${$(this).data("cid")}"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("cid")}">Recommended Fine</div>
-                <div class="associated-incidents-fine-input" data-id="${$(this).data("cid")}"><img src="img/h7S5f9J.webp"> <input disabled placeholder="0" class="fine-recommended-amount" id="fine-recommended-amount" data-id="${$(this).data("cid")}" type="number"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("cid")}">Recommended Sentence</div>
-                <div class="associated-incidents-sentence-input" data-id="${$(this).data("cid")}"><img src="img/9Xn6xXK.webp"> <input disabled placeholder="0" class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${$(this).data("cid")}" type="number"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("cid")}">Fine</div>
-                <div class="associated-incidents-fine-input" data-id="${$(this).data("cid")}"><img src="img/h7S5f9J.webp"> <input placeholder="Enter fine here..." value="0" class="fine-amount" data-id="${$(this).data("cid")}" type="number"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("cid")}">Sentence</div>
-                <div class="associated-incidents-sentence-input" data-id="${$(this).data("cid")}"><img src="img/9Xn6xXK.webp"> <input placeholder="Enter months here..." value="0" class="sentence-amount" data-id="${$(this).data("cid")}" type="number"></div>
-                <div class="associated-incidents-controls" data-id="${$(this).data("cid")}">
-                    <div id="jail-button" class="control-button" data-id="${$(this).data("cid")}"><span class="fa-solid fa-building-columns" style="margin-top: 3.5px;"></span> Jail</div>
-                    <div id="fine-button" class="control-button" data-id="${$(this).data("cid")}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Fine</div>
-                    ${canSendToCommunityService ? `<div id="community-service-button" class="control-button" data-id="${$(this).data("cid")}"> <span class="fa-solid fa-person-digging" style="margin-top: 3.5px;"></span>Community Service</div>` : ''}
+                <div class="associated-incidents-user-holder" data-name="${$(this).data("identifier")}"></div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Recommended Fine</div>
+                <div class="associated-incidents-fine-input" data-id="${$(this).data("identifier")}"><img src="img/h7S5f9J.webp"> <input disabled placeholder="0" class="fine-recommended-amount" id="fine-recommended-amount" data-id="${$(this).data("identifier")}" type="number"></div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Recommended Sentence</div>
+                <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input disabled placeholder="0" class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${$(this).data("identifier")}" type="number"></div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Fine</div>
+                <div class="associated-incidents-fine-input" data-id="${$(this).data("identifier")}"><img src="img/h7S5f9J.webp"> <input placeholder="Enter fine here..." value="0" class="fine-amount" data-id="${$(this).data("identifier")}" type="number"></div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Sentence</div>
+                <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input placeholder="Enter months here..." value="0" class="sentence-amount" data-id="${$(this).data("identifier")}" type="number"></div>
+                <div class="associated-incidents-controls" data-id="${$(this).data("identifier")}">
+                    <div id="jail-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-building-columns" style="margin-top: 3.5px;"></span> Jail</div>
+                    <div id="fine-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Fine</div>
+                    ${canSendToCommunityService ? `<div id="community-service-button" class="control-button" data-id="${$(this).data("identifier")}"> <span class="fa-solid fa-person-digging" style="margin-top: 3.5px;"></span>Community Service</div>` : ''}
                 </div>
             </div>
           `
@@ -2172,12 +2172,12 @@ $(document).ready(() => {
 
   $(".contextmenu").on("click", ".incidents-remove-normal-tag", function () {
     $(`.tag:contains(${$(this).data("info")})`).remove();
-    let cid = $(".manage-profile-identifier-input").val();
-    if (cid) {
+    let identifier = $(".manage-profile-identifier-input").val();
+    if (identifier) {
       $.post(
         `https://${GetParentResourceName()}/removeProfileTag`,
         JSON.stringify({
-          cid: cid,
+          identifier: identifier,
           text: $(this).data("info"),
         })
       );
@@ -2356,7 +2356,7 @@ $(document).ready(() => {
   $("#reports-gallery-upload-input").keydown(function (e) {
     if (e.keyCode === 13) {
       let URL = $("#reports-gallery-upload-input").val();
-      let cid = $(".manage-profile-identifier-input").val();
+      let identifier = $(".manage-profile-identifier-input").val();
       if (URL !== "") {
         let randomNum = Math.ceil(Math.random() * 10).toString();
         $(".reports-gallery-inner-container").prepend(
@@ -3218,17 +3218,17 @@ $(document).ready(() => {
   });
 
   $(".contextmenu").on("click", ".view-profile", async function () {
-    const cid = $(this).data("info");
+    const identifier = $(this).data("info");
     fidgetSpinner(".profile-page-container");
     currentTab = ".profile-page-container";
     $(".profile-search-input").slideDown(250);
     $(".profile-search-input").css("display", "block");
-    $("#profile-search-input:text").val(cid.toString());
+    $("#profile-search-input:text").val(identifier.toString());
     canSearchForProfiles = false;
     let result = await $.post(
       `https://${GetParentResourceName()}/searchProfiles`,
       JSON.stringify({
-        name: cid,
+        name: identifier,
       })
     );
 
@@ -3321,7 +3321,7 @@ $(document).ready(() => {
         className: "view-profile",
         icon: "far fa-eye",
         text: "View Profile",
-        info: $(this).data("cid"),
+        info: $(this).data("identifier"),
         status: "",
       },
       {
@@ -3350,7 +3350,7 @@ $(document).ready(() => {
       $.post(
         `https://${GetParentResourceName()}/toggleDuty`,
         JSON.stringify({
-          cid: info,
+          identifier: info,
           status: 0,
         })
       );
@@ -3363,7 +3363,7 @@ $(document).ready(() => {
       $.post(
         `https://${GetParentResourceName()}/toggleDuty`,
         JSON.stringify({
-          cid: info,
+          identifier: info,
           status: 1,
         })
       );
@@ -3391,41 +3391,41 @@ $(document).ready(() => {
     $.post(
       `https://${GetParentResourceName()}/setWaypointU`,
       JSON.stringify({
-        cid: info,
+        identifier: info,
       })
     );
   });
 
   $(".active-unit-list").on("contextmenu", ".active-unit-item", function (e) {
-    let cid = $(this).data("id");
-    if (cid) {
+    let identifier = $(this).data("id");
+    if (identifier) {
       args = [
         {
           className: "toggle-duty",
           icon: "fas fa-thumbtack",
           text: "Toggle Duty",
-          info: cid,
+          info: identifier,
           status: "",
         },
         {
           className: "set-callsign",
           icon: "far fa-id-badge",
           text: "Set Callsign",
-          info: cid,
+          info: identifier,
           status: "",
         },
         {
           className: "set-radio",
           icon: "fas fa-broadcast-tower",
           text: "Set Radio",
-          info: cid,
+          info: identifier,
           status: "",
         },
         {
           className: "set-waypoint",
           icon: "fas fa-map-marker-alt",
           text: "Set Waypoint",
-          info: cid,
+          info: identifier,
           status: "",
         },
       ];
@@ -3619,24 +3619,24 @@ $(document).ready(() => {
   );
 
   $(".contextmenu").on("click", ".call-dispatch-detach", function () {
-    const cid = $(this).data("info");
+    const identifier = $(this).data("info");
     $.post(
       `https://${GetParentResourceName()}/callDispatchDetach`,
       JSON.stringify({
         callid: $(".dispatch-attached-units-container").attr("id"),
-        cid: cid,
+        identifier: identifier,
       })
     );
-    $(".dispatch-attached-unit-item").filter(`[data-id="${cid}"]`).remove();
+    $(".dispatch-attached-unit-item").filter(`[data-id="${identifier}"]`).remove();
   });
 
   $(".contextmenu").on("click", ".Set-Dispatch-Waypoint", function () {
-    const cid = $(this).data("info");
+    const identifier = $(this).data("info");
     $.post(
       `https://${GetParentResourceName()}/setDispatchWaypoint`,
       JSON.stringify({
         callid: $(".dispatch-attached-units-container").attr("id"),
-        cid: cid,
+        identifier: identifier,
       })
     );
   });
@@ -3645,14 +3645,14 @@ $(document).ready(() => {
     "contextmenu",
     ".dispatch-attached-unit-item",
     function (e) {
-      const cid = $(this).data("id");
-      if (cid) {
+      const identifier = $(this).data("id");
+      if (identifier) {
         args = [
           {
             className: "set-waypoint",
             icon: "fas fa-map-marker-alt",
             text: "Set Waypoint",
-            info: cid,
+            info: identifier,
             status: "",
           },
         ];
@@ -3721,7 +3721,7 @@ $(document).ready(() => {
       $.post(
         `https://${GetParentResourceName()}/setCallsign`,
         JSON.stringify({
-          cid: editingcallsign,
+          identifier: editingcallsign,
           newcallsign: callsign,
         })
       );
@@ -3757,7 +3757,7 @@ $(document).ready(() => {
       $.post(
         `https://${GetParentResourceName()}/setRadio`,
         JSON.stringify({
-          cid: editingradio,
+          identifier: editingradio,
           newradio: radio,
         })
       );
@@ -3842,7 +3842,7 @@ $(document).ready(() => {
         `https://${GetParentResourceName()}/callDragAttach`,
         JSON.stringify({
           callid: callId,
-          cid: draggedElement,
+          identifier: draggedElement,
         })
       );
       draggedElement = 0;
@@ -4131,7 +4131,7 @@ $(document).ready(() => {
         );
         $("#boloindividual").attr(
           "placeholder",
-          "Enter patient name and CID here..."
+          "Enter patient name and identifier here..."
         );
         $(".incidents-nav-item").hide();
         $(".dmv-nav-item").hide();
@@ -4258,14 +4258,14 @@ window.addEventListener("message", function (event) {
      /*  let fireCount = 0; */
 
       let activeUnits = eventData.activeUnits;
-      let cid = eventData.identifier;
+      let identifier = eventData.identifier;
       let onDutyOnly = eventData.ondutyonly;
       $(".active-unit-list").html(' ');
       let unitListHTML = '';
 
       activeUnits = Object.values(activeUnits)
       activeUnits.forEach((unit) => {
-        if (onDutyOnly && unit.duty == 0 && unit.cid != cid) {
+        if (onDutyOnly && unit.duty == 0 && unit.identifier != identifier) {
           return
         }
         let status = unit.duty == 1 ? "10-8" : '10-7';
@@ -4301,7 +4301,7 @@ window.addEventListener("message", function (event) {
         }
 
         unitListHTML += `
-                    <div class="active-unit-item" data-id="${unit.cid}">
+                    <div class="active-unit-item" data-id="${unit.identifier}">
                         <div class="unit-status ${statusColor}">${status}</div>
                         ${activeInfoJob}
                         <div class="unit-name">(${callSign}) ${unit.firstName} ${unit.lastName}</div>
@@ -4339,7 +4339,7 @@ window.addEventListener("message", function (event) {
     } else if (eventData.type == "warrants") {
       $(".warrants-items").empty();
       $.each(eventData.data, function (index, value) {
-        $('.warrants-items').prepend(`<div class="warrants-item" data-cid=${value.cid} data-id=${value.linkedincident}><div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 0.75vh; width: 100%;">
+        $('.warrants-items').prepend(`<div class="warrants-item" data-identifier=${value.identifier} data-id=${value.linkedincident}><div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 0.75vh; width: 100%;">
             <div style="display: flex; flex-direction: column;">
                 <div class="warrant-title">${value.name}</div>
             </div>
@@ -4556,7 +4556,7 @@ window.addEventListener("message", function (event) {
         $(".dispatch-attached-units-holder").empty();
         $.each(table, function (index, value) {
           $(".dispatch-attached-units-holder").prepend(
-            `<div class="dispatch-attached-unit-item" data-id="${value.cid}">
+            `<div class="dispatch-attached-unit-item" data-id="${value.identifier}">
                         <div class="unit-job active-info-job-${value.job}">${value.job}</div>
                         <div class="unit-name">(${value.callsign}) ${value.fullname}</div>
                         <div class="unit-radio">${value.channel}</div>
@@ -4855,7 +4855,7 @@ window.addEventListener("message", function (event) {
       let associateddata = eventData.convictions;
       $.each(associateddata, function (index, value) {
         $(".associated-incidents-tags-holder").prepend(
-          `<div class="associated-incidents-tag" data-id="${value.cid}">${value.name}</div>`
+          `<div class="associated-incidents-tag" data-id="${value.identifier}">${value.name}</div>`
         );
 
         var warrantTag = "red-tag";
@@ -4876,34 +4876,34 @@ window.addEventListener("message", function (event) {
           associatedTag = "green-tag";
         }
 
-        const cid = value.cid;
+        const identifier = value.identifier;
 
         // If the associated field is not checked, then populate the recommended fine and sentence fields
         const associatedIncidentsContainer = (value.associated != 1) && `
-          <div class="associated-incidents-user-holder" data-name="${cid}" ></div>
-          <div class="manage-incidents-title-tag" data-id="${cid}">Recommended Fine</div>
-          <div class="associated-incidents-fine-input" data-id="${cid}"><img src="img/h7S5f9J.webp"> <input placeholder="0" disabled class="fine-recommended-amount" id="fine-recommended-amount" data-id="${cid}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${cid}">Recommended Sentence</div>
-          <div class="associated-incidents-sentence-input" data-id="${cid}"><img src="img/9Xn6xXK.webp"> <input placeholder="0" disabled class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${cid}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${cid}">Fine</div>
-          <div class="associated-incidents-fine-input" data-id="${cid}"><img src="img/h7S5f9J.webp"> <input placeholder="Enter fine here..." value="0" class="fine-amount" data-id="${cid}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${cid}">Sentence</div>
-          <div class="associated-incidents-sentence-input" data-id="${cid}"><img src="img/9Xn6xXK.webp"> <input placeholder="Enter months here..." value="0" class="sentence-amount" data-id="${cid}" type="number"></div>
-          <div class="associated-incidents-controls" data-id="${cid}">
-            <div id="jail-button" class="control-button" data-id="${cid}"><span class="fa-solid fa-building-columns" style="margin-top: 3.5px;"></span> Jail</div>
-            <div id="fine-button" class="control-button" data-id="${cid}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Fine</div>
-            ${canSendToCommunityService ? `<div id="community-service-button" class="control-button" data-id="${cid}"> <span class="fa-solid fa-person-digging" style="margin-top: 3.5px;"></span>Community Service</div>` : ''}
+          <div class="associated-incidents-user-holder" data-name="${identifier}" ></div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Recommended Fine</div>
+          <div class="associated-incidents-fine-input" data-id="${identifier}"><img src="img/h7S5f9J.webp"> <input placeholder="0" disabled class="fine-recommended-amount" id="fine-recommended-amount" data-id="${identifier}" type="number"></div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Recommended Sentence</div>
+          <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="0" disabled class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${identifier}" type="number"></div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Fine</div>
+          <div class="associated-incidents-fine-input" data-id="${identifier}"><img src="img/h7S5f9J.webp"> <input placeholder="Enter fine here..." value="0" class="fine-amount" data-id="${identifier}" type="number"></div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Sentence</div>
+          <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="Enter months here..." value="0" class="sentence-amount" data-id="${identifier}" type="number"></div>
+          <div class="associated-incidents-controls" data-id="${identifier}">
+            <div id="jail-button" class="control-button" data-id="${identifier}"><span class="fa-solid fa-building-columns" style="margin-top: 3.5px;"></span> Jail</div>
+            <div id="fine-button" class="control-button" data-id="${identifier}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Fine</div>
+            ${canSendToCommunityService ? `<div id="community-service-button" class="control-button" data-id="${identifier}"> <span class="fa-solid fa-person-digging" style="margin-top: 3.5px;"></span>Community Service</div>` : ''}
           </div>
         `;
 
         $(".incidents-ghost-holder").prepend(
-          `<div class="associated-incidents-user-container" data-id="${cid}">
-              <div class="associated-incidents-user-title">${value.name} (#${cid})</div>
+          `<div class="associated-incidents-user-container" data-id="${identifier}">
+              <div class="associated-incidents-user-title">${value.name} (#${identifier})</div>
               <div class="associated-incidents-user-tags-holder">
-                  <div class="associated-incidents-user-tag ${warrantTag}" data-id="${cid}">Warrant</div>
-                  <div class="associated-incidents-user-tag ${guiltyTag}" data-id="${cid}">Guilty</div>
-                  <div class="associated-incidents-user-tag ${processedTag}" data-id="${cid}">Processed</div>
-                  <div class="associated-incidents-user-tag ${associatedTag}" data-id="${cid}">Associated</div>
+                  <div class="associated-incidents-user-tag ${warrantTag}" data-id="${identifier}">Warrant</div>
+                  <div class="associated-incidents-user-tag ${guiltyTag}" data-id="${identifier}">Guilty</div>
+                  <div class="associated-incidents-user-tag ${processedTag}" data-id="${identifier}">Processed</div>
+                  <div class="associated-incidents-user-tag ${associatedTag}" data-id="${identifier}">Associated</div>
               </div>
               <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Right click below to add and/or modify charges.</div>
               ${associatedIncidentsContainer}
@@ -4911,19 +4911,19 @@ window.addEventListener("message", function (event) {
         );
 
         $(".fine-amount")
-          .filter("[data-id='" + value.cid + "']")
+          .filter("[data-id='" + value.identifier + "']")
           .val(value.fine);
 
         $(".sentence-amount")
-          .filter("[data-id='" + value.cid + "']")
+          .filter("[data-id='" + value.identifier + "']")
           .val(value.sentence);
 
         $(".fine-recommended-amount")
-          .filter("[data-id='" + value.cid + "']")
+          .filter("[data-id='" + value.identifier + "']")
           .val(value.recfine);
 
         $(".sentence-recommended-amount")
-          .filter("[data-id='" + value.cid + "']")
+          .filter("[data-id='" + value.identifier + "']")
           .val(value.recsentence);
 
         const charges = value["charges"];
@@ -4931,8 +4931,8 @@ window.addEventListener("message", function (event) {
           const randomNum = Math.ceil(
             Math.random() * 1000
           ).toString();
-          $(`[data-name="${cid}"]`).prepend(
-            `<div class="white-tag" data-link="${randomNum}" data-id="${cid}">${charges[i]}</div>`
+          $(`[data-name="${identifier}"]`).prepend(
+            `<div class="white-tag" data-link="${randomNum}" data-id="${identifier}">${charges[i]}</div>`
           );
         }
       });
@@ -4943,11 +4943,11 @@ window.addEventListener("message", function (event) {
         let name = value.firstname + " " + value.lastname;
         $(".incidents-person-search-holder").prepend(
           `
-            <div class="incidents-person-search-item" data-info="${name} (#${value.id})" data-cid="${value.id}" data-name="${name}" data-callsign="${value.callsign}">
+            <div class="incidents-person-search-item" data-info="${name} (#${value.id})" data-identifier="${value.id}" data-name="${name}" data-callsign="${value.callsign}">
                 <img src="${value.profilepic}" class="incidents-person-search-item-pfp">
                 <div class="incidents-person-search-item-right">
-                    <div class="incidents-person-search-item-right-cid-title">Citizen ID</div>
-                    <div class="incidents-person-search-item-right-cid-input"><span class="fas fa-id-card"></span> ${value.id}</div>
+                    <div class="incidents-person-search-item-right-identifier-title">Citizen ID</div>
+                    <div class="incidents-person-search-item-right-identifier-input"><span class="fas fa-id-card"></span> ${value.id}</div>
                     <div class="incidents-person-search-item-right-name-title">Name</div>
                     <div class="incidents-person-search-item-right-name-input"><span class="fas fa-user"></span> ${name}</div>
                 </div>
@@ -5543,7 +5543,7 @@ function copyImageSource(url) {
 }
 
 function removeImage(url) {
-  let cid = $(".manage-profile-identifier-input").val();
+  let identifier = $(".manage-profile-identifier-input").val();
   $(".gallery-inner-container img")
     .filter("[src='" + url + "']")
     .remove();

@@ -1,5 +1,3 @@
---local QBCore = exports['qb-core']:GetCoreObject()
-
 -- Get CitizenIDs from Player License
 function GetCitizenID(license)
     local result = MySQL.query.await("SELECT identifier FROM players WHERE license = ?", {license,})

@@ -383,11 +383,11 @@ lib.callback.register('mdt:server:GetProfileData', function(sentId)
 			if #apartmentList > 0 then
 				apartmentData = table.concat(apartmentList, ', ')
 			else
-				TriggerClientEvent("QBCore:Notify", src, 'The citizen does not have an apartment.', 'error')
+				TriggerClientEvent('esx:showAdvancedNotification', src, 'The citizen does not have an apartment.', 'error')
 				print('The citizen does not have an apartment. Set Config.UsingPsHousing to false.')
 			end
 		else
-			TriggerClientEvent("QBCore:Notify", src, 'The citizen does not have a property.', 'error')
+			TriggerClientEvent('esx:showAdvancedNotification', src, 'The citizen does not have a property.', 'error')
 			print('The citizen does not have a property. Set Config.UsingPsHousing to false.')
 		end	
     elseif Config.UsingDefaultQBApartments then
@@ -396,11 +396,11 @@ lib.callback.register('mdt:server:GetProfileData', function(sentId)
             if apartmentData[1] then
                 apartmentData = apartmentData[1].label .. ' (' ..apartmentData[1].name..')'
             else
-                TriggerClientEvent("QBCore:Notify", src, 'The citizen does not have an apartment.', 'error')
+                TriggerClientEvent('esx:showAdvancedNotification', src, 'The citizen does not have an apartment.', 'error')
                 print('The citizen does not have an apartment. Set Config.UsingDefaultQBApartments to false.')
             end
         else
-            TriggerClientEvent("QBCore:Notify", src, 'The citizen does not have an apartment.', 'error')
+            TriggerClientEvent('esx:showAdvancedNotification', src, 'The citizen does not have an apartment.', 'error')
             print('The citizen does not have an apartment. Set Config.UsingDefaultQBApartments to false.')
         end
     end
@@ -760,7 +760,7 @@ RegisterNetEvent('mdt:server:deleteWeapons', function(id)
 				TriggerEvent('mdt:server:AddLog', "A Weapon Info was deleted by "..fullName.." with the ID ("..id..")")
 			else
 				local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
-				TriggerClientEvent("QBCore:Notify", src, 'No Permissions to do that!', 'error')
+				TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
 				TriggerEvent('mdt:server:AddLog', fullname.." tryed to delete a Weapon Info with the ID ("..id..")")
 			end
 		end
@@ -778,7 +778,7 @@ RegisterNetEvent('mdt:server:deleteReports', function(id)
 				TriggerEvent('mdt:server:AddLog', "A Report was deleted by "..fullName.." with the ID ("..id..")")
 			else
 				local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
-				TriggerClientEvent("QBCore:Notify", src, 'No Permissions to do that!', 'error')
+				TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
 				TriggerEvent('mdt:server:AddLog', fullname.." tryed to delete a Report with the ID ("..id..")")
 			end
 		end
@@ -800,7 +800,7 @@ RegisterNetEvent('mdt:server:deleteIncidents', function(id)
             end)
         else
             local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
-            TriggerClientEvent("QBCore:Notify", src, 'No Permissions to do that!', 'error')
+            TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
             TriggerEvent('mdt:server:AddLog', fullname.." tried to delete an Incident with the ID ("..id..")")
         end
     end
@@ -1697,7 +1697,7 @@ RegisterNetEvent('mdt:server:setRadio', function(identifier, newRadio)
 	if radio ~= nil then
 		TriggerClientEvent('mdt:client:setRadio', targetSource, newRadio)
 	else
-		TriggerClientEvent("QBCore:Notify", src, targetName..' does not have a radio!', 'error')
+		TriggerClientEvent('esx:showAdvancedNotification', src, targetName..' does not have a radio!', 'error')
 	end
 end)
 

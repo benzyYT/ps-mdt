@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS `mdt_data` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `cid` VARCHAR(20) DEFAULT NULL,
+  `identifier` VARCHAR(20) DEFAULT NULL,
   `information` MEDIUMTEXT DEFAULT NULL,
   `tags` TEXT NOT NULL,
   `gallery` TEXT NOT NULL,
   `jobtype` VARCHAR(25) DEFAULT 'police',
   `pfp` TEXT DEFAULT NULL,
   `fingerprint` VARCHAR(50) DEFAULT NULL,
-  PRIMARY KEY (`cid`),
+  PRIMARY KEY (`identifier`),
   KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -54,8 +54,8 @@ CREATE TABLE IF NOT EXISTS `mdt_bolos` (
 
 CREATE TABLE IF NOT EXISTS `mdt_convictions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `cid` varchar(50) DEFAULT NULL,
-  `linkedincident` int(11) NOT NULL DEFAULT 0,
+  `identifier` varchar(50) DEFAULT NULL,
+  `linkedinidentifierent` int(11) NOT NULL DEFAULT 0,
   `warrant` varchar(50) DEFAULT NULL,
   `guilty` varchar(50) DEFAULT NULL,
   `processed` varchar(50) DEFAULT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `mdt_convictions` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `mdt_incidents` (
+CREATE TABLE IF NOT EXISTS `mdt_inidentifierents` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `author` varchar(50) NOT NULL DEFAULT '',
   `title` varchar(50) NOT NULL DEFAULT '0',
