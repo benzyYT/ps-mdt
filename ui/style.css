@@ -1111,14 +1111,14 @@ a {
     width: 55%;
 }
 
-.manage-profile-citizenid {
+.manage-profile-identifier {
     color: white;
     margin-left: 10px;
     font-size: 14px;
     user-select: none;
 }
 
-.manage-profile-citizenid-input {
+.manage-profile-identifier-input {
     border: none;
     outline: none;
     margin-left: 2.5px;

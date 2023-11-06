@@ -1,4 +1,3 @@
-QBCore = exports['qb-core']:GetCoreObject()
 local PlayerData = {}
 local mugshotInProgress, createdCamera, MugshotArray, playerData = false, 0, {}, nil
 local handle, board, board_scaleform, overlay, ped, pedcoords, x, y, z, r, suspectheading, suspectx, suspecty, suspectz, board_pos
@@ -17,12 +16,14 @@ local MugShots = {}
 -- Mugshot functions
 
 local function TakeMugShot()
-    QBCore.Functions.TriggerCallback('ps-mdt:server:MugShotWebhook', function(MugShotWebhook)
+    local MugShotWebhook = lib.callback.await('ps-mdt:server:MugShotWebhook', false)
+
+    if MugShotWebhook then
         exports['screenshot-basic']:requestScreenshotUpload(MugShotWebhook, 'files[]', {encoding = 'jpg'}, function(data)
             local resp = json.decode(data)
             table.insert(MugshotArray, resp.attachments[1].url)
         end)
-    end)
+    end
 end
 
 local function PhotoProcess(ped)
@@ -126,8 +127,8 @@ end
 
 local function MakeBoard()
     title = "Bolingbroke Penitentiary"
-    center = playerData.charinfo.firstname.. " ".. playerData.charinfo.lastname
-    footer = playerData.citizenid
+    center = playerData.name
+    footer = playerData.identifier
     header = playerData.charinfo.birthdate
 	CallScaleformMethod(board_scaleform, 'SET_BOARD', title, center, footer, header, 0, 1337, 116)
 end
@@ -165,9 +166,9 @@ RegisterNetEvent('cqc-mugshot:client:trigger', function()
     ped = PlayerPedId()
     pedcoords = GetEntityCoords(ped)
     CreateThread(function()
-        playerData = QBCore.Functions.GetPlayerData()
+        playerData = ESX.GetPlayerData()
         MugshotArray, mugshotInProgress = {}, true
-        local citizenid = playerData.citizenid
+        local identifier = playerData.identifier
         local animDict = 'mp_character_creation@lineup@male_a'
         QBCore.Functions.RequestAnimDict(animDict)
         PrepBoard()
@@ -184,26 +185,22 @@ RegisterNetEvent('cqc-mugshot:client:trigger', function()
             SetEntityHeading(ped, suspectheading)
             ClearPedSecondaryTask(GetPlayerPed(ped))
         end
-           TriggerServerEvent('psmdt-mugshot:server:MDTupload', playerData.citizenid, MugshotArray)
+           TriggerServerEvent('psmdt-mugshot:server:MDTupload', playerData.identifier, MugshotArray)
         mugshotInProgress = false
     end)
 end)
 
 RegisterNUICallback("sendToJail", function(data, cb)
-    QBCore.Functions.TriggerCallback('ps-mdt:server:MugShotWebhook', function(MugShotWebhook)
-        if MugShotWebhook ~= '' then
-            local citizenId, sentence = data.citizenId, data.sentence
+    local MugShotWebhook = lib.callback.await('ps-mdt:server:MugShotWebhook', false)
+    if MugShotWebhook then
+        local identifier, sentence = data.identifier, data.sentence
 
-            -- Gets the player id from the citizenId
-            local p = promise.new()
-            QBCore.Functions.TriggerCallback('mdt:server:GetPlayerSourceId', function(result)
-                p:resolve(result)
-            end, citizenId)
-        
-            local targetSourceId = Citizen.Await(p)
-        
+        -- Gets the player id from the identifier
+        local targetSourceId = lib.callback.await('mdt:server:GetPlayerSourceId', false, identifier)
+
+        if targetSourceId then
             if sentence > 0 then
-                if Config.UseCQCMugshot    then
+                if Config.UseCQCMugshot then
                     TriggerServerEvent('cqc-mugshot:server:triggerSuspect', targetSourceId)
                 end
                 Citizen.Wait(5000)
@@ -211,5 +208,5 @@ RegisterNUICallback("sendToJail", function(data, cb)
                 TriggerServerEvent("police:server:JailPlayer", targetSourceId, sentence)
             end
         end
-    end)
+    end
 end)

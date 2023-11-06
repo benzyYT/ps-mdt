@@ -102,7 +102,7 @@ local MugShotWebhook = ''
         } else if (itemData.name == "mdtcitation") {
     $(".item-info-title").html("<p>" + itemData.label + "</p>");
     $(".item-info-description").html(
-        '<p><strong>Citizen ID: </strong><span>' + itemData.info.citizenId + '</span></p>' +
+        '<p><strong>Citizen ID: </strong><span>' + itemData.info.identifier + '</span></p>' +
         '<p><strong>Fine: </strong><span>' + itemData.info.fine + '</span></p>' +
         '<p><strong>Citation Date: </strong><span>' + itemData.info.date + '</span></p>' +
         '<p><strong>Incident ID: </strong><span>' + itemData.info.incidentId + '</span></p>' +
@@ -159,7 +159,7 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
                 local weapModel = QBCore.Shared.Items[itemData.name].label
                 AddItem(src, itemData.name, fromAmount, toSlot, itemData.info)
                 TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
-                QBCore.Functions.Notify(src, itemInfo["label"] .. " bought!", "success")
+                ESX.ShowNotification(src, itemInfo["label"] .. " bought!", "success")
                 exports['ps-mdt']:CreateWeaponInfo(serial, imageurl, notes, owner, weapClass, weapModel)
                 TriggerEvent("qb-log:server:CreateLog", "shops", "Shop item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemInfo["label"] .. " for $"..price)
             elseif bankBalance >= price then
@@ -176,11 +176,11 @@ RegisterNetEvent('inventory:server:SetInventoryData', function(fromInventory, to
                 local weapModel = QBCore.Shared.Items[itemData.name].label
                 AddItem(src, itemData.name, fromAmount, toSlot, itemData.info)
                 TriggerClientEvent('qb-shops:client:UpdateShop', src, QBCore.Shared.SplitStr(shopType, "_")[2], itemData, fromAmount)
-                QBCore.Functions.Notify(src, itemInfo["label"] .. " bought!", "success")
+                ESX.ShowNotification(src, itemInfo["label"] .. " bought!", "success")
 				exports['ps-mdt']:CreateWeaponInfo(serial, imageurl, notes, owner, weapClass, weapModel)
                 TriggerEvent("qb-log:server:CreateLog", "shops", "Shop item bought", "green", "**"..GetPlayerName(src) .. "** bought a " .. itemInfo["label"] .. " for $"..price)
             else
-                QBCore.Functions.Notify(src, "You don't have enough cash..", "error")
+                ESX.ShowNotification(src, "You don't have enough cash..", "error")
             end
 ````
 

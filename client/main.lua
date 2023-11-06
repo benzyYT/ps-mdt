@@ -1,4 +1,3 @@
-QBCore = exports['qb-core']:GetCoreObject()
 local PlayerData = {}
 local CurrentCops = 0
 local isOpen = false
@@ -20,10 +19,9 @@ CreateThread(function()
     end
 end)
 
-
 -- Events from qbcore
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    PlayerData = QBCore.Functions.GetPlayerData()
+    PlayerData = ESX.GetPlayerData()
     callSign = PlayerData.metadata.callsign
 end)
 
@@ -68,7 +66,7 @@ end)
 AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() ~= resourceName then return end
     Wait(150)
-    PlayerData = QBCore.Functions.GetPlayerData()
+    PlayerData = ESX.GetPlayerData()
     callSign = PlayerData.metadata.callsign
 end)
 
@@ -90,14 +88,14 @@ RegisterKeyMapping('mdt', 'Open Police MDT', 'keyboard', 'k')
 
 RegisterCommand('mdt', function()
     local plyPed = PlayerPedId()
-    PlayerData = QBCore.Functions.GetPlayerData()
-    if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
+    PlayerData = ESX.GetPlayerData()
+    if not LocalPlayer.state.isDead and not LocalPlayer.state.handcuffed and not IsPauseMenuActive() then
         if GetJobType(PlayerData.job.name) ~= nil then
             TriggerServerEvent('mdt:server:openMDT')
             TriggerServerEvent('mdt:requestOfficerData')
         end
     else
-        QBCore.Functions.Notify("Can't do that!", "error")
+        ESX.ShowNotification("Can't do that!", "error")
     end
 end, false)
 
@@ -205,11 +203,10 @@ RegisterNetEvent('mdt:client:dashboardbulletin', function(sentData)
 end)
 
 RegisterNetEvent('mdt:client:dashboardWarrants', function()
-    QBCore.Functions.TriggerCallback("mdt:server:getWarrants", function(data)
-        if data then
-            SendNUIMessage({ type = "warrants", data = data })
-        end
-    end)
+    local data = lib.callback.await('mdt:server:getWarrants', false)
+    if data then
+        SendNUIMessage({ type = "warrants", data = data })
+    end
     -- SendNUIMessage({ type = "warrants",})
 end)
 
@@ -241,7 +238,7 @@ RegisterNetEvent('mdt:client:deleteBulletin', function(ignoreId, sentData, job)
     end
 end)
 
-RegisterNetEvent('mdt:client:open', function(bulletin, activeUnits, calls, cid)
+RegisterNetEvent('mdt:client:open', function(bulletin, activeUnits, calls, identifier)
     EnableGUI(true)
     local x, y, z = table.unpack(GetEntityCoords(PlayerPedId()))
 
@@ -260,7 +257,7 @@ RegisterNetEvent('mdt:client:open', function(bulletin, activeUnits, calls, cid)
 
     -- local grade = PlayerData.job.grade.name
 
-    SendNUIMessage({ type = "data", activeUnits = activeUnits, citizenid = cid, ondutyonly = Config.OnlyShowOnDuty, name = "Welcome, " ..PlayerData.job.grade.name..' '..PlayerData.charinfo.lastname:sub(1,1):upper()..PlayerData.charinfo.lastname:sub(2), location = playerStreetsLocation, fullname = PlayerData.charinfo.firstname..' '..PlayerData.charinfo.lastname, bulletin = bulletin })
+    SendNUIMessage({ type = "data", activeUnits = activeUnits, identifier = identifier, ondutyonly = Config.OnlyShowOnDuty, name = "Welcome, " ..PlayerData.job.grade.name..' '..PlayerData.charinfo.lastname:sub(1,1):upper()..PlayerData.charinfo.lastname:sub(2), location = playerStreetsLocation, fullname = PlayerData.charinfo.firstname..' '..PlayerData.charinfo.lastname, bulletin = bulletin })
     SendNUIMessage({ type = "calls", data = calls })
     TriggerEvent("mdt:client:dashboardWarrants")
 end)
@@ -276,15 +273,10 @@ end)
 --====================================================================================
 
 RegisterNUICallback("searchProfiles", function(data, cb)
-    local p = promise.new()
-
-    QBCore.Functions.TriggerCallback('mdt:server:SearchProfile', function(result)
-        p:resolve(result)
-    end, data.name)
-
-    local data = Citizen.Await(p)
-
-    cb(data)
+    local data = lib.callback.await('mdt:server:SearchProfile', false, data.name)
+    if data then
+        cb(data)
+    end
 end)
 
 
@@ -295,14 +287,14 @@ end)
 RegisterNUICallback("saveProfile", function(data, cb)
     local profilepic = data.pfp
     local information = data.description
-    local cid = data.id
+    local identifier = data.id
     local fName = data.fName
     local sName = data.sName
     local tags = data.tags
     local gallery = data.gallery
     local licenses = data.licenses
     local fingerprint = data.fingerprint
-    TriggerServerEvent("mdt:server:saveProfile", profilepic, information, cid, fName, sName, tags, gallery, licenses, fingerprint)
+    TriggerServerEvent("mdt:server:saveProfile", profilepic, information, identifier, fName, sName, tags, gallery, licenses, fingerprint)
     cb(true)
 end)
 
@@ -313,9 +305,15 @@ RegisterNUICallback("getProfileData", function(data, cb)
     local getProfileDataPromise = function(data)
         if p then return end
         p = promise.new()
-        QBCore.Functions.TriggerCallback('mdt:server:GetProfileData', function(result)
+        -- QBCore.Functions.TriggerCallback('mdt:server:GetProfileData', function(result)
+        --     p:resolve(result)
+        -- end, data)
+
+        local result = lib.callback.await('mdt:server:GetProfileData', false, data)
+        if result then
             p:resolve(result)
-        end, data)
+        end
+
         return Citizen.Await(p)
     end
     local pP = nil
@@ -348,17 +346,17 @@ RegisterNUICallback("newTag", function(data, cb)
 end)
 
 RegisterNUICallback("removeProfileTag", function(data, cb)
-    local cid = data.cid
+    local identifier = data.identifier
     local tagtext = data.text
-    TriggerServerEvent('mdt:server:removeProfileTag', cid, tagtext)
+    TriggerServerEvent('mdt:server:removeProfileTag', identifier, tagtext)
     cb(true)
 end)
 
 RegisterNUICallback("updateLicence", function(data, cb)
     local type = data.type
     local status = data.status
-    local cid = data.cid
-    TriggerServerEvent('mdt:server:updateLicense', cid, type, status)
+    local identifier = data.identifier
+    TriggerServerEvent('mdt:server:updateLicense', identifier, type, status)
     cb(true)
 end)
 
@@ -390,43 +388,34 @@ end)
 -- Uses the QB-Core bill command to send a fine to a player
 -- If you use a different fine system, you will need to change this
 RegisterNUICallback("sendFine", function(data, cb)
-    local citizenId, fine, incidentId = data.citizenId, data.fine, data.incidentId
-    
-    -- Gets the player id from the citizenId
-    local p = promise.new()
-    QBCore.Functions.TriggerCallback('mdt:server:GetPlayerSourceId', function(result)
-        p:resolve(result)
-    end, citizenId)
+    local identifier, fine, incidentId = data.identifier, data.fine, data.incidentId
 
-    local targetSourceId = Citizen.Await(p)
-
-    if fine > 0 then
-        if Config.BillVariation then
-            -- Uses QB-Core removeMoney Functions
-            TriggerServerEvent("mdt:server:removeMoney", citizenId, fine, incidentId)
-        else
-            -- Uses QB-Core /bill command
-            ExecuteCommand(('bill %s %s'):format(targetSourceId, fine))
-            TriggerServerEvent("mdt:server:giveCitationItem", citizenId, fine, incidentId)
+    local targetSourceId = lib.callback.await('mdt:server:GetPlayerSourceId', false, identifier)
+    if targetSourceId then
+        if fine > 0 then
+            if Config.BillVariation then
+                -- Uses QB-Core removeMoney Functions
+                TriggerServerEvent("mdt:server:removeMoney", identifier, fine, incidentId)
+            else
+                -- Uses QB-Core /bill command
+                ExecuteCommand(('bill %s %s'):format(targetSourceId, fine))
+                TriggerServerEvent("mdt:server:giveCitationItem", identifier, fine, incidentId)
+            end
         end
-    end
+    end    
 end)
 
 -- Handle sending the player to community service
 -- If you use a different community service system, you will need to change this
 RegisterNUICallback("sendToCommunityService", function(data, cb)
-    local citizenId, sentence = data.citizenId, data.sentence
+    local identifier, sentence = data.identifier, data.sentence
 
-    -- Gets the player id from the citizenId
-    local p = promise.new()
-    QBCore.Functions.TriggerCallback('mdt:server:GetPlayerSourceId', function(result)
-        p:resolve(result)
-    end, citizenId)
+    local targetSourceId = lib.callback.await('mdt:server:GetPlayerSourceId', false, identifier)
 
-    local targetSourceId = Citizen.Await(p)
-
-    if sentence > 0 then
-        TriggerServerEvent("qb-communityservice:server:StartCommunityService", targetSourceId, sentence)
+    if targetSourceId then
+        if sentence > 0 then
+            TriggerServerEvent("qb-communityservice:server:StartCommunityService", targetSourceId, sentence)
+        end
     end
 end)
 
@@ -464,7 +453,7 @@ RegisterNUICallback('SetHouseLocation', function(data, cb)
         coords[#coords+1] = tonumber(word)
     end
     SetNewWaypoint(coords[1], coords[2])
-    QBCore.Functions.Notify('GPS has been set!', 'success')
+    ESX.ShowNotification('GPS has been set!', 'success')
 end)
 
 --====================================================================================
@@ -635,24 +624,20 @@ end)
 --====================================================================================
 RegisterNUICallback("searchVehicles", function(data, cb)
 
-    local p = promise.new()
+    local result = lib.callback.await('mdt:server:SearchVehicles', false, data.name)
 
-    QBCore.Functions.TriggerCallback('mdt:server:SearchVehicles', function(result)
-        p:resolve(result)
-    end, data.name)
-
-    local result = Citizen.Await(p)
-    for i=1, #result do
-        local vehicle = result[i]
-        local mods = json.decode(result[i].mods)
-        result[i]['plate'] = string.upper(result[i]['plate'])
-        result[i]['color'] = Config.ColorInformation[mods['color1']]
-        result[i]['colorName'] = Config.ColorNames[mods['color1']]
-        local vehData = QBCore.Shared.Vehicles[vehicle['vehicle']]
-        result[i]['model'] = vehData["brand"] .. ' ' .. vehData["name"]
+    if result then
+        for i=1, #result do
+            local vehicle = result[i]
+            local mods = json.decode(result[i].mods)
+            result[i]['plate'] = string.upper(result[i]['plate'])
+            result[i]['color'] = Config.ColorInformation[mods['color1']]
+            result[i]['colorName'] = Config.ColorNames[mods['color1']]
+            local vehData = QBCore.Shared.Vehicles[vehicle['vehicle']]
+            result[i]['model'] = vehData["brand"] .. ' ' .. vehData["name"]
+        end
+        cb(result)
     end
-    cb(result)
-
 end)
 
 RegisterNUICallback("getVehicleData", function(data, cb)
@@ -691,7 +676,7 @@ RegisterNUICallback("saveVehicleInfo", function(data, cb)
             end
 
             if found == 0 then
-                QBCore.Functions.Notify('Vehicle not found!', 'error')
+                ESX.ShowNotification('Vehicle not found!', 'error')
                 SendNUIMessage({ type = "redImpound" })
             end
         else
@@ -717,14 +702,11 @@ end)
 ------------------------------------------
 --====================================================================================
 RegisterNUICallback("searchWeapons", function(data, cb)
-    local p = promise.new()
-
-    QBCore.Functions.TriggerCallback('mdt:server:SearchWeapons', function(result)
-        p:resolve(result)
-    end, data.name)
-
-    local result = Citizen.Await(p)
-    cb(result)
+    
+    local result = lib.callback.await('mdt:server:SearchWeapons', false, data.name)
+    if result then
+        cb(result)
+    end
 end)
 
 RegisterNUICallback("saveWeaponInfo", function(data, cb)
@@ -771,12 +753,12 @@ RegisterNUICallback("toggleDuty", function(data, cb)
 end)
 
 RegisterNUICallback("setCallsign", function(data, cb)
-    TriggerServerEvent('mdt:server:setCallsign', data.cid, data.newcallsign)
+    TriggerServerEvent('mdt:server:setCallsign', data.identifier, data.newcallsign)
     cb(true)
 end)
 
 RegisterNUICallback("setRadio", function(data, cb)
-    TriggerServerEvent('mdt:server:setRadio', data.cid, data.newradio)
+    TriggerServerEvent('mdt:server:setRadio', data.identifier, data.newradio)
     cb(true)
 end)
 
@@ -786,7 +768,7 @@ RegisterNUICallback("saveIncident", function(data, cb)
 end)
 
 RegisterNUICallback("removeIncidentCriminal", function(data, cb)
-    TriggerServerEvent('mdt:server:removeIncidentCriminal', data.cid, data.incidentId)
+    TriggerServerEvent('mdt:server:removeIncidentCriminal', data.identifier, data.incidentId)
     cb(true)
 end)
 
@@ -824,15 +806,15 @@ RegisterNetEvent('mdt:client:setRadio', function(radio)
     if type(tonumber(radio)) == "number" then
         exports["pma-voice"]:setVoiceProperty("radioEnabled", true)
         exports["pma-voice"]:setRadioChannel(tonumber(radio))
-        QBCore.Functions.Notify("You have set your radio frequency to "..radio..".", "success")
+        ESX.ShowNotification("You have set your radio frequency to "..radio..".", "success")
     else
-        QBCore.Functions.Notify("Invalid Station(Please enter a number)", "error")
+        ESX.ShowNotification("Invalid Station(Please enter a number)", "error")
     end
 end)
 
 RegisterNetEvent('mdt:client:sig100', function(radio, type)
     local job = PlayerData.job.name
-    local duty = PlayerData.job.onduty
+    local duty = LocalPlayer.state.onduty
     if AllowedJob(job) and duty == 1 then
         if type == true then
             exports['erp_notifications']:PersistentAlert("START", "signall100-"..radio, "inform", "Radio "..radio.." is currently signal 100!")
@@ -891,22 +873,22 @@ RegisterNUICallback("attachedUnits", function(data, cb)
 end)
 
 RegisterNUICallback("callDispatchDetach", function(data, cb)
-    TriggerServerEvent('mdt:server:callDispatchDetach', data.callid or data.id, data.cid)
+    TriggerServerEvent('mdt:server:callDispatchDetach', data.callid or data.id, data.identifier)
     cb(true)
 end)
 
 RegisterNUICallback("setDispatchWaypoint", function(data, cb)
-    TriggerServerEvent('mdt:server:setDispatchWaypoint', data.callid or data.id, data.cid)
+    TriggerServerEvent('mdt:server:setDispatchWaypoint', data.callid or data.id, data.identifier)
     cb(true)
 end)
 
 RegisterNUICallback("callDragAttach", function(data, cb)
-    TriggerServerEvent('mdt:server:callDragAttach', data.callid or data.id, data.cid)
+    TriggerServerEvent('mdt:server:callDragAttach', data.callid or data.id, data.identifier)
     cb(true)
 end)
 
 RegisterNUICallback("setWaypointU", function(data, cb)
-    TriggerServerEvent('mdt:server:setWaypoint:unit', data.cid)
+    TriggerServerEvent('mdt:server:setWaypoint:unit', data.identifier)
     cb(true)
 end)
 
@@ -1021,9 +1003,10 @@ RegisterNetEvent('mdt:client:statusImpound', function(data, plate)
 end)
 
 function GetPlayerWeaponInfos(cb)
-    QBCore.Functions.TriggerCallback('getWeaponInfo', function(weaponInfos)
+    local weaponInfos = lib.callback.await('getWeaponInfo', false)
+    if weaponInfos then
         cb(weaponInfos)
-    end)
+    end
 end
 
 --3rd Eye Trigger Event
@@ -1033,7 +1016,7 @@ AddEventHandler('ps-mdt:client:selfregister', function()
         if weaponInfos and #weaponInfos > 0 then
             for _, weaponInfo in ipairs(weaponInfos) do
                 TriggerServerEvent('mdt:server:registerweapon', weaponInfo.serialnumber, weaponInfo.weaponurl, weaponInfo.notes, weaponInfo.owner, weaponInfo.weapClass, weaponInfo.weaponmodel)
-                TriggerEvent('QBCore:Notify', "Weapon " .. weaponInfo.weaponmodel .. " has been added to police database.")
+                ESX.ShowNotification("Weapon " .. weaponInfo.weaponmodel .. " has been added to police database.")
                 --print("Weapon added to database")
             end
         else
@@ -1049,7 +1032,7 @@ end)
         if weaponInfos and #weaponInfos > 0 then
             for _, weaponInfo in ipairs(weaponInfos) do
                 TriggerServerEvent('mdt:server:registerweapon', weaponInfo.serialnumber, weaponInfo.weaponurl, weaponInfo.notes, weaponInfo.owner, weaponInfo.weapClass, weaponInfo.weaponmodel)
-                TriggerEvent('QBCore:Notify', "Weapon " .. weaponInfo.weaponmodel .. " has been added to police database.")
+                ESX.ShowNotification("Weapon " .. weaponInfo.weaponmodel .. " has been added to police database.")
                 --print("Weapon added to database")
             end
         else
@@ -1096,11 +1079,11 @@ end
 if Config.UseWolfknightRadar == true then
     RegisterNetEvent("ps-mdt:client:trafficStop")
     AddEventHandler("ps-mdt:client:trafficStop", function()
-        local plyData = QBCore.Functions.GetPlayerData()
+        local plyData = ESX.GetPlayerData()
         local currentPos = GetEntityCoords(PlayerPedId())
         local locationInfo = getStreetandZone(currentPos)
         if not IsPedInAnyPoliceVehicle(PlayerPedId()) then
-            QBCore.Functions.Notify("Not in any Police Vehicle!", "error") 
+            ESX.ShowNotification("Not in any Police Vehicle!", "error") 
             return 
         end
         local data, vData, vehicle = exports["wk_wars2x"]:GetFrontPlate(), {}
@@ -1134,7 +1117,7 @@ if Config.UseWolfknightRadar == true then
                 coolDown = false
             end)
         else
-            QBCore.Functions.Notify("Traffic Stop Cooldown active!", "error") 
+            ESX.ShowNotification("Traffic Stop Cooldown active!", "error") 
         end
     end)
 end

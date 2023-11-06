@@ -233,7 +233,7 @@ $(document).ready(() => {
     const { vehicles, tags, gallery, convictions, incidents, properties, fingerprint } = result;
 
     $(".manage-profile-editing-title").html(`You are currently editing ${result["firstname"]} ${result["lastname"]}`);
-    $(".manage-profile-citizenid-input").val(result['cid']);
+    $(".manage-profile-identifier-input").val(result['cid']);
     $(".manage-profile-name-input-1").val(result["firstname"]);
     $(".manage-profile-name-input-2").val(result["lastname"]);
     $(".manage-profile-dob-input").val(result["dob"]);
@@ -455,7 +455,7 @@ $(document).ready(() => {
   });
 
   $(".convictions-title").on("click", "", function () {
-    if ($(".manage-profile-citizenid-input").val()) {
+    if ($(".manage-profile-identifier-input").val()) {
       document.addEventListener("mouseup", onMouseDownIncidents);
       const source = "convictions-title";
       $(".convictions-holder").attr("data-source", source);
@@ -467,7 +467,7 @@ $(document).ready(() => {
   });
 
   $(".profile-incidents-title").on("click", "", function () {
-    if ($(".manage-profile-citizenid-input").val()) {
+    if ($(".manage-profile-identifier-input").val()) {
       document.addEventListener("mouseup", onMouseDownIncidents);
       const source = "profile-incidents-title";
       $(".profile-incidents-holder").attr("data-source", source);
@@ -479,7 +479,7 @@ $(document).ready(() => {
   });
 
   $(".gallery-add-btn").click(function () {
-    if ($(".manage-profile-citizenid-input").val()) {
+    if ($(".manage-profile-identifier-input").val()) {
       if ($(".gallery-upload-input").css("display") == "none") {
         $(".gallery-upload-input").slideDown(250);
         $(".gallery-upload-input").css("display", "block");
@@ -498,7 +498,7 @@ $(document).ready(() => {
   $("#gallery-upload-input").keydown(function (e) {
     if (e.keyCode === 13) {
       let URL = $("#gallery-upload-input").val();
-      let cid = $(".manage-profile-citizenid-input").val();
+      let cid = $(".manage-profile-identifier-input").val();
       if (URL !== "") {
         let randomNum = Math.ceil(Math.random() * 10).toString();
         $(".gallery-inner-container").prepend(
@@ -557,7 +557,7 @@ $(document).ready(() => {
           pfp = newpfp;
         }
         let description = $(".manage-profile-info").val();
-        let id = $(".manage-profile-citizenid-input").val();
+        let id = $(".manage-profile-identifier-input").val();
 
         $(".licenses-holder")
         .find("span")
@@ -854,7 +854,7 @@ $(document).ready(() => {
     }
   );
   $(".tags-add-btn").click(function () {
-    if ($(".manage-profile-citizenid-input").val()) {
+    if ($(".manage-profile-identifier-input").val()) {
       if (canInputTag) {
         $(this).removeClass("fa-plus").addClass("fa-minus");
         $(".tags-holder").prepend(
@@ -1035,7 +1035,7 @@ $(document).ready(() => {
     // $.post(
     //   `https://${GetParentResourceName()}/updateLicence`,
     //   JSON.stringify({
-    //     cid: $(".manage-profile-citizenid-input").val(),
+    //     cid: $(".manage-profile-identifier-input").val(),
     //     type: $(this).data("status"),
     //     status: "revoke",
     //   })
@@ -1054,7 +1054,7 @@ $(document).ready(() => {
     // $.post(
     //   `https://${GetParentResourceName()}/updateLicence`,
     //   JSON.stringify({
-    //     cid: $(".manage-profile-citizenid-input").val(),
+    //     cid: $(".manage-profile-identifier-input").val(),
     //     type: $(this).data("status"),
     //     status: "give",
     //   })
@@ -1328,7 +1328,7 @@ $(document).ready(() => {
   $("#incidents-upload-input").keydown(function (e) {
     if (e.keyCode === 13) {
       let URL = $("#incidents-upload-input").val();
-      let cid = $(".manage-profile-citizenid-input").val();
+      let cid = $(".manage-profile-identifier-input").val();
       if (URL !== "") {
         let randomNum = Math.ceil(Math.random() * 10).toString();
         $(".manage-incidents-evidence-holder").prepend(
@@ -1616,7 +1616,7 @@ $(document).ready(() => {
   );
 
   $(".bolo-gallery-add-btn").click(function () {
-    //if ($(".manage-profile-citizenid-input").val()) {
+    //if ($(".manage-profile-identifier-input").val()) {
     if ($(".bolo-gallery-upload-input").css("display") == "none") {
       $(".bolo-gallery-upload-input").slideDown(250);
       $(".bolo-gallery-upload-input").css("display", "block");
@@ -1636,7 +1636,7 @@ $(document).ready(() => {
   $("#bolo-gallery-upload-input").keydown(function (e) {
     if (e.keyCode === 13) {
       let URL = $("#bolo-gallery-upload-input").val();
-      let cid = $(".manage-profile-citizenid-input").val();
+      let cid = $(".manage-profile-identifier-input").val();
       if (URL !== "") {
         let randomNum = Math.ceil(Math.random() * 10).toString();
         $(".bolo-gallery-inner-container").prepend(
@@ -1969,27 +1969,27 @@ $(document).ready(() => {
 
   $('.incidents-ghost-holder').on('click', '#jail-button', function() {
     // Get the current sentence and recommended sentence values
-    const citizenId = $(this).data("id");
-    const sentence = $(".sentence-amount").filter(`[data-id=${citizenId}]`).val();
-    const recommendSentence = $(".sentence-recommended-amount").filter(`[data-id=${citizenId}]`).val();
-    sendToJail(citizenId, sentence, recommendSentence);
+    const identifier = $(this).data("id");
+    const sentence = $(".sentence-amount").filter(`[data-id=${identifier}]`).val();
+    const recommendSentence = $(".sentence-recommended-amount").filter(`[data-id=${identifier}]`).val();
+    sendToJail(identifier, sentence, recommendSentence);
   });
 
   $('.incidents-ghost-holder').on('click', '#fine-button', function() {
     // Get the current fine and recommended fine values
-    const citizenId = $(this).data("id");
-    const fine = $(".fine-amount").filter(`[data-id=${citizenId}]`).val();
-    const recommendFine = $(".fine-recommended-amount").filter(`[data-id=${citizenId}]`).val();
+    const identifier = $(this).data("id");
+    const fine = $(".fine-amount").filter(`[data-id=${identifier}]`).val();
+    const recommendFine = $(".fine-recommended-amount").filter(`[data-id=${identifier}]`).val();
     const incidentId = $(".manage-incidents-editing-title").data("id");
-    sendFine(citizenId, fine, recommendFine, incidentId);
+    sendFine(identifier, fine, recommendFine, incidentId);
   });
 
   $('.incidents-ghost-holder').on('click', '#community-service-button', function() {
     // Get the current sentence and recommended sentence values
-    const citizenId = $(this).data("id");
-    const sentence = $(".sentence-amount").filter(`[data-id=${citizenId}]`).val();
-    const recommendSentence = $(".sentence-recommended-amount").filter(`[data-id=${citizenId}]`).val();
-    sendToCommunityService(citizenId, sentence, recommendSentence);
+    const identifier = $(this).data("id");
+    const sentence = $(".sentence-amount").filter(`[data-id=${identifier}]`).val();
+    const recommendSentence = $(".sentence-recommended-amount").filter(`[data-id=${identifier}]`).val();
+    sendToCommunityService(identifier, sentence, recommendSentence);
   });
 
   $(".contextmenu").on(
@@ -2172,7 +2172,7 @@ $(document).ready(() => {
 
   $(".contextmenu").on("click", ".incidents-remove-normal-tag", function () {
     $(`.tag:contains(${$(this).data("info")})`).remove();
-    let cid = $(".manage-profile-citizenid-input").val();
+    let cid = $(".manage-profile-identifier-input").val();
     if (cid) {
       $.post(
         `https://${GetParentResourceName()}/removeProfileTag`,
@@ -2336,7 +2336,7 @@ $(document).ready(() => {
   );
 
   $(".reports-gallery-add-btn").click(function () {
-    //if ($(".manage-profile-citizenid-input").val()) {
+    //if ($(".manage-profile-identifier-input").val()) {
     if ($(".reports-gallery-upload-input").css("display") == "none") {
       $(".reports-gallery-upload-input").slideDown(250);
       $(".reports-gallery-upload-input").css("display", "block");
@@ -2356,7 +2356,7 @@ $(document).ready(() => {
   $("#reports-gallery-upload-input").keydown(function (e) {
     if (e.keyCode === 13) {
       let URL = $("#reports-gallery-upload-input").val();
-      let cid = $(".manage-profile-citizenid-input").val();
+      let cid = $(".manage-profile-identifier-input").val();
       if (URL !== "") {
         let randomNum = Math.ceil(Math.random() * 10).toString();
         $(".reports-gallery-inner-container").prepend(
@@ -4258,7 +4258,7 @@ window.addEventListener("message", function (event) {
      /*  let fireCount = 0; */
 
       let activeUnits = eventData.activeUnits;
-      let cid = eventData.citizenid;
+      let cid = eventData.identifier;
       let onDutyOnly = eventData.ondutyonly;
       $(".active-unit-list").html(' ');
       let unitListHTML = '';
@@ -5418,7 +5418,7 @@ function addTag(tagInput) {
   $.post(
     `https://${GetParentResourceName()}/newTag`,
     JSON.stringify({
-      id: $(".manage-profile-citizenid-input").val(),
+      id: $(".manage-profile-identifier-input").val(),
       tag: tagInput,
     })
   );
@@ -5426,33 +5426,33 @@ function addTag(tagInput) {
 
 // Use the customSentence if defined, otherwise use the recommendedSentence
 // This uses the assumption that customSentence will be 0 if not defined
-function sendToJail(citizenId, customSentence, recommendedSentence) {
+function sendToJail(identifier, customSentence, recommendedSentence) {
   const sentence = Number(customSentence) || Number(recommendedSentence);
 
   $.post(`https://${GetParentResourceName()}/sendToJail`, JSON.stringify({
-    citizenId,
+    identifier,
     sentence,
   }));
 }
 
 // Use the customSentence if defined, otherwise use the recommendedSentence
 // This uses the assumption that customSentence will be 0 if not defined
-function sendToCommunityService(citizenId, customSentence, recommendedSentence) {
+function sendToCommunityService(identifier, customSentence, recommendedSentence) {
   const sentence = Number(customSentence) || Number(recommendedSentence);
 
   $.post(`https://${GetParentResourceName()}/sendToCommunityService`, JSON.stringify({
-    citizenId,
+    identifier,
     sentence,
   }));
 }
 
 // Use the customFine if defined, otherwise use the recommendedFine
 // This uses the assumption that customFine will be 0 if not defined
-function sendFine(citizenId, customFine, recommendedFine, incidentId) {
+function sendFine(identifier, customFine, recommendedFine, incidentId) {
   const fine = Number(customFine) || Number(recommendedFine);
 
   $.post(`https://${GetParentResourceName()}/sendFine`, JSON.stringify({
-    citizenId,
+    identifier,
     fine,
     incidentId,
   }));
@@ -5543,7 +5543,7 @@ function copyImageSource(url) {
 }
 
 function removeImage(url) {
-  let cid = $(".manage-profile-citizenid-input").val();
+  let cid = $(".manage-profile-identifier-input").val();
   $(".gallery-inner-container img")
     .filter("[src='" + url + "']")
     .remove();
@@ -5667,7 +5667,7 @@ function searchProfilesResults(result) {
     }
 
     profileHTML += `
-    <div class="profile-item" data-id="${value.citizenid}" data-fingerprint="${value.fingerprint}">
+    <div class="profile-item" data-id="${value.identifier}" data-fingerprint="${value.fingerprint}">
         <img src="${value.pp}" class="profile-image">
         <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
         <div style="display: flex; flex-direction: column;">
@@ -5681,7 +5681,7 @@ function searchProfilesResults(result) {
             </div>
         </div>
         <div class="profile-bottom-info">
-            <div class="profile-id"><span class="fas fa-id-card"></span> Citizen ID: ${value.citizenid}</div>&nbsp;
+            <div class="profile-id"><span class="fas fa-id-card"></span> Citizen ID: ${value.identifier}</div>&nbsp;
         </div>
         </div>
     </div>

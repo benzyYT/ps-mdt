@@ -1,9 +1,9 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+--local QBCore = exports['qb-core']:GetCoreObject()
 
 function GetPlayerData(source)
-	local Player = QBCore.Functions.GetPlayer(source)
+	local Player = ESX.GetPlayerFromId(source)
 	if Player == nil then return end -- Player not loaded in correctly
-	return Player.PlayerData
+	return Player
 end
 
 function UnpackJob(data)
