@@ -1,4 +1,4 @@
---local QBCore = exports['qb-core']:GetCoreObject()
+local Items = exports.ox_inventory.Items()
 local incidents = {}
 local convictions = {}
 local bolos = {}
@@ -1863,7 +1863,7 @@ lib.callback.register('getWeaponInfo', function()
 					weaponInfo = {
 						serialnumber = item.metadata.serial,
 						owner = Player.PlayerData.charinfo.firstname .. " " .. Player.PlayerData.charinfo.lastname,
-						weaponmodel = QBCore.Shared.Items[string.lower(item.name)].label,
+						weaponmodel = Items[string.lower(item.name)].label,
 						weaponurl = invImage,
 						notes = "Self Registered",
 						weapClass = "Class 1",
@@ -1880,7 +1880,7 @@ lib.callback.register('getWeaponInfo', function()
 					local weaponInfo = {
 						serialnumber = item.info.serie,
 						owner = Player.PlayerData.charinfo.firstname .. " " .. Player.PlayerData.charinfo.lastname,
-						weaponmodel = QBCore.Shared.Items[item.name].label,
+						weaponmodel = Items[item.name].label,
 						weaponurl = invImage,
 						notes = "Self Registered",
 						weapClass = "Class 1",
@@ -1928,7 +1928,7 @@ local function giveCitationItem(src, identifier, fine, incidentId)
 	if Config.QBManagementUse then 
 		exports['qb-management']:AddMoney(Officer.PlayerData.job.name, fine) 
 	end
-	TriggerClientEvent('inventory:client:ItemBox', Player.PlayerData.source, QBCore.Shared.Items['mdtcitation'], "add")
+	TriggerClientEvent('inventory:client:ItemBox', Player.PlayerData.source, Items['mdtcitation'], "add")
 	TriggerEvent('mdt:server:AddLog', "A Fine was writen by "..OfficerFullName.." and was sent to "..PlayerName..", the Amount was $".. fine ..". (ID: "..incidentId.. ")")
 end
 
