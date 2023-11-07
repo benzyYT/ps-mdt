@@ -1,5 +1,7 @@
 Config = Config or {}
 
+Config.vModelByHash = {}
+
 Config.UsingPsHousing = false
 Config.UsingDefaultQBApartments = true
 Config.OnlyShowOnDuty = true

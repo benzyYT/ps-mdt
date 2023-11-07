@@ -48,3 +48,13 @@ end
 function GetNameFromPlayerData(PlayerData)
 	return ('%s %s'):format(PlayerData.charinfo.firstname, PlayerData.charinfo.lastname)
 end
+
+function ConstructHashToVehicleNameTable()
+	for name, _ in pairs(Config.vHashByModel) do
+        Config.vModelByHash[joaat(name)] = name
+    end
+end
+
+function GetVehicleHashByName(hash)
+	return Config.vModelByHash[hash]
+end

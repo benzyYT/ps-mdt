@@ -51,7 +51,17 @@ function CreateUser(identifier, tableName)
 end
 
 function GetPlayerVehicles(identifier, cb)
-	return MySQL.query.await('SELECT id, plate, vehicle FROM player_vehicles WHERE identifier=:identifier', { identifier = identifier })
+	local vehicleList =  MySQL.query.await('SELECT * FROM owned_vehicles WHERE owner = ?', {identifier})
+    if vehicleList then
+        for k, veh in pairs(vehicleList) do
+            veh.vehicle = json.decode(veh.vehicle)
+            local hash = GetVehicleHashByName(veh.vehicle.model)
+            local infos = MySQL.single.await("SELECT * FROM vehicles WHERE model = ?", {hash})
+            veh.infos = infos
+            veh.adv_stats = json.decode(veh.adv_stats)
+        end
+	    return vehicleList
+    end
 end
 
 function GetBulletins(JobType)
@@ -94,27 +104,31 @@ function GetPlayerApartment(identifier, cb)
 end
 
 function GetPlayerLicenses(identifier)
-    local response = false
-    local Player = ESX.GetPlayerFromIdentifier(identifier)
-    if Player ~= nil then
-        return Player.PlayerData.metadata.licences
-    else
-        local result = MySQL.scalar.await('SELECT metadata FROM players WHERE identifier = @identifier', {['@identifier'] = identifier})
-        if result ~= nil then
-            local metadata = json.decode(result)
-            if metadata["licences"] ~= nil and metadata["licences"] then
-                return metadata["licences"]
-            else
-                return {
-                    ['driver'] = false,
-                    ['business'] = false,
-                    ['weapon'] = false,
-                    ['pilot'] = false
-                }
-            end
-        end
-    end
+    return MySQL.query.await('SELECT user_licenses.type, licenses.label FROM user_licenses LEFT JOIN licenses ON user_licenses.type = licenses.type WHERE owner = ?', {identifier})
 end
+
+-- function GetPlayerLicenses(identifier)
+--     local response = false
+--     local Player = ESX.GetPlayerFromIdentifier(identifier)
+--     if Player ~= nil then
+--         return Player.PlayerData.metadata.licences
+--     else
+--         local result = MySQL.scalar.await('SELECT metadata FROM players WHERE identifier = @identifier', {['@identifier'] = identifier})
+--         if result ~= nil then
+--             local metadata = json.decode(result)
+--             if metadata["licences"] ~= nil and metadata["licences"] then
+--                 return metadata["licences"]
+--             else
+--                 return {
+--                     ['driver'] = false,
+--                     ['business'] = false,
+--                     ['weapon'] = false,
+--                     ['pilot'] = false
+--                 }
+--             end
+--         end
+--     end
+-- end
 
 function ManageLicense(identifier, type, status)
     local Player = ESX.GetPlayerFromIdentifier(identifier)
@@ -157,5 +171,25 @@ function UpdateAllLicenses(identifier, incomingLicenses)
             result.licences[k] = incomingLicenses[k]
         end
         MySQL.query.await('UPDATE `players` SET `metadata` = @metadata WHERE identifier = @identifier', {['@metadata'] = json.encode(result), ['@identifier'] = identifier})
+    end
+end
+
+function GetAllLicenses()
+    local res = MySQL.query.await('SELECT * FROM licenses', {})
+    local formattedLicences = {}
+
+    for k, v in pairs(res) do
+        formattedLicences[v.type] = { label = v.label, type = v.type, status = false }
+    end
+
+    return formattedLicences
+end
+
+function RetrieveVehiclesFromDB()
+	local vehicles = MySQL.query.await('SELECT * FROM vehicles')
+    for k, v in pairs(vehicles) do
+        if Config.vModelByHash[joaat(v.model)] == nil then
+            Config.vModelByHash[joaat(v.model)] = v.model
+        end
     end
 end

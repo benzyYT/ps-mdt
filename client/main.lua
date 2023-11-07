@@ -19,24 +19,53 @@ CreateThread(function()
     end
 end)
 
--- Events from qbcore
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    PlayerData = ESX.GetPlayerData()
-    callSign = PlayerData.metadata.callsign
+-- Events from ESX
+RegisterNetEvent('esx:playerLoaded') -- Store the players data
+AddEventHandler('esx:playerLoaded', function(xPlayer, isNew)
+	ESX.PlayerData = xPlayer
+	ESX.PlayerLoaded = true
+    PlayerData = ESX.PlayerData
 end)
 
-RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
+RegisterNetEvent('esx:playerLogout') -- When a player logs out (multicharacter), reset their data
+AddEventHandler('esx:playerLogout', function()
     TriggerServerEvent("ps-mdt:server:OnPlayerUnload")
-    PlayerData = {}
+	ESX.PlayerLoaded = false
+	ESX.PlayerData = {}
 end)
 
-RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
-    PlayerData.job = JobInfo
+-- These two functions can perform the same task
+RegisterNetEvent('esx:setJob')
+AddEventHandler('esx:setJob', function(job)
+	ESX.PlayerData.job = job
 end)
 
-RegisterNetEvent('QBCore:Client:OnGangUpdate', function(GangInfo)
-    PlayerData.gang = GangInfo
+AddEventHandler('esx:onPlayerDeath', function(data)
+    isDead = true
 end)
+
+AddEventHandler('playerSpawned', function(spawn)
+    isDead = false
+end)
+
+-- Events from qbcore
+-- RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+--     PlayerData = ESX.GetPlayerData()
+--     callSign = PlayerData.metadata.callsign
+-- end)
+
+-- RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
+--     TriggerServerEvent("ps-mdt:server:OnPlayerUnload")
+--     PlayerData = {}
+-- end)
+
+-- RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
+--     PlayerData.job = JobInfo
+-- end)
+
+-- RegisterNetEvent('QBCore:Client:OnGangUpdate', function(GangInfo)
+--     PlayerData.gang = GangInfo
+-- end)
 
 RegisterNetEvent("QBCore:Client:SetDuty", function(job, state)
     if AllowedJob(job) then
@@ -59,15 +88,15 @@ RegisterNetEvent('police:SetCopCount', function(amount)
     CurrentCops = amount
 end)
 
-RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
-    PlayerData = val
-end)
+-- RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
+--     PlayerData = val
+-- end)
 
 AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() ~= resourceName then return end
     Wait(150)
     PlayerData = ESX.GetPlayerData()
-    callSign = PlayerData.metadata.callsign
+    callSign = LocalPlayer.state.callsign
 end)
 
 AddEventHandler('onResourceStop', function(resourceName)
@@ -257,7 +286,7 @@ RegisterNetEvent('mdt:client:open', function(bulletin, activeUnits, calls, ident
 
     -- local grade = PlayerData.job.grade.name
 
-    SendNUIMessage({ type = "data", activeUnits = activeUnits, identifier = identifier, ondutyonly = Config.OnlyShowOnDuty, name = "Welcome, " ..PlayerData.job.grade.name..' '..PlayerData.charinfo.lastname:sub(1,1):upper()..PlayerData.charinfo.lastname:sub(2), location = playerStreetsLocation, fullname = PlayerData.charinfo.firstname..' '..PlayerData.charinfo.lastname, bulletin = bulletin })
+    SendNUIMessage({ type = "data", activeUnits = activeUnits, identifier = identifier, ondutyonly = Config.OnlyShowOnDuty, name = "Bienvenue, " ..ESX.PlayerData.job.grade_label..' '..ESX.PlayerData.lastName, location = playerStreetsLocation, fullname = ESX.PlayerData.name, bulletin = bulletin })
     SendNUIMessage({ type = "calls", data = calls })
     TriggerEvent("mdt:client:dashboardWarrants")
 end)

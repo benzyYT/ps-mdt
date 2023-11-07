@@ -118,8 +118,8 @@ AddEventHandler('playerDropped', function(reason)
 
     local time = os.date("%Y-%m-%d %H:%M:%S")
     local job = PlayerData.job.name
-    local firstName = PlayerData.charinfo.firstname:sub(1,1):upper()..PlayerData.charinfo.firstname:sub(2)
-    local lastName = PlayerData.charinfo.lastname:sub(1,1):upper()..PlayerData.charinfo.lastname:sub(2)
+    local firstName = PlayerData.get('firstName')
+    local lastName = PlayerData.get('lastName')
 
     -- Auto clock out if the player is off duty
      if IsPoliceOrEms(job) and Player(PlayerData.source)?.state.onduty then
@@ -164,9 +164,12 @@ RegisterNetEvent("ps-mdt:server:ToggleDuty", function()
     end
 end)
 
-QBCore.Commands.Add("mdtleaderboard", "Show MDT leaderboard", {}, false, function(source, args)
-    local PlayerData = GetPlayerData(source)
-    local job = PlayerData.job.name
+lib.addCommand('mdtleaderboard', {
+    help = "Show MDT leaderboard",
+    params = {},
+}, function(source, args, raw)
+    local PlayerData = ESX.GetPlayerFromId(source)
+	local job = PlayerData.job.name
 
     if not IsPoliceOrEms(job) then
         TriggerClientEvent('esx:showNotification', source, "You don't have permission to use this command.", 'error')
@@ -189,12 +192,37 @@ QBCore.Commands.Add("mdtleaderboard", "Show MDT leaderboard", {}, false, functio
     TriggerClientEvent('esx:showNotification', source, "MDT leaderboard sent to Discord!", 'success')
 end)
 
+-- QBCore.Commands.Add("mdtleaderboard", "Show MDT leaderboard", {}, false, function(source, args)
+--     local PlayerData = ESX.GetPlayerFromId(source)
+--     local job = PlayerData.job.name
+
+--     if not IsPoliceOrEms(job) then
+--         TriggerClientEvent('esx:showNotification', source, "You don't have permission to use this command.", 'error')
+--         return
+--     end
+
+-- 	local result = MySQL.Sync.fetchAll('SELECT firstname, lastname, total_time FROM mdt_clocking ORDER BY total_time DESC')
+
+--     local leaderboard_message = '**MDT Leaderboard**\n\n'
+
+--     for i, record in ipairs(result) do
+-- 		local firstName = record.firstname:sub(1,1):upper()..record.firstname:sub(2)
+-- 		local lastName = record.lastname:sub(1,1):upper()..record.lastname:sub(2)
+-- 		local total_time = format_time(record.total_time)
+	
+-- 		leaderboard_message = leaderboard_message .. i .. '. **' .. firstName .. ' ' .. lastName .. '** - ' .. total_time .. '\n'
+-- 	end
+
+--     sendToDiscord(16753920, "MDT Leaderboard", leaderboard_message, "ps-mdt | Made by Project Sloth")
+--     TriggerClientEvent('esx:showNotification', source, "MDT leaderboard sent to Discord!", 'success')
+-- end)
+
 RegisterNetEvent("ps-mdt:server:ClockSystem", function()
     local src = source
     local PlayerData = ESX.GetPlayerFromId(src)
     local time = os.date("%Y-%m-%d %H:%M:%S")
-    local firstName = PlayerData.charinfo.firstname:sub(1,1):upper()..PlayerData.charinfo.firstname:sub(2)
-    local lastName = PlayerData.charinfo.lastname:sub(1,1):upper()..PlayerData.charinfo.lastname:sub(2)
+    local firstName = PlayerData.get('firstName')
+    local lastName = PlayerData.get('lastName')
     if Player(PlayerData.source)?.state.onduty then
         
         TriggerClientEvent('esx:showNotification', source, "You're clocked-in", 'success')
@@ -233,12 +261,12 @@ RegisterNetEvent('mdt:server:openMDT', function()
 		
 	activeUnits[PlayerData.identifier] = {
 		identifier = PlayerData.identifier,
-		callSign = PlayerData.metadata['callsign'],
-		firstName = PlayerData.charinfo.firstname:sub(1,1):upper()..PlayerData.charinfo.firstname:sub(2),
-		lastName = PlayerData.charinfo.lastname:sub(1,1):upper()..PlayerData.charinfo.lastname:sub(2),
+		callsign = Player(PlayerData.source).state.callsign,
+		firstName = PlayerData.get('firstName'),
+		lastName = PlayerData.get('lastName'),
 		radio = Radio,
 		unitType = PlayerData.job.name,
-		duty = Player(PlayerData.source)?.state.onduty
+		duty = Player(PlayerData.source).state.onduty
 	}
 
 	local JobType = GetJobType(PlayerData.job.name)
@@ -308,7 +336,7 @@ lib.callback.register("mdt:server:getWarrants", function()
 end)
 
 lib.callback.register('mdt:server:OpenDashboard', function()
-	local PlayerData = GetPlayerData(source)
+	local PlayerData = ESX.GetPlayerFromId(source)
 	if not PermCheck(source, PlayerData) then return end
 	local JobType = GetJobType(PlayerData.job.name)
 	local bulletin = GetBulletins(JobType)
@@ -1178,7 +1206,7 @@ end)
 
 lib.callback.register('mdt:server:SearchWeapons', function(sentData)
 	if not sentData then return {} end
-	local PlayerData = GetPlayerData(source)
+	local PlayerData = ESX.GetPlayerFromId(source)
 	if not PermCheck(source, PlayerData) then return {} end
 
 	local Player = PlayerData
@@ -1195,7 +1223,7 @@ end)
 
 RegisterNetEvent('mdt:server:saveWeaponInfo', function(serial, imageurl, notes, owner, weapClass, weapModel)
 	if serial then
-		local PlayerData = GetPlayerData(source)
+		local PlayerData = ESX.GetPlayerFromId(source)
 		if not PermCheck(source, PlayerData) then return cb({}) end
 
 		local Player = PlayerData
@@ -1319,8 +1347,17 @@ RegisterNetEvent('mdt:server:getPenalCode', function()
 end)
 
 RegisterNetEvent('mdt:server:setCallsign', function(identifier, newcallsign)
-	local Player = ESX.GetPlayerFromIdentifier(identifier)
-	Player.Functions.SetMetaData("callsign", newcallsign)
+	-- local Player = ESX.GetPlayerFromIdentifier(identifier)
+	-- Player.Functions.SetMetaData("callsign", newcallsign)
+	local originSource = source
+	if identifier ~= nil and newcallsign ~= nil then
+		local xPlayer = ESX.GetPlayerFromIdentifier(identifier)
+		if xPlayer.identifier == identifier then
+			TriggerEvent("lexinor_commons:setCallsignFromServer", xPlayer.source, newcallsign)
+		else
+			TriggerClientEvent('esx:showNotification', originSource, "Vous ne pouvez changer que votre propre matricule", "error", 5000)
+		end	
+	end
 end)
 
 RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tags, officers, civilians, evidence, associated, time)
@@ -1329,10 +1366,10 @@ RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tag
     if Player then
         if GetJobType(Player.job.name) == 'police' then
             if id == 0 then
-                local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+
                 MySQL.insert('INSERT INTO `mdt_incidents` (`author`, `title`, `details`, `tags`, `officersinvolved`, `civsinvolved`, `evidence`, `time`, `jobtype`) VALUES (:author, :title, :details, :tags, :officersinvolved, :civsinvolved, :evidence, :time, :jobtype)',
                 {
-                    author = fullname,
+                    author = Player.name,
                     title = title,
                     details = information,
                     tags = json.encode(tags),
@@ -1634,16 +1671,16 @@ RegisterNetEvent('mdt:server:sendMessage', function(message, time)
 		local Player = ESX.GetPlayerFromId(src)
 		if Player then
 			MySQL.scalar("SELECT pfp FROM `mdt_data` WHERE identifier=:id LIMIT 1", {
-				id = Player.PlayerData.identifier -- % wildcard, needed to search for all alike results
+				id = Player.identifier -- % wildcard, needed to search for all alike results
 			}, function(data)
 				if data == "" then data = nil end
-				local ProfilePicture = ProfPic(Player.PlayerData.charinfo.gender, data)
-				local callsign = Player.PlayerData.metadata.callsign or "000"
+				local ProfilePicture = ProfPic(Player.get('sex'), data)
+				local callsign = Player(Player.source).state.callsign, or "000"
 				local Item = {
 					profilepic = ProfilePicture,
-					callsign = Player.PlayerData.metadata.callsign,
-					identifier = Player.PlayerData.identifier,
-					name = '('..callsign..') '..Player.PlayerData.charinfo.firstname.. " "..Player.PlayerData.charinfo.lastname,
+					callsign = callsign,
+					identifier = Player.getIdentifier(),
+					name = ("[%s] %s %s"):format(callsign, Player.get('firstName'), Player.get('lastName')),
 					message = message,
 					time = time,
 					job = Player.job.name
