@@ -281,33 +281,44 @@ lib.callback.register('mdt:server:SearchProfile', function(sentData)
     if Player then
         local JobType = GetJobType(Player.job.name)
         if JobType ~= nil then
-            local people = MySQL.query.await("SELECT p.identifier, p.charinfo, md.pfp, md.fingerprint FROM players p LEFT JOIN mdt_data md on p.identifier = md.identifier WHERE LOWER(CONCAT(JSON_VALUE(p.charinfo, '$.firstname'), ' ', JSON_VALUE(p.charinfo, '$.lastname'))) LIKE :query OR LOWER(`charinfo`) LIKE :query OR LOWER(`identifier`) LIKE :query OR LOWER(md.fingerprint) LIKE :query AND jobtype = :jobtype LIMIT 20", { query = string.lower('%'..sentData..'%'), jobtype = JobType })
-            local citizenIds = {}
-            local citizenIdIndexMap = {}
+            local people = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, md.pfp, md.fingerprint FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(CONCAT(u.firstname, ' ', u.lastname)) LIKE :query OR LOWER(u.dateofbirth) LIKE :query OR LOWER(`identifier`) LIKE :query OR LOWER(md.fingerprint) LIKE :query AND jobtype = :jobtype LIMIT 20", { query = string.lower('%'..sentData..'%'), jobtype = JobType })
+            local identifiers = {}
+            local identifiersMap = {}
             if not next(people) then return {} return end
 
+			local licencesdata = GetAllLicenses()
             for index, data in pairs(people) do
                 people[index]['warrant'] = false
                 people[index]['convictions'] = 0
-                people[index]['licences'] = GetPlayerLicenses(data.identifier)
+                --people[index]['licences'] = GetPlayerLicenses(data.identifier)
                 people[index]['pp'] = ProfPic(data.gender, data.pfp)
 				if data.fingerprint and data.fingerprint ~= "" then
 					people[index]['fingerprint'] = data.fingerprint
 				else
 					people[index]['fingerprint'] = ""
 				end				
-                citizenIds[#citizenIds+1] = data.identifier
-                citizenIdIndexMap[data.identifier] = index
+                identifiers[#identifiers+1] = data.identifier
+                identifiersMap[data.identifier] = index
+
+				local userLicences = GetPlayerLicenses(data.identifier)
+				if userLicences then
+					for k, v in pairs(userLicences) do
+						if licencesdata[v.type] then
+							licencesdata[v.type].status = true
+						end
+					end
+				end
+				people[index]['licences'] = licencesdata
             end
 
-            local convictions = GetConvictions(citizenIds)
+            local convictions = GetConvictions(identifiers)
 
             if next(convictions) then
                 for _, conv in pairs(convictions) do
-                    if conv.warrant == "1" then people[citizenIdIndexMap[conv.identifier]].warrant = true end
+                    if conv.warrant == "1" then people[identifiersMap[conv.identifier]].warrant = true end
 
                     local charges = json.decode(conv.charges)
-                    people[citizenIdIndexMap[conv.identifier]].convictions = people[citizenIdIndexMap[conv.identifier]].convictions + #charges
+                    people[identifiersMap[conv.identifier]].convictions = people[identifiersMap[conv.identifier]].convictions + #charges
                 end
             end
 			TriggerClientEvent('mdt:client:searchProfile', src, people, false)
