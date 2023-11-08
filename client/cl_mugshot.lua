@@ -170,7 +170,7 @@ RegisterNetEvent('cqc-mugshot:client:trigger', function()
         MugshotArray, mugshotInProgress = {}, true
         local identifier = playerData.identifier
         local animDict = 'mp_character_creation@lineup@male_a'
-        QBCore.Functions.RequestAnimDict(animDict)
+        lib.requestAnimDict(animDict)
         PrepBoard()
         Wait(250)
         MakeBoard()
