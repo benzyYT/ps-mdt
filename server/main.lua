@@ -1725,11 +1725,10 @@ end)
 RegisterNetEvent('mdt:server:sendCallResponse', function(message, time, callid)
 	local src = source
 	local Player = ESX.GetPlayerFromId(src)
-	local name = Player.PlayerData.charinfo.firstname.. " "..Player.PlayerData.charinfo.lastname
 	if IsPoliceOrEms(Player.job.name) then
 		TriggerEvent('dispatch:sendCallResponse', src, callid, message, time, function(isGood)
 			if isGood then
-				TriggerClientEvent('mdt:client:sendCallResponse', -1, message, time, callid, name)
+				TriggerClientEvent('mdt:client:sendCallResponse', -1, message, time, callid, Player.name)
 			end
 		end)
 	end
@@ -1738,14 +1737,12 @@ end)
 RegisterNetEvent('mdt:server:setRadio', function(identifier, newRadio)
 	local src = source
 	local targetPlayer = ESX.GetPlayerFromIdentifier(identifier)
-	local targetSource = targetPlayer.PlayerData.source
-	local targetName = targetPlayer.PlayerData.charinfo.firstname .. ' ' .. targetPlayer.PlayerData.charinfo.lastname
 
 	local radio = targetPlayer.Functions.GetItemByName("radio")
 	if radio ~= nil then
-		TriggerClientEvent('mdt:client:setRadio', targetSource, newRadio)
+		TriggerClientEvent('mdt:client:setRadio', targetPlayer.source, newRadio)
 	else
-		TriggerClientEvent('esx:showAdvancedNotification', src, targetName..' does not have a radio!', 'error')
+		TriggerClientEvent('esx:showAdvancedNotification', src, targetPlayer.name..' does not have a radio!', 'error')
 	end
 end)
 
