@@ -284,7 +284,7 @@ lib.callback.register('mdt:server:SearchProfile', function(sentData)
             local people = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, md.pfp, md.fingerprint FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(CONCAT(u.firstname, ' ', u.lastname)) LIKE :query OR LOWER(u.dateofbirth) LIKE :query OR LOWER(`identifier`) LIKE :query OR LOWER(md.fingerprint) LIKE :query AND jobtype = :jobtype LIMIT 20", { query = string.lower('%'..sentData..'%'), jobtype = JobType })
             local identifiers = {}
             local identifiersMap = {}
-            if not next(people) then return {} return end
+            if not next(people) then return {} end
 
 			local licencesdata = GetAllLicenses()
             for index, data in pairs(people) do
@@ -327,7 +327,7 @@ lib.callback.register('mdt:server:SearchProfile', function(sentData)
         end
     end
 
-    return return {}
+    return {}
 end)
 
 lib.callback.register("mdt:server:getWarrants", function()
@@ -384,7 +384,7 @@ RegisterNetEvent('mdt:server:deleteBulletin', function(id, title)
 end)
 
 lib.callback.register('mdt:server:GetProfileData', function(sentId)
-	if not sentId then return return {} end
+	if not sentId then return {} end
 
 	local src = source
 	local PlayerData = ESX.GetPlayerFromId(src)
@@ -1042,7 +1042,7 @@ lib.callback.register('mdt:server:SearchVehicles', function(sentData)
 				query = string.lower('%'..sentData..'%')
 			})
 
-			if not next(vehicles) then return {} return end
+			if not next(vehicles) then return {} end
 
 			for _, value in ipairs(vehicles) do
 				if value.state == 0 then
@@ -1686,7 +1686,7 @@ RegisterNetEvent('mdt:server:sendMessage', function(message, time)
 			}, function(data)
 				if data == "" then data = nil end
 				local ProfilePicture = ProfPic(Player.get('sex'), data)
-				local callsign = Player(Player.source).state.callsign, or "000"
+				local callsign = Player(Player.source).state.callsign or "000"
 				local Item = {
 					profilepic = ProfilePicture,
 					callsign = callsign,

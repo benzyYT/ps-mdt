@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `mdt_convictions` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `mdt_inidentifierents` (
+CREATE TABLE IF NOT EXISTS `mdt_incidents` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `author` varchar(50) NOT NULL DEFAULT '',
   `title` varchar(50) NOT NULL DEFAULT '0',
