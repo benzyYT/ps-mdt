@@ -281,7 +281,7 @@ lib.callback.register('mdt:server:SearchProfile', function(sentData)
     if Player then
         local JobType = GetJobType(Player.job.name)
         if JobType ~= nil then
-            local people = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, md.pfp, md.fingerprint FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(CONCAT(u.firstname, ' ', u.lastname)) LIKE :query OR LOWER(u.dateofbirth) LIKE :query OR LOWER(`identifier`) LIKE :query OR LOWER(md.fingerprint) LIKE :query AND jobtype = :jobtype LIMIT 20", { query = string.lower('%'..sentData..'%'), jobtype = JobType })
+            local people = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, md.pfp, md.fingerprint FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(CONCAT(u.firstname, ' ', u.lastname)) LIKE :query OR LOWER(u.dateofbirth) LIKE :query OR LOWER(u.identifier) LIKE :query OR LOWER(md.fingerprint) LIKE :query AND jobtype = :jobtype LIMIT 20", { query = string.lower('%'..sentData..'%'), jobtype = JobType })
             local identifiers = {}
             local identifiersMap = {}
             if not next(people) then return {} end
@@ -888,7 +888,7 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(query)
                 firstname = firstname or query
                 lastname = lastname or query
 
-                local result = MySQL.query.await("SELECT p.identifier, p.charinfo, p.metadata, md.pfp from players p LEFT JOIN mdt_data md on p.identifier = md.identifier WHERE (LOWER(JSON_UNQUOTE(JSON_EXTRACT(`charinfo`, '$.firstname'))) LIKE :firstname AND LOWER(JSON_UNQUOTE(JSON_EXTRACT(`charinfo`, '$.lastname'))) LIKE :lastname) OR LOWER(`identifier`) LIKE :identifier AND `jobtype` = :jobtype LIMIT 30", {
+                local result = MySQL.query.await("SELECT SELECT u.identifier, u.firstname, u.lastname, p.metadata, md.pfp from users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname) OR LOWER(u.identifier) LIKE :identifier AND `jobtype` = :jobtype LIMIT 30", {
                     firstname = string.lower('%' .. firstname .. '%'),
                     lastname = string.lower('%' .. lastname .. '%'),
                     identifier = string.lower('%' .. query .. '%'),
