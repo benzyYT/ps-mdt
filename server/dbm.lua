@@ -99,7 +99,7 @@ function GetVehicleInformation(plate, cb)
 end
 
 function GetPlayerApartment(identifier, cb)
-    local result =  MySQL.query.await('SELECT name, type, label FROM apartments where identifier = ?', {identifier})
+    local result =  MySQL.query.await('SELECT * FROM `player_houses` WHERE identifier = ?', {identifier})
     return result
 end
 

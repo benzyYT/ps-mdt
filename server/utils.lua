@@ -10,7 +10,7 @@ function UnpackJob(data)
 		label = data.label
 	}
 	local grade = {
-		name = data.grade.name,
+		name = data.grade_name,
 	}
 
 	return job, grade

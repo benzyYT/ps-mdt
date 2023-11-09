@@ -5609,32 +5609,30 @@ function searchProfilesResults(result) {
 
   let profileHTML = "";
 
-  result.forEach((value) => {
-    let charinfo = value.charinfo;
-    let metadata = value.metadata;
+  result.forEach((profile) => {
 
-    if (typeof value.charinfo == "string") {
-      charinfo = JSON.parse(charinfo);
+    // if (typeof value.charinfo == "string") {
+    //   charinfo = JSON.parse(charinfo);
+    // }
+
+    // if (typeof value.metadata == "string") {
+    //   metadata = JSON.parse(metadata);
+    // }
+
+    // if (!metadata) {
+    //   metadata = {};
+    // }
+
+    if (!profile.licences) {
+      profile.licences = {};
     }
-
-    if (typeof value.metadata == "string") {
-      metadata = JSON.parse(metadata);
-    }
-
-    if (!metadata) {
-      metadata = {};
-    }
-
-    if (!metadata.licences) {
-      metadata.licences = {};
-    }
-
-    let name = charinfo.firstname + " " + charinfo.lastname;
+    console.log(profile)
+    let name = `${profile.firstname} ${profile.lastname}`;
     let warrant = "red-tag";
     let convictions = "red-tag";
 
     let licences = "";
-    let licArr = Object.entries(value.licences);
+    let licArr = Object.entries(profile.licences);
 
     if (licArr.length == 0 || licArr.length == undefined) {
       var licenseTypes = ['business', 'pilot', 'weapon', 'driver'];
@@ -5649,26 +5647,26 @@ function searchProfilesResults(result) {
       }
     }
 
-    if (value.warrant == true) {
+    if (profile.warrant == true) {
       warrant = "green-tag";
     }
 
-    if (value.convictions < 5) {
+    if (profile.convictions < 5) {
       convictions = "green-tag";
     } else if (
-      value.convictions > 4 &&
-      value.convictions < 15
+      profile.convictions > 4 &&
+      profile.convictions < 15
     ) {
       convictions = "orange-tag";
     }
 
-    if (value.pp == '') {
-      value.pp = 'img/not-found.webp'
+    if (profile.pp == '') {
+      profile.pp = 'img/not-found.webp'
     }
 
     profileHTML += `
-    <div class="profile-item" data-id="${value.identifier}" data-fingerprint="${value.fingerprint}">
-        <img src="${value.pp}" class="profile-image">
+    <div class="profile-item" data-id="${profile.identifier}" data-fingerprint="${profile.fingerprint}">
+        <img src="${profile.pp}" class="profile-image">
         <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
         <div style="display: flex; flex-direction: column;">
             <div class="profile-item-title">${name}</div>
@@ -5676,12 +5674,12 @@ function searchProfilesResults(result) {
                 ${licences}
             </div>
             <div class="profile-criminal-tags">
-                <span class="license-tag ${warrant}">${value.warrant ? "Active" : "No"} Warrant</span>
-                <span class="license-tag ${convictions}">${value.convictions} Convictions </span>
+                <span class="license-tag ${warrant}">${profile.warrant ? "Active" : "No"} Warrant</span>
+                <span class="license-tag ${convictions}">${profile.convictions} Convictions </span>
             </div>
         </div>
         <div class="profile-bottom-info">
-            <div class="profile-id"><span class="fas fa-id-card"></span> Citizen ID: ${value.identifier}</div>&nbsp;
+            <div class="profile-id"><span class="fas fa-id-card"></span> Citizen ID: ${profile.identifier}</div>&nbsp;
         </div>
         </div>
     </div>

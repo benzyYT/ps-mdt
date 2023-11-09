@@ -390,16 +390,12 @@ lib.callback.register('mdt:server:GetProfileData', function(sentId)
 	local PlayerData = ESX.GetPlayerFromId(src)
 	if not PermCheck(src, PlayerData) then return {} end
 	local JobType = GetJobType(PlayerData.job.name)
-	local target = GetPlayerDataById(sentId)
+	local target = ESX.GetPlayerFromId(sentId)
 	local JobName = PlayerData.job.name
 	
 	local apartmentData
 
 	if not target or not next(target) then return {} end
-
-	if type(target.job) == 'string' then target.job = json.decode(target.job) end
-	if type(target.charinfo) == 'string' then target.charinfo = json.decode(target.charinfo) end
-	if type(target.metadata) == 'string' then target.metadata = json.decode(target.metadata) end
 
 	local licencesdata = target.metadata['licences'] or {
         ['driver'] = false,
@@ -446,16 +442,17 @@ lib.callback.register('mdt:server:GetProfileData', function(sentId)
 
 	local person = {
 		identifier = target.identifier,
-		firstname = target.charinfo.firstname,
-		lastname = target.charinfo.lastname,
+		firstname = target.firstName,
+		lastname = target.lastName,
 		job = job.label,
 		grade = grade.name,
 		apartment = apartmentData,
-		pp = ProfPic(target.charinfo.gender),
+		pp = ProfPic(target.sex),
 		licences = licencesdata,
-		dob = target.charinfo.birthdate,
+		dob = target.dateofbirth,
 		fingerprint = target.metadata.fingerprint,
-		phone = target.charinfo.phone,
+		--phone = target.charinfo.phone,
+		phone = '',
 		mdtinfo = '',
 		tags = {},
 		vehicles = {},

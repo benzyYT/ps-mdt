@@ -1134,7 +1134,7 @@ if Config.UseWolfknightRadar == true then
                     firstStreet = locationInfo,
                     model = vehicle.name,
                     plate = lastPlate,
-                    name = plyData.job.grade.name.. ", " ..plyData.charinfo.firstname:sub(1, 1):upper() .. plyData.charinfo.firstname:sub(2) .. " " .. plyData.charinfo.lastname:sub(1, 1):upper() .. plyData.charinfo.lastname:sub(2),
+                    name = ("%s, %s"):format(plyData.job.grade_name, plyData.name),
                     radius = 0,
                     sprite = 60,
                     color = 3,
