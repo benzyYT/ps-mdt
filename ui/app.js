@@ -4946,9 +4946,9 @@ window.addEventListener("message", function (event) {
             <div class="incidents-person-search-item" data-info="${name} (#${value.id})" data-identifier="${value.id}" data-name="${name}" data-callsign="${value.callsign}">
                 <img src="${value.profilepic}" class="incidents-person-search-item-pfp">
                 <div class="incidents-person-search-item-right">
-                    <div class="incidents-person-search-item-right-identifier-title">Citizen ID</div>
+                    <div class="incidents-person-search-item-right-identifier-title">N° Citoyen</div>
                     <div class="incidents-person-search-item-right-identifier-input"><span class="fas fa-id-card"></span> ${value.id}</div>
-                    <div class="incidents-person-search-item-right-name-title">Name</div>
+                    <div class="incidents-person-search-item-right-name-title">Nom</div>
                     <div class="incidents-person-search-item-right-name-input"><span class="fas fa-user"></span> ${name}</div>
                 </div>
             </div>
