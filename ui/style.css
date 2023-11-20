@@ -969,8 +969,8 @@ a {
 }
 
 .profile-image {
-    width: 10vh;
-    height: 10vh;
+    width: 15vh;
+    height: 20vh;
     margin-left: 10px;
     margin-top: auto;
     margin-bottom: auto;
@@ -990,6 +990,7 @@ a {
     width: 100%;
     margin-top: 10px;
     margin-bottom: 5px;
+    flex-wrap: wrap;
 }
 
 .profile-criminal-tags {
@@ -1101,8 +1102,8 @@ a {
 }
 
 .manage-profile-pic {
-    width: 45%;
-    height: 20%;
+    width: 20vh;
+    height: 45vh;
     object-fit: cover;
 }
 
@@ -1316,10 +1317,10 @@ a {
     margin: auto;
     margin-left: 0px;
     margin-right: 10px;
+    margin-top: 5px;
     padding: 4px;
     padding-left: 8px;
     padding-right: 8px;
-    border-radius: 10px;
     color: rgb(255, 255, 255);
     font-size: 12px;
     font-weight: 600;
@@ -1474,7 +1475,6 @@ span.tag-input[contenteditable]:empty::before {
     padding: 4px;
     padding-left: 8px;
     padding-right: 8px;
-    border-radius: 10px;
     color: black;
     font-size: 12px;
     font-weight: 600;
@@ -1528,7 +1528,6 @@ span.tag-input[contenteditable]:empty::before {
     padding: 4px;
     padding-left: 8px;
     padding-right: 8px;
-    border-radius: 10px;
     color: black;
     font-size: 12px;
     font-weight: bolder;
