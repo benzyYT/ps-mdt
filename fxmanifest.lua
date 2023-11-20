@@ -11,10 +11,12 @@ shared_scripts {
     '@es_extended/imports.lua',
     '@ox_lib/init.lua',
     'shared/config.lua',
+    'shared/vehicles.lua',
 }
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
+    'server/config.lua',
     'server/utils.lua',
     'server/dbm.lua',
     'server/main.lua'

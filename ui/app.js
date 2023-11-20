@@ -52,18 +52,18 @@ const DojJobs = {
 }
 
 const MONTH_NAMES = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "Janvier",
+  "Février",
+  "Mars",
+  "Avril",
+  "Mai",
+  "Juin",
+  "Juillet",
+  "Août",
+  "Septembre",
+  "Octobre",
+  "Novembre",
+  "Décembre",
 ];
 
 function getFormattedDate(date, prefomattedDate = false, hideYear = false) {
@@ -136,17 +136,17 @@ function timeAgo(dateParam) {
   const isThisYear = today.getFullYear() === date.getFullYear();
 
   if (seconds < 5) {
-    return "Just Now";
+    return "A l'instant";
   } else if (seconds < 60) {
-    return `${seconds} Seconds ago`;
+    return `Il y a ${seconds} secondes`;
   } else if (seconds < 90) {
-    return "About a minute ago";
+    return "Il y a une minute";
   } else if (minutes < 60) {
-    return `${minutes} Minutes ago`;
+    return `Il y a ${minutes} minutes`;
   } else if (isToday) {
-    return getFormattedDate(date, "Today");
+    return getFormattedDate(date, "Aujourd'hui");
   } else if (isYesterday) {
-    return getFormattedDate(date, "Yesterday");
+    return getFormattedDate(date, "Hier");
   } else if (isThisYear) {
     return getFormattedDate(date, false, true);
   }
@@ -231,15 +231,16 @@ $(document).ready(() => {
     }
 
     const { vehicles, tags, gallery, convictions, incidents, properties, fingerprint } = result;
-
-    $(".manage-profile-editing-title").html(`You are currently editing ${result["firstname"]} ${result["lastname"]}`);
+    
+    $(".manage-profile-editing-title").html(`Vous modifiez le profile: ${result["firstname"]} ${result["lastname"]}`);
     $(".manage-profile-identifier-input").val(result['identifier']);
     $(".manage-profile-name-input-1").val(result["firstname"]);
     $(".manage-profile-name-input-2").val(result["lastname"]);
     $(".manage-profile-dob-input").val(result["dob"]);
-    $(".manage-profile-phonenumber-input").val(result["phone"]);
-    $(".manage-profile-job-input").val(`${result.job}, ${result.grade}`);
-    $(".manage-profile-apartment-input").val(`${result.apartment}`);
+    //$(".manage-profile-phonenumber-input").val(result["phone"]);
+    //$(".manage-profile-job-input").val(`${result.job}, ${result.grade}`);
+    $(".manage-profile-job-input").val(`${result.job}`);
+    //$(".manage-profile-apartment-input").val(`${result.apartment}`);
     $(".manage-profile-url-input").val(result["profilepic"] ?? "");
     $(".manage-profile-info").val(result["mdtinfo"]);
     $(".manage-profile-info").removeAttr("disabled");
@@ -256,13 +257,13 @@ $(document).ready(() => {
     $(".convictions-holder").empty();
     $(".profile-incidents-holder").empty();
 
-    let licencesHTML = '<div style="color: #fff; text-align:center;">No Licenses</div>';
-    let tagsHTML = '<div style="color: #fff; text-align:center;">No Tags</div>';
-    let convHTML = '<div style="color: #fff; text-align:center;">Clean Record</div>';
+    let licencesHTML = '<div style="color: #fff; text-align:center;">Aucun Permis</div>';
+    let tagsHTML = '<div style="color: #fff; text-align:center;">Aucun Tags</div>';
+    let convHTML = '<div style="color: #fff; text-align:center;">Vider Registre ?</div>';
     let incidentsHTML = '<div style="color: #fff; text-align:center;">No Incidents</div>';
-    let vehHTML = '<div style="color: #fff; text-align:center;">No Vehicles</div>';
-    let galleryHTML = '<div style="color: #fff; text-align:center;">No Photos</div>';
-    let propertyHTML = '<div style="color: #fff; text-align:center;">No Properties</div>';
+    let vehHTML = '<div style="color: #fff; text-align:center;">Aucun véhicules</div>';
+    let galleryHTML = '<div style="color: #fff; text-align:center;">Aucunes photos</div>';
+    let propertyHTML = '<div style="color: #fff; text-align:center;">Aucunes propriétés</div>';
 
     // convert key value pair object of licenses to array
     let licenses = Object.entries(result.licences);
@@ -273,16 +274,25 @@ $(document).ready(() => {
     }
 
     if (licenses.length > 0 && (PoliceJobs[playerJob] !== undefined || DojJobs[playerJob] !== undefined)) {
-      licencesHTML = '';
-      for (const [lic, hasLic] of licenses) {
-        let tagColour = hasLic == true ? "green-tag" : "red-tag";
-        licencesHTML += `<span class="license-tag ${tagColour} ${lic}" data-type="${lic}">${titleCase(lic)}</span>`;
+      licencesHTML = ""
+      let hasNoLicence = true
+      licenses.forEach(e => {
+        if (e[1].status === true) {
+          hasNoLicence = false
+          licencesHTML += `<span class="license-tag green-tag">${e[1].label}</span>`;
+        }
+      });
+      if (hasNoLicence === true) {
+        licencesHTML += `<span class="license-tag red-tag">Aucun Permis</span>`;
       }
 
       if (vehicles && vehicles.length > 0) {
         vehHTML = '';
-        vehicles.forEach(value => {
-          vehHTML += `<div class="veh-tag" data-plate="${value.plate}">${value.plate} - ${value.model} </div>`
+        vehicles.forEach(vehicle => {
+          if (vehicle.infos)
+            vehHTML += `<div class="veh-tag" data-plate="${vehicle.plate}">${vehicle.plate} - ${vehicle.infos.name} </div>`
+          else
+            vehHTML += `<div class="veh-tag" data-plate="${value.plate}">${value.plate} - INCONNU </div>`          
         })
       }
 
@@ -813,7 +823,7 @@ $(document).ready(() => {
       $(".manage-incidents-title-holder").empty();
       $(".manage-incidents-title-holder").prepend(
         `
-            <div class="manage-incidents-title">Manage Incident</div>
+            <div class="manage-incidents-title">Gestion Incident</div>
             <div class="manage-incidents-create"> <span class="fas fa-plus" style="margin-top: 3.5px;"></span></div>
             <div class="manage-incidents-save"><span class="fas fa-save" style="margin-top: 3.5px;"></span></div>
             `
@@ -2642,7 +2652,7 @@ $(document).ready(() => {
 
                                 <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
                                 <div style="display: flex; flex-direction: column;">
-                                    <div class="profile-item-title">No Vehicles Matching that search</div>
+                                    <div class="profile-item-title">Aucun vehicule trouvé, essayez autre chose</div>
                                     </div>
                                     <div class="profile-bottom-info">
                                     </div>
@@ -2657,45 +2667,45 @@ $(document).ready(() => {
 
         let vehicleHTML = "";
 
-        result.forEach((value) => {
-          let paint = value.color;
+        result.forEach((vehicle) => {
+          let paint = vehicle.color;
           let impound = "red-tag";
           let bolo = "red-tag";
           let codefive = "red-tag";
           let stolen = "red-tag";
 
-          if (value.state == 'Impounded') {
+          if (vehicle.state == 'Impounded') {
             impound = "green-tag";
           }
 
-          if (value.bolo) {
+          if (vehicle.bolo) {
             bolo = "green-tag";
           }
 
-          if (value.code) {
+          if (vehicle.code) {
             codefive = "green-tag";
           }
 
-          if (value.stolen) {
+          if (vehicle.stolen) {
             stolen = "green-tag";
           }
 
           vehicleHTML += `
-                        <div class="dmv-item" data-id="${value.id}" data-dbid="${value.dbid}" data-plate="${value.plate}">
-                            <img src="${value.image}" class="dmv-image">
+                        <div class="dmv-item" data-id="${vehicle.id}" data-dbid="${vehicle.dbid}" data-plate="${vehicle.plate}">
+                            <img src="${vehicle.image}" class="dmv-image">
                             <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
                             <div style="display: flex; flex-direction: column;">
-                                <div class="dmv-item-title">${value.model}</div>
+                                <div class="dmv-item-title">${vehicle.model}</div>
                                     <div class="dmv-tags">
-                                        <div class="dmv-tag ${paint}-color">${value.colorName}</div>
-                                        <div class="dmv-tag ${impound}">Impound</div>
-                                        <div class="dmv-tag ${bolo}">BOLO</div>
-                                        <div class="dmv-tag ${stolen}">Stolen</div>
+                                        <div class="dmv-tag ${paint}-color">${vehicle.colorName}</div>
+                                        <div class="dmv-tag ${impound}">En fourrière</div>
+                                        <div class="dmv-tag ${bolo}">Recherché</div>
+                                        <div class="dmv-tag ${stolen}">Volé</div>
                                         <div class="dmv-tag ${codefive}">Code 5</div>
                                     </div>
                                 </div>
                                 <div class="dmv-bottom-info">
-                                    <div class="dmv-id">Plate: ${value.plate} · Owner: ${value.owner}</div>
+                                    <div class="dmv-id">Plaque: ${vehicle.plate} · Propriétaire: ${vehicle.owner}</div>
                                 </div>
                             </div>
                         </div>
@@ -4042,7 +4052,7 @@ $(document).ready(() => {
         $(".bolo-nav-item").html("BOLOs");
         $(".bolos-search-title").html("Bolos");
         $("#bolos-search-input").attr("placeholder", "Search Bolo...");
-        $(".manage-bolos-title").html("Manage Bolo");
+        $(".manage-bolos-title").html("Gestion Bolo");
         $(".manage-bolos-editing-title").html(
           "You are currently creating a new BOLO"
         );
@@ -4110,7 +4120,7 @@ $(document).ready(() => {
           "placeholder",
           "Search Check-ins..."
         );
-        $(".manage-bolos-title").html("Manage ICU Check-in");
+        $(".manage-bolos-title").html("Gestion ICU Check-in");
         $(".manage-bolos-editing-title").html(
           "You are creating a new ICU Check-in"
         );
@@ -4836,7 +4846,7 @@ window.addEventListener("message", function (event) {
       if (PoliceJobs[playerJob] !== undefined || AmbulanceJobs[playerJob] !== undefined) {
         $(".manage-incidents-title-holder").prepend(
           `
-            <div class="manage-incidents-title">Manage Incident</div>
+            <div class="manage-incidents-title">Gestion Incident</div>
             <div class="manage-incidents-create"> <span class="fas fa-plus" style="margin-top: 3.5px;"></span></div>
             <div class="manage-incidents-save"><span class="fas fa-save" style="margin-top: 3.5px;"></span></div>
             `
@@ -4846,7 +4856,7 @@ window.addEventListener("message", function (event) {
       } else if (DojJobs[playerJob] !== undefined) {
         $(".manage-incidents-title-holder").prepend(
           `
-            <div class="manage-incidents-title">Manage Incident</div>
+            <div class="manage-incidents-title">Gestion Incident</div>
             `
         );
         $(".manage-incidents-title").css("width", "95%");
@@ -5675,7 +5685,7 @@ function searchProfilesResults(result) {
             </div>
             <div class="profile-criminal-tags">
                 <span class="license-tag ${warrant}">${profile.warrant ? "Active" : "No"} Warrant</span>
-                <span class="license-tag ${convictions}">${profile.convictions} Convictions </span>
+                <span class="license-tag ${convictions}">${profile.convictions} Condamnations </span>
             </div>
         </div>
         <div class="profile-bottom-info">

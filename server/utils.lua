@@ -4,13 +4,13 @@ function GetPlayerData(source)
 	return Player
 end
 
-function UnpackJob(data)
+function UnpackJob(_job)
 	local job = {
-		name = data.name,
-		label = data.label
+		name = _job.name,
+		label = _job.label
 	}
 	local grade = {
-		name = data.grade_name,
+		name = _job.grade_label,
 	}
 
 	return job, grade
@@ -49,12 +49,6 @@ function GetNameFromPlayerData(PlayerData)
 	return ('%s %s'):format(PlayerData.charinfo.firstname, PlayerData.charinfo.lastname)
 end
 
-function ConstructHashToVehicleNameTable()
-	for name, _ in pairs(Config.vHashByModel) do
-        Config.vModelByHash[joaat(name)] = name
-    end
-end
-
 function GetVehicleHashByName(hash)
-	return Config.vModelByHash[hash]
+	return HASHTOVEHICLE[hash]
 end

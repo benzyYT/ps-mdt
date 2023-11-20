@@ -9,7 +9,7 @@ local dispatchMessages = {}
 local isDispatchRunning = false
 local antiSpam = false
 local calls = {}
-
+local FullJobList = ESX.GetJobs()
 --------------------------------
 -- SET YOUR WEHBOOKS IN HERE
 -- Images for mug shots will be uploaded here. Add a Discord webhook. 
@@ -24,7 +24,7 @@ local ClockinWebhook = ''
 local IncidentWebhook = ''
 --------------------------------
 
-lib.callback.register('ps-mdt:server:MugShotWebhook', function()
+lib.callback.register('ps-mdt:server:MugShotWebhook', function(source)
     if MugShotWebhook == '' then
         print("\27[31mA webhook is missing in: MugShotWebhook (server > main.lua > line 16)\27[0m")
     else
@@ -100,6 +100,8 @@ AddEventHandler('onResourceStart', function(resourceName)
 		local calls = exports['ps-dispatch']:GetDispatchCalls()
 		return calls
 	end
+	GetVehiclesFromDB()
+	FullJobList = ESX.GetJobs()
 end)
 
 RegisterNetEvent("ps-mdt:server:OnPlayerUnload", function()
@@ -274,23 +276,23 @@ RegisterNetEvent('mdt:server:openMDT', function()
 	TriggerClientEvent('mdt:client:open', src, bulletin, activeUnits, calls, PlayerData.identifier)
 end)
 
-lib.callback.register('mdt:server:SearchProfile', function(sentData)
+lib.callback.register('mdt:server:SearchProfile', function(source, sentData)
     if not sentData then return {} end
     local src = source
     local Player = ESX.GetPlayerFromId(src)
     if Player then
         local JobType = GetJobType(Player.job.name)
         if JobType ~= nil then
-            local people = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, md.pfp, md.fingerprint FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(CONCAT(u.firstname, ' ', u.lastname)) LIKE :query OR LOWER(u.dateofbirth) LIKE :query OR LOWER(u.identifier) LIKE :query OR LOWER(md.fingerprint) LIKE :query AND jobtype = :jobtype LIMIT 20", { query = string.lower('%'..sentData..'%'), jobtype = JobType })
+            local people = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.dateofbirth, md.pfp, md.fingerprint FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(CONCAT(u.firstname, ' ', u.lastname)) LIKE :query OR LOWER(u.dateofbirth) LIKE :query OR LOWER(u.identifier) LIKE :query OR LOWER(md.fingerprint) LIKE :query AND jobtype = :jobtype LIMIT 20", { query = string.lower('%'..sentData..'%'), jobtype = JobType })
             local identifiers = {}
             local identifiersMap = {}
             if not next(people) then return {} end
-
+			print(json.encode(people))
 			local licencesdata = GetAllLicenses()
             for index, data in pairs(people) do
                 people[index]['warrant'] = false
                 people[index]['convictions'] = 0
-                --people[index]['licences'] = GetPlayerLicenses(data.identifier)
+                people[index]['licences'] = GetPlayerLicenses(data.identifier)
                 people[index]['pp'] = ProfPic(data.gender, data.pfp)
 				if data.fingerprint and data.fingerprint ~= "" then
 					people[index]['fingerprint'] = data.fingerprint
@@ -330,7 +332,7 @@ lib.callback.register('mdt:server:SearchProfile', function(sentData)
     return {}
 end)
 
-lib.callback.register("mdt:server:getWarrants", function()
+lib.callback.register("mdt:server:getWarrants", function(source)
     local WarrantData = {}
     local data = MySQL.query.await("SELECT * FROM mdt_convictions", {})
     for _, value in pairs(data) do
@@ -346,7 +348,7 @@ lib.callback.register("mdt:server:getWarrants", function()
     return WarrantData
 end)
 
-lib.callback.register('mdt:server:OpenDashboard', function()
+lib.callback.register('mdt:server:OpenDashboard', function(source)
 	local PlayerData = ESX.GetPlayerFromId(source)
 	if not PermCheck(source, PlayerData) then return end
 	local JobType = GetJobType(PlayerData.job.name)
@@ -383,30 +385,43 @@ RegisterNetEvent('mdt:server:deleteBulletin', function(id, title)
 	AddLog("Bulletin with Title: "..title.." was deleted by " .. GetNameFromPlayerData(PlayerData) .. ".")
 end)
 
-lib.callback.register('mdt:server:GetProfileData', function(sentId)
+lib.callback.register('mdt:server:GetProfileData', function(source, sentId)
 	if not sentId then return {} end
 
 	local src = source
 	local PlayerData = ESX.GetPlayerFromId(src)
 	if not PermCheck(src, PlayerData) then return {} end
+
 	local JobType = GetJobType(PlayerData.job.name)
-	local target = ESX.GetPlayerFromId(sentId)
 	local JobName = PlayerData.job.name
+	--local target = ESX.GetPlayerFromId(sentId)
 	
-	local apartmentData
+	local apartmentData = nil
+	
+	local target = MySQL.single.await("SELECT identifier, jobs.label as job_label, jb.label as grade_label, firstname, lastname, dateofbirth, sex, height FROM users u, jobs, job_grades jb WHERE u.identifier = ? AND u.job = jobs.name AND u.job = jb.job_name AND u.job_grade = jb.grade", {sentId})
 
-	if not target or not next(target) then return {} end
+	if not target then return {} end
 
-	local licencesdata = target.metadata['licences'] or {
-        ['driver'] = false,
-        ['business'] = false,
-        ['weapon'] = false,
-		['pilot'] = false
-	}
+	-- local licencesdata = target.metadata['licences'] or {
+    --     ['driver'] = false,
+    --     ['business'] = false,
+    --     ['weapon'] = false,
+	-- 	['pilot'] = false
+	-- }
 
-	local job, grade = UnpackJob(target.job)
+	local licencesdata = GetAllLicenses()
+	local userLicences = GetPlayerLicenses(target.identifier)
+	if userLicences then
+		for k, v in pairs(userLicences) do
+			if licencesdata[v.type] then
+				licencesdata[v.type].status = true
+			end
+		end
+	end
 
-	if Config.UsingPsHousing and not Config.UsingDefaultQBApartments then
+	--local job, grade = UnpackJob(target.job)
+
+	if SVConfig.HousingScript == "ps" then
 		local propertyData = GetPlayerPropertiesByCitizenId(target.identifier)
 		if propertyData and next(propertyData) then
 			local apartmentList = {}
@@ -419,39 +434,40 @@ lib.callback.register('mdt:server:GetProfileData', function(sentId)
 				apartmentData = table.concat(apartmentList, ', ')
 			else
 				TriggerClientEvent('esx:showAdvancedNotification', src, 'The citizen does not have an apartment.', 'error')
-				print('The citizen does not have an apartment. Set Config.UsingPsHousing to false.')
+				print('The citizen does not have an apartment. Set SVConfig.HousingScript to other than "ps".')
 			end
 		else
 			TriggerClientEvent('esx:showAdvancedNotification', src, 'The citizen does not have a property.', 'error')
-			print('The citizen does not have a property. Set Config.UsingPsHousing to false.')
+			print('The citizen does not have a property. Set SVConfig.HousingScript to other than "ps".')
 		end	
-    elseif Config.UsingDefaultQBApartments then
+    elseif SVConfig.HousingScript == "qb" then
         apartmentData = GetPlayerApartment(target.identifier)
         if apartmentData then
             if apartmentData[1] then
                 apartmentData = apartmentData[1].label .. ' (' ..apartmentData[1].name..')'
             else
                 TriggerClientEvent('esx:showAdvancedNotification', src, 'The citizen does not have an apartment.', 'error')
-                print('The citizen does not have an apartment. Set Config.UsingDefaultQBApartments to false.')
+                print('The citizen does not have an apartment. Set SVConfig.HousingScript to other than "qb".')
             end
         else
             TriggerClientEvent('esx:showAdvancedNotification', src, 'The citizen does not have an apartment.', 'error')
-            print('The citizen does not have an apartment. Set Config.UsingDefaultQBApartments to false.')
+            print('The citizen does not have an apartment. Set SVConfig.HousingScript to other than "qb".')
         end
+	elseif SVConfig.HousingScript == "qs" then
+        --- TODO
     end
-
+	
 	local person = {
 		identifier = target.identifier,
-		firstname = target.firstName,
-		lastname = target.lastName,
-		job = job.label,
-		grade = grade.name,
+		firstname = target.firstname,
+		lastname = target.lastname,
+		job = target.job_label,
+		--grade = target.grade_label,
 		apartment = apartmentData,
 		pp = ProfPic(target.sex),
 		licences = licencesdata,
 		dob = target.dateofbirth,
-		fingerprint = target.metadata.fingerprint,
-		--phone = target.charinfo.phone,
+		fingerprint = 'target.metadata.fingerprint',
 		phone = '',
 		mdtinfo = '',
 		tags = {},
@@ -508,10 +524,10 @@ lib.callback.register('mdt:server:GetProfileData', function(sentId)
 			person.vehicles = vehicles
 		end
 
-		if Config.UsingPsHousing and not Config.UsingDefaultQBApartments then
+		if SVConfig.HousingScript == "ps" then
     		local Coords = {}
     		local Houses = {}
-		local propertyData = GetPlayerPropertiesByCitizenId(target.identifier)
+			local propertyData = GetPlayerPropertiesByCitizenId(target.identifier)
     		for k, v in pairs(propertyData) do
 				if not v.apartment then
     		    	Coords[#Coords + 1] = {
@@ -568,7 +584,7 @@ end)
 RegisterNetEvent("mdt:server:saveProfile", function(pfp, information, identifier, fName, sName, tags, gallery, licenses, fingerprint)
     local src = source
     local Player = ESX.GetPlayerFromId(src)
-    UpdateAllLicenses(identifier, licenses)
+    --UpdateAllLicenses(identifier, licenses)
     if Player then
         local JobType = GetJobType(Player.job.name)
         if JobType == 'doj' then JobType = 'police' end
@@ -1024,58 +1040,69 @@ RegisterNetEvent('mdt:server:newReport', function(existing, id, title, reporttyp
 	end
 end)
 
-lib.callback.register('mdt:server:SearchVehicles', function(sentData)
-	if not sentData then  return {} end
-	local src = source
-	local PlayerData = ESX.GetPlayerFromId(src)
-	if not PermCheck(source, PlayerData) then return {} end
+lib.callback.register('mdt:server:SearchVehicles', function(source, sentData)
+	if not sentData then return {} end
 
-	local src = source
-	local Player = ESX.GetPlayerFromId(src)
-	if Player then
-		local JobType = GetJobType(Player.job.name)
+	local PlayerData = ESX.GetPlayerFromId(source)
+	if not PermCheck(source, PlayerData) then return {} end
+	if PlayerData then
+		local JobType = GetJobType(PlayerData.job.name)
 		if JobType == 'police' or JobType == 'doj' then
-			local vehicles = MySQL.query.await("SELECT pv.id, pv.identifier, pv.plate, pv.vehicle, pv.mods, pv.state, p.charinfo FROM `player_vehicles` pv LEFT JOIN players p ON pv.identifier = p.identifier WHERE LOWER(`plate`) LIKE :query OR LOWER(`vehicle`) LIKE :query LIMIT 25", {
+			-- local vehicles = MySQL.query.await("SELECT pv.id, pv.identifier, pv.plate, pv.vehicle, pv.mods, pv.state, p.charinfo FROM `player_vehicles` pv LEFT JOIN players p ON pv.identifier = p.identifier WHERE LOWER(`plate`) LIKE :query OR LOWER(`vehicle`) LIKE :query LIMIT 25", {
+			-- 	query = string.lower('%'..sentData..'%')
+			-- })
+			local vehicles = MySQL.query.await("SELECT ov.*, u.firstname, u.lastname FROM `owned_vehicles` ov LEFT JOIN users u ON ov.owner = u.identifier WHERE LOWER(`plate`) LIKE :query OR LOWER(`vehicle`) LIKE :query LIMIT 25", {
 				query = string.lower('%'..sentData..'%')
 			})
 
 			if not next(vehicles) then return {} end
-
-			for _, value in ipairs(vehicles) do
-				if value.state == 0 then
-					value.state = "Out"
-				elseif value.state == 1 then
-					value.state = "Garaged"
-				elseif value.state == 2 then
-					value.state = "Impounded"
+			
+			for _, veh in ipairs(vehicles) do
+				veh.vehicle = json.decode(veh.vehicle)
+				local vName = GetVehicleHashByName(veh.vehicle.model)
+				local infos = MySQL.single.await("SELECT * FROM vehicles WHERE model = ?", {vName})
+				if infos then
+					veh.infos = infos
+					veh.model = infos.name
+				end
+				if veh.in_garage == 0 then
+					veh.state = "Out"
+				elseif veh.in_garage == 1 then
+					veh.state = "Garaged"
+				elseif veh.impound == 1 then
+					veh.state = "Impounded"
 				end
 
-				value.bolo = false
-				local boloResult = GetBoloStatus(value.plate)
+				veh.bolo = false
+				local boloResult = GetBoloStatus(veh.plate)
 				if boloResult then
-					value.bolo = true
+					veh.bolo = true
 				end
 
-				value.code = false
-				value.stolen = false
-				value.image = "img/not-found.webp"
-				local info = GetVehicleInformation(value.plate)
+				veh.code = false
+				veh.stolen = false
+				veh.image = "img/not-found.webp"
+				local info = GetVehicleInformation(veh.plate)
 				if info then
-					value.code = info['code5']
-					value.stolen = info['stolen']
-					value.image = info['image']
+					veh.code = info['code5']
+					veh.stolen = info['stolen']
+					veh.image = info['image']
 				end
 
-				local ownerResult = json.decode(value.charinfo)
-
-				value.owner = ownerResult['firstname'] .. " " .. ownerResult['lastname']
+				if veh.firstname and veh.lastname then
+					veh.owner = veh.firstname.. " "..veh.lastname
+				elseif FullJobList[veh.owner] and FullJobList[veh.owner].label then
+					veh.owner = FullJobList[veh.owner].label
+				else
+					veh.owner = "Personne Inconnue"
+				end
 			end
+
 			return vehicles
 		end
 
 		return {}
 	end
-
 end)
 
 RegisterNetEvent('mdt:server:getVehicleData', function(plate)
@@ -1085,40 +1112,49 @@ RegisterNetEvent('mdt:server:getVehicleData', function(plate)
 		if Player then
 			local JobType = GetJobType(Player.job.name)
 			if JobType == 'police' or JobType == 'doj' then
-				local vehicle = MySQL.query.await("select pv.*, p.charinfo from player_vehicles pv LEFT JOIN players p ON pv.identifier = p.identifier where pv.plate = :plate LIMIT 1", { plate = string.gsub(plate, "^%s*(.-)%s*$", "%1")})
-				if vehicle and vehicle[1] then
-					vehicle[1]['impound'] = false
-					if vehicle[1].state == 2 then
-						vehicle[1]['impound'] = true
+				local veh = MySQL.single.await("select ov.*, u.firstname, u.lastname from owned_vehicles ov LEFT JOIN users u ON ov.owner = u.identifier where ov.plate = :plate", { plate = string.gsub(plate, "^%s*(.-)%s*$", "%1")})
+				if veh then
+					veh.impound = false
+					if veh.impound == 1 then
+						veh.impound = true
+					else
+						veh.impound = false
 					end
 
-					vehicle[1]['bolo'] = GetBoloStatus(vehicle[1]['plate'])
-					vehicle[1]['information'] = ""
+					veh.bolo = GetBoloStatus(veh.plate)
+					veh.information = ""
 
-					vehicle[1]['name'] = "Unknown Person"
+					if veh.firstname and veh.lastname then
+						veh.name = veh.firstname.. " "..veh.lastname
+					elseif FullJobList[veh.owner] and FullJobList[veh.owner].label then
+						veh.name = FullJobList[veh.owner].label
+					else
+						veh.name = "Personne Inconnue"
+					end
 
-					local ownerResult = json.decode(vehicle[1].charinfo)
-					vehicle[1]['name'] = ownerResult['firstname'] .. " " .. ownerResult['lastname']
+					veh.vehicle = json.decode(veh.vehicle)
+					veh.color1 = veh.vehicle.color1
 
-					local color1 = json.decode(vehicle[1].mods)
-					vehicle[1]['color1'] = color1['color1']
+					local vName = GetVehicleHashByName(veh.vehicle.model)
+					local infos = MySQL.single.await("SELECT * FROM vehicles WHERE model = ?", {vName})
+					veh.infos = infos
 
-					vehicle[1]['dbid'] = 0
+					veh.dbid = 0
 
-					local info = GetVehicleInformation(vehicle[1]['plate'])
+					local info = GetVehicleInformation(veh.plate)
 					if info then
-						vehicle[1]['information'] = info['information']
-						vehicle[1]['dbid'] = info['id']
-						vehicle[1]['points'] = info['points']
-						vehicle[1]['image'] = info['image']
-						vehicle[1]['code'] = info['code5']
-						vehicle[1]['stolen'] = info['stolen']
+						veh.information = info.information
+						veh.dbid = info.id
+						veh.points = info.points
+						veh.image = info.image
+						veh.code = info.code5
+						veh.stolen = info.stolen
 					end
 
-					if vehicle[1]['image'] == nil then vehicle[1]['image'] = "img/not-found.webp" end
+					if veh.image == nil then veh.image = "img/not-found.webp" end -- Image
 				end
 
-				TriggerClientEvent('mdt:client:getVehicleData', src, vehicle)
+				TriggerClientEvent('mdt:client:getVehicleData', Player.source, veh)
 			end
 		end
 	end
@@ -1131,7 +1167,7 @@ RegisterNetEvent('mdt:server:saveVehicleInfo', function(dbid, plate, imageurl, n
 		if Player then
 			if GetJobType(Player.job.name) == 'police' then
 				if dbid == nil then dbid = 0 end;
-				local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+				local fullname = Player.name
 				TriggerEvent('mdt:server:AddLog', "A vehicle with the plate ("..plate..") has a new image ("..imageurl..") edited by "..fullname)
 				if tonumber(dbid) == 0 then
 					MySQL.insert('INSERT INTO `mdt_vehicleinfo` (`plate`, `information`, `image`, `code5`, `stolen`, `points`) VALUES (:plate, :information, :image, :code5, :stolen, :points)', { plate = string.gsub(plate, "^%s*(.-)%s*$", "%1"), information = notes, image = imageurl, code5 = code5, stolen = stolen, points = tonumber(points) }, function(infoResult)
@@ -1167,7 +1203,7 @@ RegisterNetEvent('mdt:server:saveVehicleInfo', function(dbid, plate, imageurl, n
 										plate = plate,
 										beingcollected = 0,
 										vehicle = sentVehicle,
-										officer = Player.PlayerData.charinfo.firstname.. " "..Player.PlayerData.charinfo.lastname,
+										officer = Player.name,
 										number = Player.PlayerData.charinfo.phone,
 										time = os.time() * 1000,
 										src = src,
@@ -1212,7 +1248,7 @@ RegisterNetEvent('mdt:server:searchCalls', function(calls)
 	end
 end)
 
-lib.callback.register('mdt:server:SearchWeapons', function(sentData)
+lib.callback.register('mdt:server:SearchWeapons', function(source, sentData)
 	if not sentData then return {} end
 	local PlayerData = ESX.GetPlayerFromId(source)
 	if not PermCheck(source, PlayerData) then return {} end
@@ -1882,7 +1918,7 @@ function GetVehicleOwner(plate)
 end
 
 -- Returns the source for the given identifier
-lib.callback.register('mdt:server:GetPlayerSourceId', function(targetCitizenId)
+lib.callback.register('mdt:server:GetPlayerSourceId', function(source, targetCitizenId)
     local targetPlayer = ESX.GetPlayerFromIdentifier(targetCitizenId)
     if targetPlayer == nil then 
         TriggerClientEvent('esx:showNotification', source, "Citizen seems Asleep / Missing", "error")
@@ -1893,7 +1929,7 @@ lib.callback.register('mdt:server:GetPlayerSourceId', function(targetCitizenId)
     return targetSource
 end)
 
-lib.callback.register('getWeaponInfo', function()
+lib.callback.register('getWeaponInfo', function(source)
     local Player = ESX.GetPlayerFromId(source)
     local weaponInfos = {}
 	if Config.InventoryForWeaponsImages == "ox_inventory" then

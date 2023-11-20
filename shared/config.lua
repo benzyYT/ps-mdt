@@ -2,8 +2,6 @@ Config = Config or {}
 
 Config.vModelByHash = {}
 
-Config.UsingPsHousing = false
-Config.UsingDefaultQBApartments = true
 Config.OnlyShowOnDuty = true
 Config.UseCQCMugshot = true
 
@@ -41,7 +39,7 @@ Config.sopLink = {
 
 -- Google Docs Link
 Config.RosterLink = {
-    ['police'] = '',
+    ['police'] = 'https://cdn.discordapp.com/attachments/1167940233304748043/1175927511008411738/ORGANIGRAME_SAPD_5.png?ex=656d02d6&is=655a8dd6&hm=1e6e4504e2cd5333a87c371254f2881cc6c12b92c606f8bb972f61f8b7159b22&',
     ['ambulance'] = '',
     ['bcso'] = '',
     ['doj'] = '',

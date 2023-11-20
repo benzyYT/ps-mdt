@@ -50,13 +50,16 @@ function CreateUser(identifier, tableName)
 	return MySQL.insert.await("INSERT INTO `"..tableName.."` (identifier) VALUES (:identifier)", { identifier = identifier })
 end
 
-function GetPlayerVehicles(identifier, cb)
+function GetPlayerVehicles(identifier)
 	local vehicleList =  MySQL.query.await('SELECT * FROM owned_vehicles WHERE owner = ?', {identifier})
     if vehicleList then
         for k, veh in pairs(vehicleList) do
             veh.vehicle = json.decode(veh.vehicle)
-            local hash = GetVehicleHashByName(veh.vehicle.model)
-            local infos = MySQL.single.await("SELECT * FROM vehicles WHERE model = ?", {hash})
+            local modelName = GetVehicleHashByName(veh.vehicle.model)
+            local infos = MySQL.single.await("SELECT * FROM vehicles WHERE model = ?", {modelName})
+            if infos == nil then
+                print(veh.vehicle.model)
+            end
             veh.infos = infos
             veh.adv_stats = json.decode(veh.adv_stats)
         end
@@ -105,6 +108,17 @@ end
 
 function GetPlayerLicenses(identifier)
     return MySQL.query.await('SELECT user_licenses.type, licenses.label FROM user_licenses LEFT JOIN licenses ON user_licenses.type = licenses.type WHERE owner = ?', {identifier})
+end
+
+function GetAllLicenses()
+    local res = MySQL.query.await('SELECT * FROM licenses', {})
+    local formattedLicences = {}
+
+    for k, v in pairs(res) do
+        formattedLicences[v.type] = { label = v.label, type = v.type, status = false }
+    end
+
+    return formattedLicences
 end
 
 -- function GetPlayerLicenses(identifier)
@@ -185,11 +199,40 @@ function GetAllLicenses()
     return formattedLicences
 end
 
-function RetrieveVehiclesFromDB()
-	local vehicles = MySQL.query.await('SELECT * FROM vehicles')
+-- function RetrieveVehiclesFromDB()
+-- 	local vehicles = MySQL.query.await('SELECT * FROM vehicles')
+--     for k, v in pairs(vehicles) do
+--         if Config.vModelByHash[joaat(v.model)] == nil then
+--             Config.vModelByHash[joaat(v.model)] = v.model
+--         end
+--     end
+-- end
+
+function GetVehiclesFromDB()
+    local vehicles = MySQL.query.await('SELECT * FROM `vehicles`')
+
     for k, v in pairs(vehicles) do
-        if Config.vModelByHash[joaat(v.model)] == nil then
-            Config.vModelByHash[joaat(v.model)] = v.model
+        if VEHICLESTOHASH[string.lower(v.model)] == nil then
+            --print(string.lower(v.model), joaat(string.lower(v.model)))
+            VEHICLESTOHASH[string.lower(v.model)] = joaat(string.lower(v.model))
+        end
+        if HASHTOVEHICLE[joaat(string.lower(v.model))] == nil then
+            --print(joaat(string.lower(v.model)), string.lower(v.model))
+            HASHTOVEHICLE[joaat(string.lower(v.model))] = string.lower(v.model)
         end
     end
+
+    local VEHICLESTOHASHCOUNT = 0
+    for k, v in pairs(VEHICLESTOHASH) do
+        VEHICLESTOHASHCOUNT += 1
+    end
+
+    local HASHTOVEHICLECOUNT = 0
+    for k, v in pairs(HASHTOVEHICLE) do
+        HASHTOVEHICLECOUNT += 1
+    end
+
+    print(VEHICLESTOHASHCOUNT)
+    print(HASHTOVEHICLECOUNT)
 end
+

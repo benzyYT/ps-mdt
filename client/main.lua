@@ -351,17 +351,17 @@ RegisterNUICallback("getProfileData", function(data, cb)
     local vehicles = result.vehicles
     local licenses = result.licences
 
-    for i=1,#vehicles do
-        local vehicle=result.vehicles[i]
-        local vehData = QBCore.Shared.Vehicles[vehicle['vehicle']]
+    -- for i=1,#vehicles do
+    --     local vehicle = result.vehicles[i]
+    --     local vehData = QBCore.Shared.Vehicles[vehicle['vehicle']] VEHICLESTOHASH[]
         
-        if vehData == nil then
-            print("Vehicle not found for profile:", vehicle['vehicle']) -- Do not remove print, is a guide for a nil error. 
-            print("Make sure the profile you're trying to load has all cars added to the core under vehicles.lua.") -- Do not remove print, is a guide for a nil error. 
-        else
-            result.vehicles[i]['model'] = vehData["name"]
-        end
-    end
+    --     if vehData == nil then
+    --         print("Vehicle not found for profile:", vehicle['vehicle']) -- Do not remove print, is a guide for a nil error. 
+    --         print("Make sure the profile you're trying to load has all cars added to the core under vehicles.lua.") -- Do not remove print, is a guide for a nil error. 
+    --     else
+    --         result.vehicles[i]['model'] = vehData["name"]
+    --     end
+    -- end
     p = nil
 
     result['fingerprint'] = result['searchFingerprint']
@@ -654,19 +654,27 @@ end)
 --====================================================================================
 RegisterNUICallback("searchVehicles", function(data, cb)
 
-    local result = lib.callback.await('mdt:server:SearchVehicles', false, data.name)
+    local foundVehicles = lib.callback.await('mdt:server:SearchVehicles', false, data.name)
 
-    if result then
-        for i=1, #result do
-            local vehicle = result[i]
-            local mods = json.decode(result[i].mods)
-            result[i]['plate'] = string.upper(result[i]['plate'])
-            result[i]['color'] = Config.ColorInformation[mods['color1']]
-            result[i]['colorName'] = Config.ColorNames[mods['color1']]
-            local vehData = QBCore.Shared.Vehicles[vehicle['vehicle']]
-            result[i]['model'] = vehData["brand"] .. ' ' .. vehData["name"]
+    if foundVehicles then
+        for k, veh in pairs(foundVehicles) do
+            veh['plate'] = string.upper(veh['plate'])
+            veh['color'] = Config.ColorInformation[veh.vehicle['color1']]
+            veh['colorName'] = Config.ColorNames[veh.vehicle['color1']]
+            if not veh.infos and not veh.model then
+                veh.model = GetDisplayNameFromVehicleModel(veh.vehicle.model)
+            end
         end
-        cb(result)
+        -- for i=1, #result do
+        --     local vehicle = result[i]
+        --     local mods = json.decode(result[i].mods)
+        --     result[i]['plate'] = string.upper(result[i]['plate'])
+        --     result[i]['color'] = Config.ColorInformation[mods['color1']]
+        --     result[i]['colorName'] = Config.ColorNames[mods['color1']]
+        --     local vehData = QBCore.Shared.Vehicles[vehicle['vehicle']]
+        --     result[i]['model'] = vehData["brand"] .. ' ' .. vehData["name"]
+        -- end
+        cb(foundVehicles)
     end
 end)
 
@@ -802,17 +810,14 @@ RegisterNUICallback("removeIncidentCriminal", function(data, cb)
     cb(true)
 end)
 
-RegisterNetEvent('mdt:client:getVehicleData', function(sentData)
-    if sentData and sentData[1] then
-        local vehicle = sentData[1]
-        local vehData = json.decode(vehicle['vehicle'])
-        vehicle['color'] = Config.ColorInformation[vehicle['color1']]
-        vehicle['colorName'] = Config.ColorNames[vehicle['color1']]
-        local vehData = QBCore.Shared.Vehicles[vehicle.vehicle]
-        vehicle.model = vehData["brand"] .. ' ' .. vehData["name"]
-        vehicle['class'] = Config.ClassList[GetVehicleClassFromName(vehicle['vehicle'])]
-        vehicle['vehicle'] = nil
-        SendNUIMessage({ type = "getVehicleData", data = vehicle })
+RegisterNetEvent('mdt:client:getVehicleData', function(veh)
+    if veh then
+        local mods = veh.vehicle
+        veh.color = Config.ColorInformation[mods.color1]
+        veh.colorName = Config.ColorNames[mods.color1]
+        veh.model = veh.infos.name
+        veh.class = Config.ClassList[GetVehicleClassFromName(mods.model)]
+        SendNUIMessage({ type = "getVehicleData", data = veh })
     end
 end)
 
