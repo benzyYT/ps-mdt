@@ -1,12 +1,11 @@
-# Project Sloth MDT
-
-For all support questions, ask in our [Discord](https://www.discord.gg/projectsloth) support chat. Do not create issues if you need help. Issues are for bug reporting and new features only.
+# Project Sloth MDT (Not QBCore)
 
 ## Dependencies
 
-- [QBCore](https://github.com/qbcore-framework/qb-core)
+- [ESX](https://github.com/esx-framework/esx_core)
 - [ps-dispatch](https://github.com/Project-Sloth/ps-dispatch)
 - [oxmysql](https://github.com/overextended/oxmysql)
+- [ox_lib](https://github.com/overextended/ox_lib)
 - [qb-apartments](https://github.com/qbcore-framework/qb-apartments) | [Config](https://github.com/Project-Sloth/ps-mdt/blob/0ce2ab88d2ca7b0a49abfb3f7f8939d0769c7b73/shared/config.lua#L3) available to enable or disable. 
 - [qb-communityservice](https://github.com/Zepherlah/qb-community-service) - If you're planning on sending to community service. 
 
