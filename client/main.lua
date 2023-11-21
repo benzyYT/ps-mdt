@@ -35,8 +35,7 @@ AddEventHandler('esx:playerLogout', function()
 end)
 
 -- These two functions can perform the same task
-RegisterNetEvent('esx:setJob')
-AddEventHandler('esx:setJob', function(job)
+RegisterNetEvent('esx:setJob', function(job)
 	ESX.PlayerData.job = job
 end)
 
