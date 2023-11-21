@@ -1171,13 +1171,5 @@ function SetServiceStatus(status)
     elseif status == 0 then
         TriggerServerEvent("esx_service:disableService", ESX.PlayerData.job.name)
         ESX.SetPlayerData('onduty', false)
-        --LocalPlayer.state:set('onduty', false, true)
     end
 end
-
-CreateThread(function ()
-    while true do
-        print(LocalPlayer.state.onduty)
-        Wait(1000)
-    end
-end)
