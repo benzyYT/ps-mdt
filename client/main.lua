@@ -20,21 +20,18 @@ CreateThread(function()
 end)
 
 -- Events from ESX
-RegisterNetEvent('esx:playerLoaded') -- Store the players data
-AddEventHandler('esx:playerLoaded', function(xPlayer, isNew)
+RegisterNetEvent('esx:playerLoaded', function(xPlayer, isNew)
 	ESX.PlayerData = xPlayer
 	ESX.PlayerLoaded = true
-    PlayerData = ESX.PlayerData
+	PlayerData = ESX.PlayerData
 end)
 
-RegisterNetEvent('esx:playerLogout') -- When a player logs out (multicharacter), reset their data
-AddEventHandler('esx:playerLogout', function()
-    TriggerServerEvent("ps-mdt:server:OnPlayerUnload")
+RegisterNetEvent('esx:playerLogout', function()
+    	TriggerServerEvent("ps-mdt:server:OnPlayerUnload")
 	ESX.PlayerLoaded = false
 	ESX.PlayerData = {}
 end)
 
--- These two functions can perform the same task
 RegisterNetEvent('esx:setJob', function(job)
 	ESX.PlayerData.job = job
 end)
