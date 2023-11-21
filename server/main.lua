@@ -13,15 +13,15 @@ local FullJobList = ESX.GetJobs()
 --------------------------------
 -- SET YOUR WEHBOOKS IN HERE
 -- Images for mug shots will be uploaded here. Add a Discord webhook. 
-local MugShotWebhook = ''
+local MugShotWebhook = 'https://discord.com/api/webhooks/1168287405569220708/RfZo2y02-EpeRzfztoOi9ZZw3xuGtBOb7Yo5OBErAmoZBdLlmD_rgHUprNVmJPqCgG46'
 
 -- Clock-in notifications for duty. Add a Discord webhook.
 -- Command /mdtleaderboard, will display top players per clock-in hours.
-local ClockinWebhook = ''
+local ClockinWebhook = 'https://discord.com/api/webhooks/1168287405569220708/RfZo2y02-EpeRzfztoOi9ZZw3xuGtBOb7Yo5OBErAmoZBdLlmD_rgHUprNVmJPqCgG46'
 
 -- Incident and Incident editting. Add a Discord webhook.
 -- Incident Author, Title, and Report will display in webhook post.
-local IncidentWebhook = ''
+local IncidentWebhook = 'https://discord.com/api/webhooks/1168287405569220708/RfZo2y02-EpeRzfztoOi9ZZw3xuGtBOb7Yo5OBErAmoZBdLlmD_rgHUprNVmJPqCgG46'
 --------------------------------
 
 lib.callback.register('ps-mdt:server:MugShotWebhook', function(source)
@@ -124,7 +124,7 @@ AddEventHandler('playerDropped', function(reason)
     local lastName = PlayerData.get('lastName')
 
     -- Auto clock out if the player is off duty
-     if IsPoliceOrEms(job) and Player(PlayerData.source)?.state.onduty then
+     if IsPoliceOrEms(job) and Player(PlayerData.source).state.onduty then
 		MySQL.query.await('UPDATE mdt_clocking SET clock_out_time = NOW(), total_time = TIMESTAMPDIFF(SECOND, clock_in_time, NOW()) WHERE user_id = @user_id ORDER BY id DESC LIMIT 1', {
 			['@user_id'] = PlayerData.identifier
 		})
@@ -134,7 +134,10 @@ AddEventHandler('playerDropped', function(reason)
 		})
 		if result then
 			local time_formatted = format_time(tonumber(result))
-			sendToDiscord(16711680, "MDT Clock-Out", 'Player: **' ..  firstName .. " ".. lastName .. '**\n\nJob: **' .. PlayerData.job.name .. '**\n\nRank: **' .. PlayerData.job.grade.name .. '**\n\nStatus: **Off Duty**\n Total time:' .. time_formatted, "ps-mdt | Made by Project Sloth")
+
+			local log = string.format("Joueur: **%s %s**\n\nJob: **%s**\n\nRang: **%s**\n\nMatricule: **%s**\n\nStatus: **Fin Service**\n Durée total: %s", firstName, lastName, PlayerData.job.label, PlayerData.job.grade_label, Player(PlayerData.source).state.callsign, time_formatted or "")
+
+			sendToDiscord(16711680, "MDT Fin de Service", log, "ps-mdt | Edited by Lexinor")
 		end
 	end
 
@@ -167,7 +170,7 @@ RegisterNetEvent("ps-mdt:server:ToggleDuty", function()
 end)
 
 lib.addCommand('mdtleaderboard', {
-    help = "Show MDT leaderboard",
+    help = "Afficher classement MDT",
     params = {},
 }, function(source, args, raw)
     local PlayerData = ESX.GetPlayerFromId(source)
@@ -180,7 +183,7 @@ lib.addCommand('mdtleaderboard', {
 
 	local result = MySQL.Sync.fetchAll('SELECT firstname, lastname, total_time FROM mdt_clocking ORDER BY total_time DESC')
 
-    local leaderboard_message = '**MDT Leaderboard**\n\n'
+    local leaderboard_message = '**Classement MDT**\n\n'
 
     for i, record in ipairs(result) do
 		local firstName = record.firstname:sub(1,1):upper()..record.firstname:sub(2)
@@ -190,34 +193,9 @@ lib.addCommand('mdtleaderboard', {
 		leaderboard_message = leaderboard_message .. i .. '. **' .. firstName .. ' ' .. lastName .. '** - ' .. total_time .. '\n'
 	end
 
-    sendToDiscord(16753920, "MDT Leaderboard", leaderboard_message, "ps-mdt | Made by Project Sloth")
-    TriggerClientEvent('esx:showNotification', source, "MDT leaderboard sent to Discord!", 'success')
+    sendToDiscord(16753920, "Classement MDT", leaderboard_message, "ps-mdt | Edited by Lexinor")
+    TriggerClientEvent('esx:showNotification', source, "Classement MDT envoyé sur discord!", 'success')
 end)
-
--- QBCore.Commands.Add("mdtleaderboard", "Show MDT leaderboard", {}, false, function(source, args)
---     local PlayerData = ESX.GetPlayerFromId(source)
---     local job = PlayerData.job.name
-
---     if not IsPoliceOrEms(job) then
---         TriggerClientEvent('esx:showNotification', source, "You don't have permission to use this command.", 'error')
---         return
---     end
-
--- 	local result = MySQL.Sync.fetchAll('SELECT firstname, lastname, total_time FROM mdt_clocking ORDER BY total_time DESC')
-
---     local leaderboard_message = '**MDT Leaderboard**\n\n'
-
---     for i, record in ipairs(result) do
--- 		local firstName = record.firstname:sub(1,1):upper()..record.firstname:sub(2)
--- 		local lastName = record.lastname:sub(1,1):upper()..record.lastname:sub(2)
--- 		local total_time = format_time(record.total_time)
-	
--- 		leaderboard_message = leaderboard_message .. i .. '. **' .. firstName .. ' ' .. lastName .. '** - ' .. total_time .. '\n'
--- 	end
-
---     sendToDiscord(16753920, "MDT Leaderboard", leaderboard_message, "ps-mdt | Made by Project Sloth")
---     TriggerClientEvent('esx:showNotification', source, "MDT leaderboard sent to Discord!", 'success')
--- end)
 
 RegisterNetEvent("ps-mdt:server:ClockSystem", function()
     local src = source
@@ -225,7 +203,7 @@ RegisterNetEvent("ps-mdt:server:ClockSystem", function()
     local time = os.date("%Y-%m-%d %H:%M:%S")
     local firstName = PlayerData.get('firstName')
     local lastName = PlayerData.get('lastName')
-    if Player(PlayerData.source)?.state.onduty then
+    if Player(PlayerData.source).state.onduty  then
         
         TriggerClientEvent('esx:showNotification', source, "You're clocked-in", 'success')
 		MySQL.Async.insert('INSERT INTO mdt_clocking (user_id, firstname, lastname, clock_in_time) VALUES (:user_id, :firstname, :lastname, :clock_in_time) ON DUPLICATE KEY UPDATE user_id = :user_id, firstname = :firstname, lastname = :lastname, clock_in_time = :clock_in_time', {
@@ -235,9 +213,13 @@ RegisterNetEvent("ps-mdt:server:ClockSystem", function()
 			clock_in_time = time
 		}, function()
 		end)
-		sendToDiscord(65280, "MDT Clock-In", 'Player: **' ..  firstName .. " ".. lastName .. '**\n\nJob: **' .. PlayerData.job.name .. '**\n\nRank: **' .. PlayerData.job.grade.name .. '**\n\nStatus: **On Duty**', "ps-mdt | Made by Project Sloth")
+		
+		
+		local log = string.format("Joueur: **%s %s**\n\nJob: **%s**\n\nRang: **%s**\n\nMatricule: **%s**\n\nStatus: **En Service**\n Durée total: %s", firstName, lastName, PlayerData.job.label, PlayerData.job.grade_label, Player(PlayerData.source).state.callsign, time_formatted)
+		
+		sendToDiscord(65280, "MDT Prise de Service", log, "ps-mdt | Edited by Lexinor")
     else
-		TriggerClientEvent('esx:showNotification', source, "You're clocked-out", 'success')
+		TriggerClientEvent('esx:showNotification', source, "Vous n'êtes plus en service", 'success')
 		MySQL.query.await('UPDATE mdt_clocking SET clock_out_time = NOW(), total_time = TIMESTAMPDIFF(SECOND, clock_in_time, NOW()) WHERE user_id = @user_id ORDER BY id DESC LIMIT 1', {
 			['@user_id'] = PlayerData.identifier
 		})
@@ -246,8 +228,10 @@ RegisterNetEvent("ps-mdt:server:ClockSystem", function()
 			['@user_id'] = PlayerData.identifier
 		})
 		local time_formatted = format_time(tonumber(result))
+		
+		local log = string.format("Joueur: **%s %s**\n\nJob: **%s**\n\nRang: **%s**\n\nMatricule: **%s**\n\nStatus: **Fin Service**\n Durée total: %s", firstName, lastName, PlayerData.job.label, PlayerData.job.grade_label, Player(PlayerData.source).state.callsign, time_formatted or "")
 
-		sendToDiscord(16711680, "MDT Clock-Out", 'Player: **' ..  firstName .. " ".. lastName .. '**\n\nJob: **' .. PlayerData.job.name .. '**\n\nRank: **' .. PlayerData.job.grade.name .. '**\n\nStatus: **Off Duty**\n Total time:' .. time_formatted, "ps-mdt | Made by Project Sloth")
+		sendToDiscord(16711680, "MDT Hors Service", log, "ps-mdt | Edited by Lexinor")
     end
 end)
 
@@ -287,7 +271,7 @@ lib.callback.register('mdt:server:SearchProfile', function(source, sentData)
             local identifiers = {}
             local identifiersMap = {}
             if not next(people) then return {} end
-			print(json.encode(people))
+			
 			local licencesdata = GetAllLicenses()
             for index, data in pairs(people) do
                 people[index]['warrant'] = false
@@ -749,7 +733,7 @@ RegisterNetEvent('mdt:server:newBolo', function(existing, id, title, plate, owne
 		local Player = ESX.GetPlayerFromId(src)
 		local JobType = GetJobType(Player.job.name)
 		if JobType == 'police' or JobType == 'ambulance' then
-			local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+			local fullname = Player.name
 
 			local function InsertBolo()
 				MySQL.insert('INSERT INTO `mdt_bolos` (`title`, `author`, `plate`, `owner`, `individual`, `detail`, `tags`, `gallery`, `officersinvolved`, `time`, `jobtype`) VALUES (:title, :author, :plate, :owner, :individual, :detail, :tags, :gallery, :officersinvolved, :time, :jobtype)', {
@@ -806,12 +790,12 @@ RegisterNetEvent('mdt:server:deleteWeapons', function(id)
 		local src = source
 		local Player = ESX.GetPlayerFromId(src)
 		if Config.RemoveWeaponsPerms[Player.job.name] then
-			if Config.RemoveWeaponsPerms[Player.job.name][Player.PlayerData.job.grade.level] then
-				local fullName = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+			if Config.RemoveWeaponsPerms[Player.job.name][Player.job.grade] then
+				local fullName = Player.name
 				MySQL.update("DELETE FROM `mdt_weaponinfo` WHERE id=:id", { id = id })
 				TriggerEvent('mdt:server:AddLog', "A Weapon Info was deleted by "..fullName.." with the ID ("..id..")")
 			else
-				local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+				local fullname = Player.name
 				TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
 				TriggerEvent('mdt:server:AddLog', fullname.." tryed to delete a Weapon Info with the ID ("..id..")")
 			end
@@ -825,11 +809,11 @@ RegisterNetEvent('mdt:server:deleteReports', function(id)
 		local Player = ESX.GetPlayerFromId(src)
 		if Config.RemoveReportPerms[Player.job.name] then
 			if Config.RemoveReportPerms[Player.job.name][Player.PlayerData.job.grade.level] then
-				local fullName = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+				local fullName = Player.name
 				MySQL.update("DELETE FROM `mdt_reports` WHERE id=:id", { id = id })
 				TriggerEvent('mdt:server:AddLog', "A Report was deleted by "..fullName.." with the ID ("..id..")")
 			else
-				local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+				local fullname = Player.name
 				TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
 				TriggerEvent('mdt:server:AddLog', fullname.." tryed to delete a Report with the ID ("..id..")")
 			end
@@ -841,8 +825,8 @@ RegisterNetEvent('mdt:server:deleteIncidents', function(id)
     local src = source
     local Player = ESX.GetPlayerFromId(src)
     if Config.RemoveIncidentPerms[Player.job.name] then
-        if Config.RemoveIncidentPerms[Player.job.name][Player.PlayerData.job.grade.level] then
-            local fullName = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+        if Config.RemoveIncidentPerms[Player.job.name][Player.job.grade] then
+            local fullName = Player.name
             MySQL.update("DELETE FROM `mdt_convictions` WHERE `linkedincident` = :id", {id = id})
             MySQL.update("UPDATE `mdt_convictions` SET `warrant` = '0' WHERE `linkedincident` = :id", {id = id}) -- Delete any outstanding warrants from incidents
             MySQL.update("DELETE FROM `mdt_incidents` WHERE id=:id", { id = id }, function(rowsChanged)
@@ -851,7 +835,7 @@ RegisterNetEvent('mdt:server:deleteIncidents', function(id)
                 end
             end)
         else
-            local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+            local fullname = Player.name
             TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
             TriggerEvent('mdt:server:AddLog', fullname.." tried to delete an Incident with the ID ("..id..")")
         end
@@ -864,7 +848,7 @@ RegisterNetEvent('mdt:server:deleteBolo', function(id)
 		local Player = ESX.GetPlayerFromId(src)
 		local JobType = GetJobType(Player.job.name)
 		if JobType == 'police' then
-			local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+			local fullname = Player.name
 			MySQL.update("DELETE FROM `mdt_bolos` WHERE id=:id", { id = id, jobtype = JobType })
 			TriggerEvent('mdt:server:AddLog', "A BOLO was deleted by "..fullname.." with the ID ("..id..")")
 		end
@@ -877,7 +861,7 @@ RegisterNetEvent('mdt:server:deleteICU', function(id)
 		local Player = ESX.GetPlayerFromId(src)
 		local JobType = GetJobType(Player.job.name)
 		if JobType == 'ambulance' then
-			local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+			local fullname = Player.name
 			MySQL.update("DELETE FROM `mdt_bolos` WHERE id=:id", { id = id, jobtype = JobType })
 			TriggerEvent('mdt:server:AddLog', "A ICU Check-in was deleted by "..fullname.." with the ID ("..id..")")
 		end
@@ -901,7 +885,7 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(query)
                 firstname = firstname or query
                 lastname = lastname or query
 
-                local result = MySQL.query.await("SELECT SELECT u.identifier, u.firstname, u.lastname, p.metadata, md.pfp from users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname) OR LOWER(u.identifier) LIKE :identifier AND `jobtype` = :jobtype LIMIT 30", {
+				local result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname OR LOWER(u.identifier) LIKE :identifier AND `jobtype` = :jobtype LIMIT 50", {
                     firstname = string.lower('%' .. firstname .. '%'),
                     lastname = string.lower('%' .. lastname .. '%'),
                     identifier = string.lower('%' .. query .. '%'),
@@ -909,15 +893,14 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(query)
                 })
 
                 local data = {}
-                for i=1, #result do
-                    local charinfo = json.decode(result[i].charinfo)
+                for i=1, #result do					
                     local metadata = json.decode(result[i].metadata)
                     data[i] = {
                         id = result[i].identifier,
-                        firstname = charinfo.firstname,
-                        lastname = charinfo.lastname,
-                        profilepic = ProfPic(charinfo.gender, result[i].pfp),
-                        callsign = metadata.callsign
+                        firstname = result[i].firstname,
+                        lastname = result[i].lastname,
+                        profilepic = ProfPic(result[i].sex, result[i].pfp),
+                        callsign = result[i].callsign
                     }
                 end
                 TriggerClientEvent('mdt:client:incidentSearchPerson', src, data)
@@ -990,7 +973,7 @@ RegisterNetEvent('mdt:server:newReport', function(existing, id, title, reporttyp
 		if Player then
 			local JobType = GetJobType(Player.job.name)
 			if JobType ~= nil then
-				local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+				local fullname = Player.name
 				local function InsertReport()
 					MySQL.insert('INSERT INTO `mdt_reports` (`title`, `author`, `type`, `details`, `tags`, `gallery`, `officersinvolved`, `civsinvolved`, `time`, `jobtype`) VALUES (:title, :author, :type, :details, :tags, :gallery, :officersinvolved, :civsinvolved, :time, :jobtype)', {
 						title = title,
@@ -1204,7 +1187,7 @@ RegisterNetEvent('mdt:server:saveVehicleInfo', function(dbid, plate, imageurl, n
 										beingcollected = 0,
 										vehicle = sentVehicle,
 										officer = Player.name,
-										number = Player.PlayerData.charinfo.phone,
+										number = "",
 										time = os.time() * 1000,
 										src = src,
 									}
@@ -1274,7 +1257,7 @@ RegisterNetEvent('mdt:server:saveWeaponInfo', function(serial, imageurl, notes, 
 		if Player then
 			local JobType = GetJobType(Player.job.name)
 			if JobType == 'police' or JobType == 'doj' then
-				local fullname = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+				local fullname = Player.name
 				if imageurl == nil then imageurl = 'img/not-found.webp' end
 				--AddLog event?
 				local result = false
@@ -1326,7 +1309,7 @@ RegisterNetEvent('mdt:server:getWeaponData', function(serial)
 			local JobType = GetJobType(Player.job.name)
 			if JobType == 'police' or JobType == 'doj' then
 				local results = MySQL.query.await('SELECT * FROM mdt_weaponinfo WHERE serial = ?', { serial })
-				TriggerClientEvent('mdt:client:getWeaponData', Player.PlayerData.source, results)
+				TriggerClientEvent('mdt:client:getWeaponData', Player.source, results)
 			end
 		end
 	end
@@ -1337,7 +1320,7 @@ RegisterNetEvent('mdt:server:getAllLogs', function()
 	local Player = ESX.GetPlayerFromId(src)
 	if Player then
 		if Config.LogPerms[Player.job.name] then
-			if Config.LogPerms[Player.job.name][Player.PlayerData.job.grade.level] then
+			if Config.LogPerms[Player.job.name][Player.job.grade] then
 
 				local JobType = GetJobType(Player.job.name)
 				local infoResult = MySQL.query.await('SELECT * FROM mdt_logs WHERE `jobtype` = :jobtype ORDER BY `id` DESC LIMIT 250', {jobtype = JobType})
@@ -1445,7 +1428,7 @@ RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tag
                                         officersinvolved = officers,
                                         civsinvolved = civilians
                                     }
-                                    sendIncidentToDiscord(3989503, "MDT Incident Report", message, "ps-mdt | Made by Project Sloth", associatedData)                                
+                                    sendIncidentToDiscord(3989503, "MDT Incident Report", message, "ps-mdt | Edited by Lexinor", associatedData)                                
                                 end
                             else
                                 print('No incident found in the mdt_incidents table with id: ' .. infoResult)
@@ -1495,7 +1478,7 @@ RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tag
                                 officersinvolved = officers,
                                 civsinvolved = civilians
                             }
-                            sendIncidentToDiscord(16711680, "MDT Incident Report has been Updated", message, "ps-mdt | Made by Project Sloth", associatedData)
+                            sendIncidentToDiscord(16711680, "MDT Incident Report has been Updated", message, "ps-mdt | Edited by Lexinor", associatedData)
                         end
                     else
                         print('No incident found in the mdt_incidents table with id: ' .. id)
@@ -1592,10 +1575,10 @@ RegisterNetEvent('mdt:server:callDetach', function(callid)
 	local src = source
 	local Player = ESX.GetPlayerFromId(src)
 	local playerdata = {
-		fullname = Player.PlayerData.charinfo.firstname.. " "..Player.PlayerData.charinfo.lastname,
-		job = Player.PlayerData.job,
-		identifier = Player.PlayerData.identifier,
-		callsign = Player.PlayerData.metadata.callsign
+		fullname = Player.name,
+		job = Player.job,
+		identifier = Player.identifier,
+		callsign = Player(Player.source).state.callsign,
 	}
 	local JobType = GetJobType(Player.job.name)
 	if JobType == 'police' or JobType == 'ambulance' then
@@ -1703,7 +1686,7 @@ end)
 RegisterNetEvent('mdt:server:setWaypoint:unit', function(identifier)
 	local src = source
 	local Player = ESX.GetPlayerFromIdentifier(identifier)
-	local PlayerCoords = GetEntityCoords(GetPlayerPed(Player.PlayerData.source))
+	local PlayerCoords = GetEntityCoords(GetPlayerPed(Player.source))
 	TriggerClientEvent("mdt:client:setWaypoint:unit", src, PlayerCoords)
 end)
 
@@ -1977,7 +1960,7 @@ end)
 
 local function giveCitationItem(src, identifier, fine, incidentId)
 	local Player = ESX.GetPlayerFromIdentifier(identifier)
-	local PlayerName = Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+	local PlayerName = PlayerData.name
 	local Officer = ESX.GetPlayerFromId(src)
 	local OfficerFullName = '(' .. Officer.PlayerData.metadata.callsign .. ') ' .. Officer.PlayerData.charinfo.firstname .. ' ' .. Officer.PlayerData.charinfo.lastname
 	local info = {}
@@ -2154,16 +2137,16 @@ function format_time(time)
 
     local formattedTime = ""
     if days > 0 then
-        formattedTime = string.format("%d day%s ", days, days == 1 and "" or "s")
+        formattedTime = string.format("%d jour%s ", days, days == 1 and "" or "s")
     end
     if hours > 0 then
-        formattedTime = formattedTime .. string.format("%d hour%s ", hours, hours == 1 and "" or "s")
+        formattedTime = formattedTime .. string.format("%d heure%s ", hours, hours == 1 and "" or "s")
     end
     if minutes > 0 then
         formattedTime = formattedTime .. string.format("%d minute%s ", minutes, minutes == 1 and "" or "s")
     end
     if seconds > 0 then
-        formattedTime = formattedTime .. string.format("%d second%s", seconds, seconds == 1 and "" or "s")
+        formattedTime = formattedTime .. string.format("%d seconde%s", seconds, seconds == 1 and "" or "s")
     end
     return formattedTime
 end

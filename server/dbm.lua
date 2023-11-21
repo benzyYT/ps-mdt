@@ -199,14 +199,6 @@ function GetAllLicenses()
     return formattedLicences
 end
 
--- function RetrieveVehiclesFromDB()
--- 	local vehicles = MySQL.query.await('SELECT * FROM vehicles')
---     for k, v in pairs(vehicles) do
---         if Config.vModelByHash[joaat(v.model)] == nil then
---             Config.vModelByHash[joaat(v.model)] = v.model
---         end
---     end
--- end
 
 function GetVehiclesFromDB()
     local vehicles = MySQL.query.await('SELECT * FROM `vehicles`')
@@ -231,8 +223,5 @@ function GetVehiclesFromDB()
     for k, v in pairs(HASHTOVEHICLE) do
         HASHTOVEHICLECOUNT += 1
     end
-
-    print(VEHICLESTOHASHCOUNT)
-    print(HASHTOVEHICLECOUNT)
 end
 

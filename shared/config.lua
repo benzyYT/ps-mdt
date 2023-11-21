@@ -1,7 +1,5 @@
 Config = Config or {}
 
-Config.vModelByHash = {}
-
 Config.OnlyShowOnDuty = true
 Config.UseCQCMugshot = true
 
@@ -39,7 +37,7 @@ Config.sopLink = {
 
 -- Google Docs Link
 Config.RosterLink = {
-    ['police'] = 'https://cdn.discordapp.com/attachments/1167940233304748043/1175927511008411738/ORGANIGRAME_SAPD_5.png?ex=656d02d6&is=655a8dd6&hm=1e6e4504e2cd5333a87c371254f2881cc6c12b92c606f8bb972f61f8b7159b22&',
+    ['police'] = '',
     ['ambulance'] = '',
     ['bcso'] = '',
     ['doj'] = '',
@@ -52,14 +50,14 @@ Config.RosterLink = {
 
 Config.PoliceJobs = {
     ['police'] = true,
-    ['lspd'] = true,
+    ['lspd'] = false,
     ['bcso'] = true,
-    ['sast'] = true,
-    ['sasp'] = true,
-    ['doc'] = true,
-    ['lssd'] = true,
-    ['sapr'] = true,
-    ['pa'] = true
+    ['sast'] = false,
+    ['sasp'] = false,
+    ['doc'] = false,
+    ['lssd'] = false,
+    ['sapr'] = false,
+    ['pa'] = false
 }
 
 Config.AmbulanceJobs = {
@@ -68,8 +66,8 @@ Config.AmbulanceJobs = {
 }
 
 Config.DojJobs = {
-    ['lawyer'] = true,
-    ['judge'] = true
+    ['lawyer'] = false,
+    ['judge'] = false
 }
 
 -- This is a workaround solution because the qb-menu present in qb-policejob fills in an impound location and sends it to the event. 

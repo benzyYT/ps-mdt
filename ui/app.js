@@ -427,7 +427,7 @@ $(document).ready(() => {
         {
           className: "remove-bulletin",
           icon: "fas fa-times",
-          text: "Remove Item",
+          text: "Retirer élément",
           info: $(this).data("id"),
           status: $(this).data("title"),
         },
@@ -534,7 +534,7 @@ $(document).ready(() => {
       );
       setTimeout(() => {
         $(".manage-profile-save").empty();
-        $(".manage-profile-save").html("Save");
+        $(".manage-profile-save").html('<i class="fa-regular fa-floppy-disk"></i>');
         canSaveProfile = true;
       }, 750);
 
@@ -615,7 +615,7 @@ $(document).ready(() => {
         setTimeout(() => {
           $(".manage-incidents-save").empty();
           $(".manage-incidents-save").prepend(
-            `<span class="fas fa-save" style="margin-top: 3.5px;"></span>`
+            `<i class="fa-regular fa-floppy-disk"></i>`
           );
           canSaveProfile = true;
         }, 750);
@@ -797,7 +797,7 @@ $(document).ready(() => {
       </div>
   `;
       $("#manage-incidents-title-input").val(
-        "Name - Charge - " + $(".date").html()
+        "Nom - Charges - " + $(".date").html()
       );
       $(".manage-incidents-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
@@ -825,7 +825,7 @@ $(document).ready(() => {
         `
             <div class="manage-incidents-title">Gestion Incident</div>
             <div class="manage-incidents-create"> <span class="fas fa-plus" style="margin-top: 3.5px;"></span></div>
-            <div class="manage-incidents-save"><span class="fas fa-save" style="margin-top: 3.5px;"></span></div>
+            <div class="manage-incidents-save"><i class="fa-regular fa-floppy-disk"></i></div>
             `
       );
       $(".manage-incidents-title").css("width", "66%");
@@ -835,7 +835,7 @@ $(document).ready(() => {
       $(".associated-incidents-tags-holder").html("");
 
       $(".manage-incidents-editing-title").html(
-        "You are currently creating a new Incident"
+        "Vous rédigez un nouveau Incident"
       );
       $(".manage-incidents-editing-title").data("id", 0);
 
@@ -913,7 +913,7 @@ $(document).ready(() => {
       {
         className: "search-vehicle",
         icon: "fas fa-car",
-        text: "Search Vehicle",
+        text: "Rechercher Vehicule",
         info: $(this).data("plate"),
         status: "",
       },
@@ -937,7 +937,7 @@ $(document).ready(() => {
       {
         className: "make-waypoint",
         icon: "fas fa-map-pin",
-        text: "Make Waypoint",
+        text: "Make Marqueur",
         info: $(this).data("location"),
         status: "",
       },
@@ -973,7 +973,7 @@ $(document).ready(() => {
         {
           className: "remove-image",
           icon: "fas fa-times",
-          text: "Remove Image",
+          text: "Retirer Image",
           info: $(this).attr("src"),
           status: "",
         },
@@ -1376,13 +1376,13 @@ $(document).ready(() => {
       if ($(".badge-logo").attr("src") == "img/ems_badge.webp") {
         template = `
         <div style="color: white;">
-            <p><strong>📝 ICU Room #: [ # ]</strong></p>
+            <p><strong>📝 Salle USI #: [ # ]</strong></p>
             <p><strong>Report ID: [ Report ID ]</strong></p>
             <p><em><br></em></p>
-            <p><strong>🧍Time Admitted: [ Date and Time Here ]</strong>&nbsp;</p>
-            <p><strong>Surgery: [Yes/No]</strong></p>
-            <p><strong>Injuries/Ailments:</strong></p>
-            <p><em>· [Enter List Of Injuries Here]</em><br></p>
+            <p><strong>🧍Heure Admission: [ Date and Time Here ]</strong>&nbsp;</p>
+            <p><strong>Chirurgie: [Yes/No]</strong></p>
+            <p><strong>Blessures/Maladies:</strong></p>
+            <p><em>· [Insérez la liste des bléssures]</em><br></p>
             <p>&nbsp;</p>
             <p>-----</p>
             <p><strong style="background-color: var(--color-1);">Additional Attending:</strong><br></p>
@@ -1396,7 +1396,7 @@ $(document).ready(() => {
     `;
       }
       $(".manage-bolos-editing-title").html(
-        "You are currently creating a new BOLO"
+        "Vous rédigez un nouveau Mandat"
       );
       $(".manage-bolos-input-title").val("");
       $(".manage-bolos-input-plate").val("");
@@ -1457,7 +1457,7 @@ $(document).ready(() => {
     function () {
       let existing = !(
         $(".manage-bolos-editing-title").html() ==
-        "You are currently creating a new BOLO"
+        "Vous rédigez un nouveau Mandat"
       );
       let id = $(".manage-bolos-editing-title").data("id");
       let title = $("#bolotitle").val();
@@ -1521,7 +1521,7 @@ $(document).ready(() => {
         {
           className: "remove-image-incident",
           icon: "fas fa-times",
-          text: "Remove Image",
+          text: "Retirer Image",
           info: $(this).attr("src"),
           status: "",
         },
@@ -1864,7 +1864,7 @@ $(document).ready(() => {
       let args = [
           {
             className: "incidents-remove-tag",
-            text: "Remove Tag",
+            text: "Retirer Tag",
             info: descr,
             status: "",
           },
@@ -1898,7 +1898,7 @@ $(document).ready(() => {
         {
           className: "bolo-remove-image",
           icon: "fas fa-times",
-          text: "Remove Image",
+          text: "Retirer Image",
           info: $(this).attr("src"),
           status: "",
         },
@@ -2036,7 +2036,7 @@ $(document).ready(() => {
         {
           className: "associated-incidents-remove-tag",
           icon: "fas fa-times",
-          text: "Remove Tag",
+          text: "Retirer Tag",
           info: $(this).html(),
           status: $(this).data("id"),
         },
@@ -2101,9 +2101,9 @@ $(document).ready(() => {
                 <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Recommended Sentence</div>
                 <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input disabled placeholder="0" class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${$(this).data("identifier")}" type="number"></div>
                 <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Fine</div>
-                <div class="associated-incidents-fine-input" data-id="${$(this).data("identifier")}"><img src="img/h7S5f9J.webp"> <input placeholder="Enter fine here..." value="0" class="fine-amount" data-id="${$(this).data("identifier")}" type="number"></div>
+                <div class="associated-incidents-fine-input" data-id="${$(this).data("identifier")}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${$(this).data("identifier")}" type="number"></div>
                 <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Sentence</div>
-                <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input placeholder="Enter months here..." value="0" class="sentence-amount" data-id="${$(this).data("identifier")}" type="number"></div>
+                <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez months here..." value="0" class="sentence-amount" data-id="${$(this).data("identifier")}" type="number"></div>
                 <div class="associated-incidents-controls" data-id="${$(this).data("identifier")}">
                     <div id="jail-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-building-columns" style="margin-top: 3.5px;"></span> Jail</div>
                     <div id="fine-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Fine</div>
@@ -2130,7 +2130,7 @@ $(document).ready(() => {
       {
         className: "incidents-remove-tag",
         icon: "fas fa-times",
-        text: "Remove Tag",
+        text: "Retirer Tag",
         info: $(this).html(),
         status: "",
       },
@@ -2155,7 +2155,7 @@ $(document).ready(() => {
         {
           className: "remove-tag",
           icon: "fas fa-times",
-          text: "Remove Tag",
+          text: "Retirer Tag",
           info: $(this).html(),
           status: "",
         },
@@ -2198,7 +2198,7 @@ $(document).ready(() => {
       {
         className: "incidents-remove-normal-tag",
         icon: "fas fa-times",
-        text: "Remove Tag",
+        text: "Retirer Tag",
         info: $(this).html(),
         status: "",
       },
@@ -2409,7 +2409,7 @@ $(document).ready(() => {
         {
           className: "reports-remove-image",
           icon: "fas fa-times",
-          text: "Remove Image",
+          text: "Retirer Image",
           info: $(this).attr("src"),
           status: "",
         },
@@ -2456,7 +2456,7 @@ $(document).ready(() => {
       if ($(".badge-logo").attr("src") == "img/ems_badge.webp") {
         template = `
     <div style="color: white;">
-        <p><strong>Submitted to ICU?: [Yes/No]</strong></p>
+        <p><strong>Submitted to USI?: [Yes/No]</strong></p>
         <p><strong>Incident Report:</strong></p>
         <p><em>· [ Brief summary of what happened and who did what while on scene. Note anything that stood out about the scene as well as what was done to treat the patient ]</em></p>
         <p><strong>List of Injuries:</strong></p>
@@ -2475,7 +2475,7 @@ $(document).ready(() => {
     </div>
 `;}
       $(".manage-reports-editing-title").html(
-        "You are currently creating a new report"
+        "Vous rédigez un nouveau report"
       );
       $(".manage-reports-input-title").val("");
       $(".manage-reports-input-type").val("");
@@ -2554,7 +2554,7 @@ $(document).ready(() => {
     function () {
       let existing = !(
         $(".manage-reports-editing-title").html() ==
-        "You are currently creating a new report"
+        "Vous rédigez un nouveau report"
       );
       let id = $(".manage-reports-editing-title").data("id");
       let title = $("#reporttitle").val();
@@ -2741,7 +2741,7 @@ $(document).ready(() => {
         );
         setTimeout(() => {
           $(".vehicle-information-save").empty();
-          $(".vehicle-information-save").html("Save");
+          $(".vehicle-information-save").html('<i class="fa-regular fa-floppy-disk"></i>');
           canSaveVehicle = true;
         }, 750);
         setTimeout(() => {
@@ -2836,7 +2836,7 @@ $(document).ready(() => {
           {
             className: "remove-code-5",
             icon: "fas fa-times",
-            text: "Remove Code 5 Status",
+            text: "Retirer Code 5 Status",
             info: plate,
             status: "",
           },
@@ -2880,7 +2880,7 @@ $(document).ready(() => {
           {
             className: "remove-stolen",
             icon: "fas fa-times",
-            text: "Remove Code 5 Status",
+            text: "Retirer Code 5 Status",
             info: plate,
             status: "",
           },
@@ -3181,7 +3181,7 @@ $(document).ready(() => {
         );
         setTimeout(() => {
           $(".manage-profile-save").empty();
-          $(".manage-profile-save").html("Save");
+          $(".manage-profile-save").html('<i class="fa-regular fa-floppy-disk"></i>');
           canSaveProfile = true;
         }, 750);
 
@@ -3413,28 +3413,28 @@ $(document).ready(() => {
         {
           className: "toggle-duty",
           icon: "fas fa-thumbtack",
-          text: "Toggle Duty",
+          text: "Prise de service",
           info: identifier,
           status: "",
         },
         {
           className: "set-callsign",
           icon: "far fa-id-badge",
-          text: "Set Callsign",
+          text: "Définir Matricule",
           info: identifier,
           status: "",
         },
         {
           className: "set-radio",
           icon: "fas fa-broadcast-tower",
-          text: "Set Radio",
+          text: "Définir Radio",
           info: identifier,
           status: "",
         },
         {
           className: "set-waypoint",
           icon: "fas fa-map-marker-alt",
-          text: "Set Waypoint",
+          text: "Définir Marqueur",
           info: identifier,
           status: "",
         },
@@ -3443,7 +3443,7 @@ $(document).ready(() => {
     }
   });
 
-  $(".contextmenu").on("click", ".Set-Waypoint", function () {
+  $(".contextmenu").on("click", ".Définir-Waypoint", function () {
     const callId = $(this).data("info");
     $.post(
       `https://${GetParentResourceName()}/setWaypoint`,
@@ -3543,42 +3543,42 @@ $(document).ready(() => {
             {
               className: "respond-call",
               icon: "fas fa-reply",
-              text: "Respond to Call",
+              text: "Répondre à l'appel",
               info: callId,
               status: "",
             },
             {
               className: "attached-units",
               icon: "fas fa-link",
-              text: "Attached Units",
+              text: "Unités Rattachées",
               info: callId,
               status: "",
             },
             {
               className: "call-detach",
               icon: "fas fa-sign-out-alt",
-              text: "Detach",
+              text: "Se détacher",
               info: callId,
               status: "",
             },
             {
               className: "call-attach",
               icon: "fas fa-sign-in-alt",
-              text: "Respond",
+              text: "Répondre",
               info: callId,
               status: "",
             },
             {
               className: "Set-Waypoint",
               icon: "fas fa-map-marker-alt",
-              text: "Set Waypoint",
+              text: "Définir Marqueur",
               info: callId,
               status: "",
             },
             {
               className: "remove-blip",
               icon: "fa-solid fa-circle-minus",
-              text: "Remove Blip",
+              text: "Retirer Blip",
               info: callId,
               status: "",
             },
@@ -3588,35 +3588,35 @@ $(document).ready(() => {
             {
               className: "attached-units",
               icon: "fas fa-link",
-              text: "Attached Units",
+              text: "Unités Rattachées",
               info: callId,
               status: "",
             },
             {
               className: "call-detach",
               icon: "fas fa-sign-out-alt",
-              text: "Detach",
+              text: "Se détacher",
               info: callId,
               status: "",
             },
             {
               className: "call-attach",
               icon: "fas fa-sign-in-alt",
-              text: "Respond",
+              text: "Répondre",
               info: callId,
               status: "",
             },
             {
               className: "Set-Waypoint",
               icon: "fas fa-map-marker-alt",
-              text: "Set Waypoint",
+              text: "Définir Marqueur",
               info: callId,
               status: "",
             },
             {
               className: "remove-blip",
               icon: "fa-solid fa-circle-minus",
-              text: "Remove Blip",
+              text: "Retirer Blip",
               info: callId,
               status: "",
             },
@@ -3661,7 +3661,7 @@ $(document).ready(() => {
           {
             className: "set-waypoint",
             icon: "fas fa-map-marker-alt",
-            text: "Set Waypoint",
+            text: "Définir Marqueur",
             info: identifier,
             status: "",
           },
@@ -3686,11 +3686,11 @@ $(document).ready(() => {
     "contextmenu",
     ".dispatch-item-message",
     function (e) {
-      const Callsign = $(this).data("author");
+      const Matricule = $(this).data("author");
 
-      var mySubString = Callsign.substring(
-        Callsign.indexOf("(") + 1,
-        Callsign.lastIndexOf(")")
+      var mySubString = Matricule.substring(
+        Matricule.indexOf("(") + 1,
+        Matricule.lastIndexOf(")")
       );
 
       args = [
@@ -4054,7 +4054,7 @@ $(document).ready(() => {
         $("#bolos-search-input").attr("placeholder", "Search Bolo...");
         $(".manage-bolos-title").html("Gestion Bolo");
         $(".manage-bolos-editing-title").html(
-          "You are currently creating a new BOLO"
+          "Vous rédigez un nouveau Mandat"
         );
         $(".boloplate-title").html("Plate");
         $(".boloowner-title").html("Owner");
@@ -4114,43 +4114,43 @@ $(document).ready(() => {
           applyCustomTheme(customThemes.ambulance)
         }
         //$(".quote-span").html("The simplest explanation is almost always somebody screwed up.");
-        $(".bolo-nav-item").html("ICU");
-        $(".bolos-search-title").html("ICU Check-ins");
+        $(".bolo-nav-item").html("USI");
+        $(".bolos-search-title").html("Admissions USI");
         $("#bolos-search-input").attr(
           "placeholder",
-          "Search Check-ins..."
+          "Rechercher admission..."
         );
-        $(".manage-bolos-title").html("Gestion ICU Check-in");
+        $(".manage-bolos-title").html("Gestion admission USI");
         $(".manage-bolos-editing-title").html(
-          "You are creating a new ICU Check-in"
+          "Vous créé une admission en USI"
         );
-        $(".boloplate-title").html("Estimated Recovery");
-        $(".boloowner-title").html("Emergency Contact");
+        $(".boloplate-title").html("Durée rétablissement");
+        $(".boloowner-title").html("Contact d'urgence");
         $(".boloindividual-title").html("Patient");
         $("#boloplate").attr(
           "placeholder",
-          "Enter recovery time here..."
+          "Insérez la durée de rétablissement..."
         );
         $("#bolodetail").attr(
           "placeholder",
-          "Enter ICU Check-in details here..."
+          "Insérez les détails de l'admission USI..."
         );
         $("#boloowner").attr(
           "placeholder",
-          "Enter emergency contact here..."
+          "Insérez Contact d'urgence ici..."
         );
         $("#boloindividual").attr(
           "placeholder",
-          "Enter patient name and identifier here..."
+          "Insérez les Nom et Prénom du patient..."
         );
         $(".incidents-nav-item").hide();
         $(".dmv-nav-item").hide();
         $(".cams-nav-item").hide();
         $("#reports-officers-involved-tag-title").html(
-          "EMS Involved"
+          "EMS Impliqués"
         );
         $("#bolos-officers-involved-tag-title").html(
-          "EMS Involved"
+          "EMS Impliqués"
         );
         $(".dispatch-title-ofsomesort").html("Dispatch");
         $(".dispatch-comms-container").fadeIn(0);
@@ -4848,7 +4848,7 @@ window.addEventListener("message", function (event) {
           `
             <div class="manage-incidents-title">Gestion Incident</div>
             <div class="manage-incidents-create"> <span class="fas fa-plus" style="margin-top: 3.5px;"></span></div>
-            <div class="manage-incidents-save"><span class="fas fa-save" style="margin-top: 3.5px;"></span></div>
+            <div class="manage-incidents-save"><i class="fa-regular fa-floppy-disk"></i></div>
             `
         );
         $(".manage-incidents-title").css("width", "66%");
@@ -4896,9 +4896,9 @@ window.addEventListener("message", function (event) {
           <div class="manage-incidents-title-tag" data-id="${identifier}">Recommended Sentence</div>
           <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="0" disabled class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${identifier}" type="number"></div>
           <div class="manage-incidents-title-tag" data-id="${identifier}">Fine</div>
-          <div class="associated-incidents-fine-input" data-id="${identifier}"><img src="img/h7S5f9J.webp"> <input placeholder="Enter fine here..." value="0" class="fine-amount" data-id="${identifier}" type="number"></div>
+          <div class="associated-incidents-fine-input" data-id="${identifier}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${identifier}" type="number"></div>
           <div class="manage-incidents-title-tag" data-id="${identifier}">Sentence</div>
-          <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="Enter months here..." value="0" class="sentence-amount" data-id="${identifier}" type="number"></div>
+          <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez months here..." value="0" class="sentence-amount" data-id="${identifier}" type="number"></div>
           <div class="associated-incidents-controls" data-id="${identifier}">
             <div id="jail-button" class="control-button" data-id="${identifier}"><span class="fa-solid fa-building-columns" style="margin-top: 3.5px;"></span> Jail</div>
             <div id="fine-button" class="control-button" data-id="${identifier}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Fine</div>
@@ -4968,12 +4968,12 @@ window.addEventListener("message", function (event) {
     } else if (eventData.type == "boloData") {
       let table = eventData.data;
       $(".manage-bolos-editing-title").html(
-        "You are currently editing BOLO " + table["id"]
+        "You are currently editing Mandat " + table["id"]
       );
 
       if ($(".badge-logo").attr("src") == "img/ems_badge.webp") {
         $(".manage-bolos-editing-title").html(
-          "You are editing ICU Check-in " + table["id"]
+          "You are editing USI Check-in " + table["id"]
         );
       }
 
@@ -5024,11 +5024,11 @@ window.addEventListener("message", function (event) {
       });
     } else if (eventData.type == "bolos") {
       let table = eventData.data;
-      var reportName = "General BOLO";
+      var reportName = "General Mandat";
       canSearchForProfiles = true;
       $(".bolos-items").empty();
       if ($(".badge-logo").attr("src") == "img/ems_badge.webp") {
-        reportName = "ICU Check-in";
+        reportName = "USI Check-in";
       }
       $.each(table, function (index, value) {
         $(".bolos-items").prepend(
@@ -5061,7 +5061,7 @@ window.addEventListener("message", function (event) {
         }, 1500);
       }
       $(".manage-bolos-editing-title").html(
-        "You are currently editing BOLO " + id
+        "You are currently editing Mandat " + id
       );
       $(".manage-bolos-editing-title").data("id", Number(id));
     } else if (eventData.type == "reportComplete") {
@@ -5409,11 +5409,11 @@ function fidgetSpinner(page) {
 
 function timeShit() {
   let localDate = new Date();
-  const myTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  date = localDate.toLocaleDateString("en-US", {
+  const myTimeZone = Intl.DateTimeFormat('fr-FR').resolvedOptions().timeZone
+  date = localDate.toLocaleDateString("fr-FR", {
     timeZone: myTimeZone,
   });
-  time = localDate.toLocaleTimeString("en-US", {
+  time = localDate.toLocaleTimeString("fr-FR", {
     timeZone: myTimeZone,
   });
   $(".date").html(date);
@@ -5636,7 +5636,7 @@ function searchProfilesResults(result) {
     if (!profile.licences) {
       profile.licences = {};
     }
-    console.log(profile)
+    
     let name = `${profile.firstname} ${profile.lastname}`;
     let warrant = "red-tag";
     let convictions = "red-tag";

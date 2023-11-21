@@ -70,7 +70,7 @@ end)
 RegisterNetEvent("QBCore:Client:SetDuty", function(job, state)
     if AllowedJob(job) then
         TriggerServerEvent("ps-mdt:server:ToggleDuty")
-	TriggerServerEvent("ps-mdt:server:ClockSystem")
+	    TriggerServerEvent("ps-mdt:server:ClockSystem")
         TriggerServerEvent('QBCore:ToggleDuty')
         if PlayerData.job.name == "police" or PlayerData.job.type == "leo" then
             TriggerServerEvent("police:server:UpdateCurrentCops")
@@ -785,7 +785,8 @@ RegisterNUICallback("getPenalCode", function(data, cb)
 end)
 
 RegisterNUICallback("toggleDuty", function(data, cb)
-    TriggerServerEvent('QBCore:ToggleDuty')
+    --TriggerServerEvent('QBCore:ToggleDuty')
+    SetServiceStatus(data.status)
     TriggerServerEvent('ps-mdt:server:ClockSystem')
     cb(true)
 end)
@@ -1156,3 +1157,27 @@ if Config.UseWolfknightRadar == true then
         end
     end)
 end
+
+function SetServiceStatus(status)
+    if status == 1 then
+        ESX.TriggerServerCallback("esx_service:enableService", function(canTakeService, maxInService, inServiceCount)
+            if canTakeService then
+                ESX.ShowNotification("Vous avez pris votre service")
+                ESX.SetPlayerData('onduty', true)
+            else
+                ESX.ShowNotification("Service complet: " .. inServiceCount .. "/" .. maxInService)
+            end
+        end, ESX.PlayerData.job.name)
+    elseif status == 0 then
+        TriggerServerEvent("esx_service:disableService", ESX.PlayerData.job.name)
+        ESX.SetPlayerData('onduty', false)
+        --LocalPlayer.state:set('onduty', false, true)
+    end
+end
+
+CreateThread(function ()
+    while true do
+        print(LocalPlayer.state.onduty)
+        Wait(1000)
+    end
+end)
