@@ -14,7 +14,7 @@ local lastVeh = nil
 local lastPlate = nil
 
 CreateThread(function()
-    if GetResourceState('ps-dispatch') == 'started' then
+    if GetResourceState(Config.dispatchName) == 'started' then
         TriggerServerEvent("ps-mdt:dispatchStatus", true)
     end
 end)
@@ -405,10 +405,11 @@ RegisterNUICallback("getIncidentData", function(data, cb)
 end)
 
 RegisterNUICallback("incidentSearchPerson", function(data, cb)
-    local name = data.name
-    TriggerServerEvent('mdt:server:incidentSearchPerson', name )
+    local firstname = data.firstname
+    local lastname = data.lastname
+    TriggerServerEvent('mdt:server:incidentSearchPerson', firstname, lastname)
     cb(true)
-end)
+  end)
 
 -- Handle sending a fine to a player
 -- Uses the QB-Core bill command to send a fine to a player
@@ -890,7 +891,7 @@ RegisterNUICallback("callDetach", function(data, cb)
 end)
 
 RegisterNUICallback("removeCallBlip", function(data, cb)
-    TriggerEvent('ps-dispatch:client:removeCallBlip', data.callid or data.id)
+    TriggerEvent(Config.dispatchName..':client:removeCallBlip', data.callid or data.id)
     cb(true)
 end)
 
@@ -1124,7 +1125,7 @@ if Config.UseWolfknightRadar == true then
                 lastVeh = data.veh
                 lastPlate = data.plate
                 vehicle = vehicleData(data.veh)
-                exports["ps-dispatch"]:CustomAlert({
+                exports[Config.dispatchName]:CustomAlert({
                     coords = {
                         x = currentPos.x,
                         y = currentPos.y,
@@ -1169,3 +1170,8 @@ function SetServiceStatus(status)
         ESX.SetPlayerData('onduty', false)
     end
 end
+
+RegisterCommand("tsa", function ()
+    --exports['ps-dispatch-esx']:ATMRobbery()
+    exports[Config.dispatchName]:Shooting()
+end, false)

@@ -22,6 +22,8 @@ Config.InventoryForWeaponsImages = "ox_inventory"
 -- "LegacyFuel", "lj-fuel", "ps-fuel"
 Config.Fuel = "ps-fuel"
 
+Config.dispatchName = "ps-dispatch-esx"
+
 -- Google Docs Link
 Config.sopLink = {
     ['police'] = '',
@@ -37,7 +39,7 @@ Config.sopLink = {
 
 -- Google Docs Link
 Config.RosterLink = {
-    ['police'] = '',
+    ['police'] = 'https://docs.google.com/spreadsheets/d/1NDxo4Th_bAwD4q04b7QXEKC4SM22p7-yBjrWn8YJGbo/edit#gid=0',
     ['ambulance'] = '',
     ['bcso'] = '',
     ['doj'] = '',

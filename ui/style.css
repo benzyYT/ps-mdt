@@ -2896,7 +2896,46 @@ span.tag-incident-input[contenteditable]:empty::before {
     user-select: none;
 }
 
-.incidents-person-search-name-input {
+.incidents-person-search-firstname-input {
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    outline: none;
+    color: white;
+    width: 100%;
+    margin: auto;
+    margin-top: 5px;
+    margin-bottom: 0px;
+    text-align: left;
+    padding-bottom: 2.5px;
+}
+
+.incidents-person-search-lastname-input {
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    outline: none;
+    color: white;
+    width: 100%;
+    margin: auto;
+    margin-top: 5px;
+    margin-bottom: 0px;
+    text-align: left;
+    padding-bottom: 2.5px;
+}
+
+.incidents-person-search-firstname-input {
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    outline: none;
+    color: white;
+    width: 100%;
+    margin: auto;
+    margin-top: 5px;
+    margin-bottom: 0px;
+    text-align: left;
+    padding-bottom: 2.5px;
+}
+
+.incidents-person-search-lastname-input {
     background-color: rgba(0, 0, 0, 0);
     border: none;
     outline: none;

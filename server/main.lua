@@ -96,8 +96,8 @@ AddEventHandler('onResourceStart', function(resourceName)
     if ClockinWebhook == '' then
 		print("\27[31mA webhook is missing in: ClockinWebhook (server > main.lua > line 20)\27[0m")
 	end
-	if GetResourceState('ps-dispatch') == 'started' then
-		local calls = exports['ps-dispatch']:GetDispatchCalls()
+	if GetResourceState(Config.dispatchName) == 'started' then
+		local calls = exports[Config.dispatchName]:GetDispatchCalls()
 		return calls
 	end
 	GetVehiclesFromDB()
@@ -241,8 +241,8 @@ RegisterNetEvent('mdt:server:openMDT', function()
 	if not PermCheck(src, PlayerData) then return end
 	local Radio = Player(src).state.radioChannel or 0
 		
-	if GetResourceState('ps-dispatch') == 'started' then
-		calls = exports['ps-dispatch']:GetDispatchCalls()
+	if GetResourceState(Config.dispatchName) == 'started' then
+		calls = exports[Config.dispatchName]:GetDispatchCalls()
 	end
 		
 	activeUnits[PlayerData.identifier] = {
@@ -319,13 +319,14 @@ end)
 lib.callback.register("mdt:server:getWarrants", function(source)
     local WarrantData = {}
     local data = MySQL.query.await("SELECT * FROM mdt_convictions", {})
-    for _, value in pairs(data) do
-        if value.warrant == "1" then
+    for _, conviction in pairs(data) do
+        if conviction.warrant == "1" then
+			local xPlayer = ESX.GetPlayerFromIdentifier(conviction.identifier)
 			WarrantData[#WarrantData+1] = {
-                identifier = value.identifier,
-                linkedincident = value.linkedincident,
-                name = GetNameFromId(value.identifier),
-                time = value.time
+                identifier = conviction.identifier,
+                linkedincident = conviction.linkedincident,
+                name = xPlayer.name,
+                time = conviction.time
             }
         end
     end
@@ -667,9 +668,9 @@ RegisterNetEvent('mdt:server:getIncidentData', function(sentId)
 				})
 				if convictions ~= nil then
 					for i=1, #convictions do
-						local res = GetNameFromId(convictions[i]['identifier'])
+						local xPlayer = ESX.GetPlayerFromIdentifier(convictions[i]['identifier'])
 						if res ~= nil then
-							convictions[i]['name'] = res
+							convictions[i]['name'] = xPlayer.name
 						else
 							convictions[i]['name'] = "Unknown"
 						end
@@ -808,7 +809,7 @@ RegisterNetEvent('mdt:server:deleteReports', function(id)
 		local src = source
 		local Player = ESX.GetPlayerFromId(src)
 		if Config.RemoveReportPerms[Player.job.name] then
-			if Config.RemoveReportPerms[Player.job.name][Player.PlayerData.job.grade.level] then
+			if Config.RemoveReportPerms[Player.job.name][Player.job.grade] then
 				local fullName = Player.name
 				MySQL.update("DELETE FROM `mdt_reports` WHERE id=:id", { id = id })
 				TriggerEvent('mdt:server:AddLog', "A Report was deleted by "..fullName.." with the ID ("..id..")")
@@ -868,8 +869,10 @@ RegisterNetEvent('mdt:server:deleteICU', function(id)
 	end
 end)
 
-RegisterNetEvent('mdt:server:incidentSearchPerson', function(query)
-    if query then
+RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname)
+	print(type(firstname), firstname ~= "")
+	print(type(lastname), lastname ~= "")
+    if firstname or lastname then
         local src = source
         local Player = ESX.GetPlayerFromId(src)
         if Player then
@@ -881,28 +884,58 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(query)
                     return "img/male.png"
                 end
 
-                local firstname, lastname = query:match("^(%S+)%s*(%S*)$")
-                firstname = firstname or query
-                lastname = lastname or query
-
-				local result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname OR LOWER(u.identifier) LIKE :identifier AND `jobtype` = :jobtype LIMIT 50", {
-                    firstname = string.lower('%' .. firstname .. '%'),
-                    lastname = string.lower('%' .. lastname .. '%'),
-                    identifier = string.lower('%' .. query .. '%'),
-                    jobtype = JobType
-                })
-
+                -- local firstname, lastname = query:match("^(%S+)%s*(%S*)$")
+                -- firstname = firstname or query
+                -- lastname = lastname or query
+				-- OR LOWER(u.firstname) LIKE :firstname OR LOWER(u.lastname) LIKE :lastname
+				-- local result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname OR LOWER(u.identifier) LIKE :identifier AND `jobtype` = :jobtype LIMIT 50", {
+                --     firstname = string.lower('%' .. firstname .. '%'),
+                --     lastname = string.lower('%' .. lastname .. '%'),
+                --     identifier = string.lower('%' .. query .. '%'),
+                --     jobtype = JobType
+                -- })
+				local result = nil
+				if firstname ~= "" and lastname ~= "" then
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
+						firstname = string.lower('%' .. firstname .. '%'),
+						lastname = string.lower('%' .. lastname .. '%'),
+						jobtype = JobType
+					})
+				elseif firstname ~= "" and lastname == "" then
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND `jobtype` = :jobtype LIMIT 50", {
+						firstname = string.lower('%' .. firstname .. '%'),
+						jobtype = JobType
+					})
+				elseif firstname == "" and lastname ~= "" then
+					print("ok3")
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
+						lastname = string.lower('%' .. lastname .. '%'),
+						jobtype = JobType
+					})
+				end
+				print(result)
                 local data = {}
-                for i=1, #result do					
-                    local metadata = json.decode(result[i].metadata)
-                    data[i] = {
-                        id = result[i].identifier,
-                        firstname = result[i].firstname,
-                        lastname = result[i].lastname,
-                        profilepic = ProfPic(result[i].sex, result[i].pfp),
-                        callsign = result[i].callsign
-                    }
-                end
+				for k, person in pairs(result) do
+					print(person.firstname)
+					print(person.lastname)
+					data[k] = {
+						id = person.identifier,
+						firstname = person.firstname,
+						lastname = person.lastname,
+						profilepic = ProfPic(person.sex, person.pfp),
+						callsign = person.callsign
+					}
+				end
+                -- for i=1, #result do					
+                --     --local metadata = json.decode(result[i].metadata)
+                --     data[i] = {
+                --         id = result[i].identifier,
+                --         firstname = result[i].firstname,
+                --         lastname = result[i].lastname,
+                --         profilepic = ProfPic(result[i].sex, result[i].pfp),
+                --         callsign = result[i].callsign
+                --     }
+                -- end
                 TriggerClientEvent('mdt:client:incidentSearchPerson', src, data)
             end
         end
@@ -1573,14 +1606,14 @@ end)
 
 RegisterNetEvent('mdt:server:callDetach', function(callid)
 	local src = source
-	local Player = ESX.GetPlayerFromId(src)
+	local xPlayer = ESX.GetPlayerFromId(src)
 	local playerdata = {
-		fullname = Player.name,
-		job = Player.job,
-		identifier = Player.identifier,
-		callsign = Player(Player.source).state.callsign,
+		fullname = xPlayer.name,
+		job = xPlayer.job,
+		identifier = xPlayer.identifier,
+		callsign = Player(xPlayer.source).state?.callsign,
 	}
-	local JobType = GetJobType(Player.job.name)
+	local JobType = GetJobType(xPlayer.job.name)
 	if JobType == 'police' or JobType == 'ambulance' then
 		if callid then
 			TriggerEvent('dispatch:removeUnit', callid, playerdata, function(newNum)
@@ -1592,17 +1625,18 @@ end)
 
 RegisterNetEvent('mdt:server:callAttach', function(callid)
 	local src = source
-	local plyState = Player(source).state
+	local plyState = Player(src).state
 	local Radio = plyState.radioChannel or 0
-	local Player = ESX.GetPlayerFromId(src)
+	local xPlayer = ESX.GetPlayerFromId(src)
 	local playerdata = {
-		fullname = Player.PlayerData.charinfo.firstname.. " "..Player.PlayerData.charinfo.lastname,
-		job = Player.PlayerData.job,
-		identifier = Player.PlayerData.identifier,
-		callsign = Player.PlayerData.metadata.callsign,
+		fullname = xPlayer.name,
+		job = xPlayer.job,
+		identifier = xPlayer.identifier,
+		callsign = Player(xPlayer.source).state?.callsign or "000",
 		radio = Radio
 	}
-	local JobType = GetJobType(Player.job.name)
+	print(json.encode(playerdata))
+	local JobType = GetJobType(xPlayer.job.name)
 	if JobType == 'police' or JobType == 'ambulance' then
 		if callid then
 			TriggerEvent('dispatch:addUnit', callid, playerdata, function(newNum)
@@ -1631,10 +1665,10 @@ RegisterNetEvent('mdt:server:callDispatchDetach', function(callid, identifier)
 	local src = source
 	local Player = ESX.GetPlayerFromId(src)
 	local playerdata = {
-		fullname = Player.PlayerData.charinfo.firstname.. " "..Player.PlayerData.charinfo.lastname,
+		fullname = Player.name,
 		job = Player.PlayerData.job,
-		identifier = Player.PlayerData.identifier,
-		callsign = Player.PlayerData.metadata.callsign
+		identifier = Player.identifier,
+		callsign = Player(Player.source).state?.callsign
 	}
 	local callid = tonumber(callid)
 	local JobType = GetJobType(Player.job.name)
@@ -1667,10 +1701,10 @@ RegisterNetEvent('mdt:server:callDragAttach', function(callid, identifier)
 	local src = source
 	local Player = ESX.GetPlayerFromId(src)
 	local playerdata = {
-		name = Player.PlayerData.charinfo.firstname.. " "..Player.PlayerData.charinfo.lastname,
+		name = Player.name,
 		job = Player.job.name,
-		identifier = Player.PlayerData.identifier,
-		callsign = Player.PlayerData.metadata.callsign
+		identifier = Player.identifier,
+		callsign = Player(Player.source).state?.callsign
 	}
 	local callid = tonumber(callid)
 	local JobType = GetJobType(Player.job.name)
@@ -1697,16 +1731,17 @@ RegisterNetEvent('mdt:server:sendMessage', function(message, time)
 		local src = source
 		local Player = ESX.GetPlayerFromId(src)
 		if Player then
+			print(Player.name)
 			MySQL.scalar("SELECT pfp FROM `mdt_data` WHERE identifier=:id LIMIT 1", {
 				id = Player.identifier -- % wildcard, needed to search for all alike results
 			}, function(data)
 				if data == "" then data = nil end
-				local ProfilePicture = ProfPic(Player.get('sex'), data)
-				local callsign = Player(Player.source).state.callsign or "000"
+				local ProfilePicture = ProfPic(Player.sex, data)
+				local callsign = Player(src).state?.callsign or "000"
 				local Item = {
 					profilepic = ProfilePicture,
 					callsign = callsign,
-					identifier = Player.getIdentifier(),
+					identifier = Player.identifier,
 					name = ("[%s] %s %s"):format(callsign, Player.get('firstName'), Player.get('lastName')),
 					message = message,
 					time = time,
@@ -1797,8 +1832,8 @@ RegisterNetEvent('mdt:server:impoundVehicle', function(sentInfo, sentVehicle)
 								plate = plate,
 								beingcollected = 0,
 								vehicle = sentVehicle,
-								officer = Player.PlayerData.charinfo.firstname.. " "..Player.PlayerData.charinfo.lastname,
-								number = Player.PlayerData.charinfo.phone,
+								officer = Player.name,
+								number = "",
 								time = os.time() * 1000,
 								src = src,
 							}
@@ -1873,7 +1908,7 @@ function GetWarrantStatus(plate)
 	if result and result[1] then
 		local identifier = result[1]['identifier']
 		local Player = ESX.GetPlayerFromIdentifier(identifier)
-		local owner = Player.PlayerData.charinfo.firstname.." "..Player.PlayerData.charinfo.lastname
+		local owner = Player.name
 		local incidentId = result[1]['id']
 		return true, owner, incidentId
 	end
@@ -1895,7 +1930,7 @@ function GetVehicleOwner(plate)
 	if result and result[1] then
 		local identifier = result[1]['identifier']
 		local Player = ESX.GetPlayerFromIdentifier(identifier)
-		local owner = Player.PlayerData.charinfo.firstname.." "..Player.PlayerData.charinfo.lastname
+		local owner = Player.name
 		return owner
 	end
 end
@@ -1923,7 +1958,7 @@ lib.callback.register('getWeaponInfo', function(source)
 				if invImage then
 					weaponInfo = {
 						serialnumber = item.metadata.serial,
-						owner = Player.PlayerData.charinfo.firstname .. " " .. Player.PlayerData.charinfo.lastname,
+						owner = Player.name,
 						weaponmodel = Items[string.lower(item.name)].label,
 						weaponurl = invImage,
 						notes = "Self Registered",
@@ -1940,7 +1975,7 @@ lib.callback.register('getWeaponInfo', function(source)
 				if invImage then
 					local weaponInfo = {
 						serialnumber = item.info.serie,
-						owner = Player.PlayerData.charinfo.firstname .. " " .. Player.PlayerData.charinfo.lastname,
+						owner = Player.name,
 						weaponmodel = Items[item.name].label,
 						weaponurl = invImage,
 						notes = "Self Registered",

@@ -750,7 +750,7 @@ $(document).ready(() => {
             associated: associated,
             time: time.getTime(),
           })
-        );
+        ); 
 
         setTimeout(() => {
           if (canRefreshIncidents == true) {
@@ -1273,13 +1273,39 @@ $(document).ready(() => {
     }));
   }
 
-  $(".incidents-person-search-name-input").on("keydown", "", function (e) {
+  // $(".incidents-person-search-name-input").on("keydown", "", function (e) {
+  //   if (e.keyCode === 13) {
+  //     let name = $(".incidents-person-search-name-input").val();
+  //     $.post(
+  //       `https://${GetParentResourceName()}/incidentSearchPerson`,
+  //       JSON.stringify({
+  //         name: name,
+  //       })
+  //     );
+  //   }
+  // });
+  $(".incidents-person-search-firstname-input").on("keydown", "", function (e) {
     if (e.keyCode === 13) {
-      let name = $(".incidents-person-search-name-input").val();
+      let firstname = $(".incidents-person-search-firstname-input").val();
+      let lastname = $(".incidents-person-search-lastname-input").val();
       $.post(
         `https://${GetParentResourceName()}/incidentSearchPerson`,
         JSON.stringify({
-          name: name,
+          firstname: firstname,
+          lastname: lastname,
+        })
+      );
+    }
+  });
+  $(".incidents-person-search-lastname-input").on("keydown", "", function (e) {
+    if (e.keyCode === 13) {
+      let firstname = $(".incidents-person-search-firstname-input").val();
+      let lastname = $(".incidents-person-search-lastname-input").val();
+      $.post(
+        `https://${GetParentResourceName()}/incidentSearchPerson`,
+        JSON.stringify({
+          firstname: firstname,
+          lastname: lastname,
         })
       );
     }
@@ -2117,7 +2143,9 @@ $(document).ready(() => {
       // Clear the search results and source
       $(".incidents-person-search-holder").removeData("source"); // Without using this line, we end up reading stale data from the data-source attribute rather than the data-source from the field we clicked on
       $(".incidents-person-search-holder").empty(); // Clear the search results
-      $('.incidents-person-search-name-input').val(''); // Reset the search input field
+      //$('.incidents-person-search-name-input').val(''); // Reset the search input field
+      $('.incidents-person-search-firstname-input').val(''); // Reset the search input field
+      $('.incidents-person-search-lastname-input').val(''); // Reset the search input field
     }
   );
 
@@ -4565,6 +4593,7 @@ window.addEventListener("message", function (event) {
         $(".close-all").css("filter", "brightness(15%)");
         $(".dispatch-attached-units-holder").empty();
         $.each(table, function (index, value) {
+          console.log(value)
           $(".dispatch-attached-units-holder").prepend(
             `<div class="dispatch-attached-unit-item" data-id="${value.identifier}">
                         <div class="unit-job active-info-job-${value.job}">${value.job}</div>
@@ -4958,7 +4987,7 @@ window.addEventListener("message", function (event) {
                 <div class="incidents-person-search-item-right">
                     <div class="incidents-person-search-item-right-identifier-title">N° Citoyen</div>
                     <div class="incidents-person-search-item-right-identifier-input"><span class="fas fa-id-card"></span> ${value.id}</div>
-                    <div class="incidents-person-search-item-right-name-title">Nom</div>
+                    <div class="incidents-person-search-item-right-name-title">Prénom Nom</div>
                     <div class="incidents-person-search-item-right-name-input"><span class="fas fa-user"></span> ${name}</div>
                 </div>
             </div>
@@ -5404,7 +5433,7 @@ function fidgetSpinner(page) {
   setTimeout(() => {
     $(".container-load").fadeOut(0);
     $(page).fadeIn(0);
-  }, 1250);
+  }, 500);
 }
 
 function timeShit() {
