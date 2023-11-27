@@ -572,6 +572,7 @@ RegisterNetEvent("mdt:server:saveProfile", function(pfp, information, identifier
     --UpdateAllLicenses(identifier, licenses)
     if Player then
         local JobType = GetJobType(Player.job.name)
+
         if JobType == 'doj' then JobType = 'police' end
 
         MySQL.Async.insert('INSERT INTO mdt_data (identifier, information, pfp, jobtype, tags, gallery, fingerprint) VALUES (:identifier, :information, :pfp, :jobtype, :tags, :gallery, :fingerprint) ON DUPLICATE KEY UPDATE identifier = :identifier, information = :information, pfp = :pfp, jobtype = :jobtype, tags = :tags, gallery = :gallery, fingerprint = :fingerprint', {

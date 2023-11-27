@@ -292,7 +292,7 @@ $(document).ready(() => {
           if (vehicle.infos)
             vehHTML += `<div class="veh-tag" data-plate="${vehicle.plate}">${vehicle.plate} - ${vehicle.infos.name} </div>`
           else
-            vehHTML += `<div class="veh-tag" data-plate="${value.plate}">${value.plate} - INCONNU </div>`          
+            vehHTML += `<div class="veh-tag" data-plate="${vehicle.plate}">${vehicle.plate} - INCONNU </div>`          
         })
       }
 
