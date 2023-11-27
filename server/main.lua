@@ -387,14 +387,7 @@ lib.callback.register('mdt:server:GetProfileData', function(source, sentId)
 
 	if not target then return {} end
 
-	-- local licencesdata = target.metadata['licences'] or {
-    --     ['driver'] = false,
-    --     ['business'] = false,
-    --     ['weapon'] = false,
-	-- 	['pilot'] = false
-	-- }
-
-	local licencesdata = GetAllLicenses()
+	local licencesdata = GetAllLicenses() or Config.Licenses
 	local userLicences = GetPlayerLicenses(target.identifier)
 	if userLicences then
 		for k, v in pairs(userLicences) do

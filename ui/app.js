@@ -24,6 +24,7 @@ var DispatchNum = 0;
 var playerJob = "";
 let rosterLink  = "";
 let sopLink = "";
+const licenseTypesGlobal = ['business', 'pilot', 'weapon', 'driver', 'weed'];
 
 //Set this to false if you don't want to show the send to community service button on the incidents page
 const canSendToCommunityService = false
@@ -269,7 +270,7 @@ $(document).ready(() => {
     let licenses = Object.entries(result.licences);
 
     if (licenses.length == 0 || licenses.length == undefined) {
-      var licenseTypes = ['business', 'pilot', 'weapon', 'driver'];
+      var licenseTypes = licenseTypesGlobal;
       licenses = Object.entries(licenseTypes.reduce((licenseType, licenseValue) => (licenseType[licenseValue] = false, licenseType), {}));
     }
 
@@ -1015,7 +1016,7 @@ $(document).ready(() => {
     } else if (type == "Weapon") {
       info = "weapon";
     } else {
-      info = type;
+      info = type.toLowerCase();
     }
 
     if ($(this).hasClass("green-tag")) {
@@ -3565,6 +3566,7 @@ $(document).ready(() => {
     function (e) {
       const callId = $(this).data("id");
       const canRespond = $(this).data("canrespond");
+
       if (callId) {
         if (canRespond == true) {
           args = [
@@ -3650,7 +3652,6 @@ $(document).ready(() => {
             },
           ];
         }
-
         openContextMenu(e, args);
       }
     }
@@ -5674,7 +5675,7 @@ function searchProfilesResults(result) {
     let licArr = Object.entries(profile.licences);
 
     if (licArr.length == 0 || licArr.length == undefined) {
-      var licenseTypes = ['business', 'pilot', 'weapon', 'driver'];
+      var licenseTypes = licenseTypesGlobal;
       licArr = Object.entries(licenseTypes.reduce((licenseType, licenseValue) => (licenseType[licenseValue] = false, licenseType), {}));
     }
 

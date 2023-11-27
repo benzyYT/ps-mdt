@@ -885,13 +885,8 @@ RegisterNUICallback("setWaypoint", function(data, cb)
     cb(true)
 end)
 
-RegisterNUICallback("callDetach", function(data, cb)
-    TriggerServerEvent('mdt:server:callDetach', data.callid or data.id)
-    cb(true)
-end)
-
 RegisterNUICallback("removeCallBlip", function(data, cb)
-    TriggerEvent(Config.dispatchName..':client:removeCallBlip', data.callid or data.id)
+    TriggerEvent('ps-dispatch:client:removeCallBlip', data.callid or data.id)
     cb(true)
 end)
 
@@ -991,20 +986,6 @@ end)
 RegisterNetEvent('mdt:client:setWaypoint', function(callInformation)
     if callInformation['coords'] and callInformation['coords']['x'] and callInformation['coords']['y'] then
         SetNewWaypoint(callInformation['coords']['x'], callInformation['coords']['y'])
-    end
-end)
-
-
-RegisterNetEvent('mdt:client:callDetach', function(callid, sentData)
-    local job = PlayerData.job.name
-    if AllowedJob(job) then 
-        SendNUIMessage({ type = "callDetach", callid = callid, data = tonumber(sentData) }) 
-    end
-end)
-RegisterNetEvent('mdt:client:callAttach', function(callid, sentData)
-    local job = PlayerData.job.name
-    if AllowedJob(job) then 
-        SendNUIMessage({ type = "callAttach", callid = callid, data = tonumber(sentData) })
     end
 end)
 
