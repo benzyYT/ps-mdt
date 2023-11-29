@@ -28,7 +28,7 @@ function PermCheck(src, PlayerData)
 end
 
 function ProfPic(gender, profilepic)
-	if profilepic then return profilepic end;
+	if profilepic and profilepic ~= "" then return profilepic end;
 	if gender == "f" then return "img/female.png" end;
 	return "img/male.png"
 end

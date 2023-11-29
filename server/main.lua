@@ -554,7 +554,7 @@ lib.callback.register('mdt:server:GetProfileData', function(source, sentId)
 	local mdtData = GetPersonInformation(sentId, JobType)
 	if mdtData then
 		person.mdtinfo = mdtData.information
-		person.profilepic = mdtData.pfp
+		person.pp = ProfPic(person.sex, mdtData.pfp)
 		person.tags = json.decode(mdtData.tags)
 		person.gallery = json.decode(mdtData.gallery)
 		person.fingerprint = mdtData.fingerprint
@@ -570,7 +570,6 @@ RegisterNetEvent("mdt:server:saveProfile", function(pfp, information, identifier
     --UpdateAllLicenses(identifier, licenses)
     if Player then
         local JobType = GetJobType(Player.job.name)
-		print(pfp)
         if JobType == 'doj' then JobType = 'police' end
 
         MySQL.Async.insert('INSERT INTO mdt_data (identifier, information, pfp, jobtype, tags, gallery, fingerprint) VALUES (:identifier, :information, :pfp, :jobtype, :tags, :gallery, :fingerprint) ON DUPLICATE KEY UPDATE identifier = :identifier, information = :information, pfp = :pfp, jobtype = :jobtype, tags = :tags, gallery = :gallery, fingerprint = :fingerprint', {
@@ -1728,23 +1727,23 @@ end)
 RegisterNetEvent('mdt:server:sendMessage', function(message, time)
 	if message and time then
 		local src = source
-		local Player = ESX.GetPlayerFromId(src)
-		if Player then
-			print(Player.name)
+		local xPlayer = ESX.GetPlayerFromId(src)
+		if xPlayer then
 			MySQL.scalar("SELECT pfp FROM `mdt_data` WHERE identifier=:id LIMIT 1", {
-				id = Player.identifier -- % wildcard, needed to search for all alike results
+				id = xPlayer.identifier -- % wildcard, needed to search for all alike results
 			}, function(data)
 				if data == "" then data = nil end
-				local ProfilePicture = ProfPic(Player.sex, data)
-				local callsign = Player(src).state?.callsign or "000"
+				local ProfilePicture = ProfPic(xPlayer.sex, data)
+				local callsign = Player(xPlayer.source).state?.callsign or "000"
 				local Item = {
 					profilepic = ProfilePicture,
 					callsign = callsign,
-					identifier = Player.identifier,
-					name = ("[%s] %s %s"):format(callsign, Player.get('firstName'), Player.get('lastName')),
+					identifier = xPlayer.identifier,
+					--name = ("[%s] %s %s %s"):format(callsign, xPlayer.job.grade_label, xPlayer.get('firstName'), xPlayer.get('lastName')),
+					name = ("[%s] %s %s"):format(callsign, xPlayer.job.grade_label, xPlayer.get('lastName')),
 					message = message,
 					time = time,
-					job = Player.job.name
+					job = xPlayer.job.name
 				}
 				dispatchMessages[#dispatchMessages+1] = Item
 				TriggerClientEvent('mdt:client:dashboardMessage', -1, Item)
@@ -1871,7 +1870,7 @@ end)
 
 RegisterNetEvent('mdt:server:statusImpound', function(plate)
 	local src = source
-	local Player = ESX.GetPlayerFromId(src)
+	local xPlayer = ESX.GetPlayerFromId(src)
 	if Player then
 		if GetJobType(Player.job.name) == 'police' then
 			local vehicle = MySQL.query.await("SELECT id, plate FROM `player_vehicles` WHERE plate=:plate LIMIT 1", { plate = string.gsub(plate, "^%s*(.-)%s*$", "%1")})
@@ -2211,3 +2210,12 @@ function generateMessageFromResult(result)
     message = message .. "Details: " .. details
     return message
 end
+
+lib.cron.new('*/15 * * * *', function()
+	for k, msg in pairs(dispatchMessages) do
+		local xPlayer = ESX.GetPlayerFromIdentifier(msg.identifier)
+		msg.name = ("[%s] %s %s"):format(Player(xPlayer.source).state.callsign, xPlayer.job.grade_label, xPlayer.get('lastName'))
+		msg.callsign = Player(xPlayer.source).state.callsign
+	end
+	TriggerClientEvent('mdt:client:dashboardMessages', -1, dispatchMessages)
+end)

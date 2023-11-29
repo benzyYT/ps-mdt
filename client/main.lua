@@ -80,12 +80,11 @@ end)
 ------------------------------------------
 --====================================================================================\
 
-RegisterKeyMapping('mdt', 'Open Police MDT', 'keyboard', 'k')
+RegisterKeyMapping('mdt', 'Ouvrir Tablette', 'keyboard', 'm')
 
 RegisterCommand('mdt', function()
     local plyPed = PlayerPedId()
     PlayerData = ESX.GetPlayerData()
-    print(PlayerData.job.name)
     if not LocalPlayer.state.isDead and not LocalPlayer.state.handcuffed and not IsPauseMenuActive() then
         if GetJobType(PlayerData.job.name) ~= nil then
             TriggerServerEvent('mdt:server:openMDT')
