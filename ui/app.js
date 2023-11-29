@@ -242,10 +242,10 @@ $(document).ready(() => {
     //$(".manage-profile-job-input").val(`${result.job}, ${result.grade}`);
     $(".manage-profile-job-input").val(`${result.job}`);
     //$(".manage-profile-apartment-input").val(`${result.apartment}`);
-    $(".manage-profile-url-input").val(result["profilepic"] ?? "");
+    $(".manage-profile-url-input").val(result["pp"] ?? "");
     $(".manage-profile-info").val(result["mdtinfo"]);
     $(".manage-profile-info").removeAttr("disabled");
-    $(".manage-profile-pic").attr("src", result["profilepic"] ?? "img/male.png");
+    $(".manage-profile-pic").attr("src", result["pp"] ?? "img/male.png");
     $(".manage-profile-active-warrant").css("display", "none")
     if (result["warrant"]) {
       $(".manage-profile-active-warrant").css("display", "block");
@@ -1001,20 +1001,24 @@ $(document).ready(() => {
     const status = $(this).data("type");
     let type = $(this).html();
 
-    if (type == "Theory") {
-      info = "theory";
-    } else if (type == "Car") {
+    if (type == "Code") {
+      info = "dmv";
+    } else if (type == "Voiture") {
       info = "drive";
-    } else if (type == "Bike") {
+    } else if (type == "Moto") {
       info = "drive_bike";
-    } else if (type == "Truck") {
+    } else if (type == "Camion") {
       info = "drive_truck";
-    } else if (type == "Hunting") {
+    } else if (type == "Chasse") {
       info = "hunting";
-    } else if (type == "Pilot") {
+    } else if (type == "Pilotage") {
       info = "pilot";
-    } else if (type == "Weapon") {
-      info = "weapon";
+    } else if (type == "Cat. A") {
+      info = "weapon_a";
+    } else if (type == "Cat. B") {
+      info = "weapon_b";
+    } else if (type == "Cat. C") {
+      info = "weapon_c";
     } else {
       info = type.toLowerCase();
     }
@@ -4078,24 +4082,24 @@ $(document).ready(() => {
           } else if (sentJob == "doc") {
             applyCustomTheme(customThemes.doc)
           }
-        $(".bolo-nav-item").html("BOLOs");
-        $(".bolos-search-title").html("Bolos");
-        $("#bolos-search-input").attr("placeholder", "Search Bolo...");
-        $(".manage-bolos-title").html("Gestion Bolo");
+        $(".bolo-nav-item").html("Mandats");
+        $(".bolos-search-title").html("Mandats");
+        $("#bolos-search-input").attr("placeholder", "Rechercher Mandats...");
+        $(".manage-bolos-title").html("Gestion Mandats");
         $(".manage-bolos-editing-title").html(
           "Vous rédigez un nouveau Mandat"
         );
-        $(".boloplate-title").html("Plate");
-        $(".boloowner-title").html("Owner");
-        $(".boloindividual-title").html("Individual");
-        $("#boloplate").attr("placeholder", "Place plate here...");
+        $(".boloplate-title").html("Plaque");
+        $(".boloowner-title").html("Propriétaire");
+        $(".boloindividual-title").html("Individu");
+        $("#boloplate").attr("placeholder", "Insérez la plaque ici...");
         $("#bolodetail").attr(
           "placeholder",
-          "Bolo detail goes here..."
+          "Insérez les détails du mandat ici..."
         );
         $("#boloowner").attr(
           "placeholder",
-          "Place vehicle owner here..."
+          "Propriétaire du véhicule..."
         );
         $("#boloindividual").attr(
           "placeholder",
@@ -4984,7 +4988,7 @@ window.addEventListener("message", function (event) {
         $(".incidents-person-search-holder").prepend(
           `
             <div class="incidents-person-search-item" data-info="${name} (#${value.id})" data-identifier="${value.id}" data-name="${name}" data-callsign="${value.callsign}">
-                <img src="${value.profilepic}" class="incidents-person-search-item-pfp">
+                <img src="${value.pp}" class="incidents-person-search-item-pfp">
                 <div class="incidents-person-search-item-right">
                     <div class="incidents-person-search-item-right-identifier-title">N° Citoyen</div>
                     <div class="incidents-person-search-item-right-identifier-input"><span class="fas fa-id-card"></span> ${value.id}</div>
@@ -5636,7 +5640,7 @@ function searchProfilesResults(result) {
 
                           <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
                           <div style="display: flex; flex-direction: column;">
-                              <div class="profile-item-title">No Users Matching that search</div>
+                              <div class="profile-item-title">Aucun citoyen trouvés</div>
                               </div>
                               <div class="profile-bottom-info">
                               </div>
@@ -5648,20 +5652,8 @@ function searchProfilesResults(result) {
   }
 
   let profileHTML = "";
-
+  
   result.forEach((profile) => {
-
-    // if (typeof value.charinfo == "string") {
-    //   charinfo = JSON.parse(charinfo);
-    // }
-
-    // if (typeof value.metadata == "string") {
-    //   metadata = JSON.parse(metadata);
-    // }
-
-    // if (!metadata) {
-    //   metadata = {};
-    // }
 
     if (!profile.licences) {
       profile.licences = {};
@@ -5671,20 +5663,21 @@ function searchProfilesResults(result) {
     let warrant = "red-tag";
     let convictions = "red-tag";
 
-    let licences = "";
-    let licArr = Object.entries(profile.licences);
+    let licencesHTML = "";
+    let licenses = Object.entries(profile.licences);
 
-    if (licArr.length == 0 || licArr.length == undefined) {
+    if (licenses.length == 0 || licenses.length == undefined) {
       var licenseTypes = licenseTypesGlobal;
-      licArr = Object.entries(licenseTypes.reduce((licenseType, licenseValue) => (licenseType[licenseValue] = false, licenseType), {}));
+      licenses = Object.entries(licenseTypes.reduce((licenseType, licenseValue) => (licenseType[licenseValue] = false, licenseType), {}));
     }
 
-    if (licArr.length > 0 && (PoliceJobs[playerJob] !== undefined || DojJobs[playerJob] !== undefined)) {
-      for (const [lic, hasLic] of licArr) {
-        let tagColour =
-          hasLic == true ? "green-tag" : "red-tag";
-        licences += `<span class="license-tag ${tagColour}">${titleCase(lic)}</span>`;
-      }
+    if (licenses.length > 0 && (PoliceJobs[playerJob] !== undefined || DojJobs[playerJob] !== undefined)) {
+      
+      licenses.forEach(e => {
+        if (e[1].status === true) {
+          licencesHTML += `<span class="license-tag green-tag">${e[1].label}</span>`;
+        }
+      });
     }
 
     if (profile.warrant == true) {
@@ -5711,7 +5704,7 @@ function searchProfilesResults(result) {
         <div style="display: flex; flex-direction: column;">
             <div class="profile-item-title">${name}</div>
             <div class="profile-tags">
-                ${licences}
+                ${licencesHTML}
             </div>
             <div class="profile-criminal-tags">
                 <span class="license-tag ${warrant}">${profile.warrant ? "Active" : "No"} Warrant</span>

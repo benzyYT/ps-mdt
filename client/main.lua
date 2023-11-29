@@ -24,10 +24,11 @@ RegisterNetEvent('esx:playerLoaded', function(xPlayer, isNew)
 	ESX.PlayerData = xPlayer
 	ESX.PlayerLoaded = true
 	PlayerData = ESX.PlayerData
+    LocalPlayer.state:set("isLoggedIn", ESX.PlayerLoaded, true)
 end)
 
 RegisterNetEvent('esx:playerLogout', function()
-    	TriggerServerEvent("ps-mdt:server:OnPlayerUnload")
+    TriggerServerEvent("ps-mdt:server:OnPlayerUnload")
 	ESX.PlayerLoaded = false
 	ESX.PlayerData = {}
 end)
@@ -35,33 +36,6 @@ end)
 RegisterNetEvent('esx:setJob', function(job)
 	ESX.PlayerData.job = job
 end)
-
-AddEventHandler('esx:onPlayerDeath', function(data)
-    isDead = true
-end)
-
-AddEventHandler('playerSpawned', function(spawn)
-    isDead = false
-end)
-
--- Events from qbcore
--- RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
---     PlayerData = ESX.GetPlayerData()
---     callSign = PlayerData.metadata.callsign
--- end)
-
--- RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
---     TriggerServerEvent("ps-mdt:server:OnPlayerUnload")
---     PlayerData = {}
--- end)
-
--- RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
---     PlayerData.job = JobInfo
--- end)
-
--- RegisterNetEvent('QBCore:Client:OnGangUpdate', function(GangInfo)
---     PlayerData.gang = GangInfo
--- end)
 
 RegisterNetEvent("QBCore:Client:SetDuty", function(job, state)
     if AllowedJob(job) then
@@ -84,15 +58,12 @@ RegisterNetEvent('police:SetCopCount', function(amount)
     CurrentCops = amount
 end)
 
--- RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
---     PlayerData = val
--- end)
-
 AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() ~= resourceName then return end
     Wait(150)
     PlayerData = ESX.GetPlayerData()
     callSign = LocalPlayer.state.callsign
+    LocalPlayer.state:set("isLoggedIn", ESX.PlayerLoaded, true)
 end)
 
 AddEventHandler('onResourceStop', function(resourceName)
@@ -331,9 +302,6 @@ RegisterNUICallback("getProfileData", function(data, cb)
     local getProfileDataPromise = function(data)
         if p then return end
         p = promise.new()
-        -- QBCore.Functions.TriggerCallback('mdt:server:GetProfileData', function(result)
-        --     p:resolve(result)
-        -- end, data)
 
         local result = lib.callback.await('mdt:server:GetProfileData', false, data)
         if result then
@@ -875,6 +843,8 @@ end)
 
 RegisterNetEvent('dispatch:clNotify', function(sNotificationData, sNotificationId)
     if LocalPlayer.state.isLoggedIn then
+
+        print(LocalPlayer.state.isLoggedIn)
         sNotificationData.playerJob = PlayerData.job.name
         SendNUIMessage({ type = "call", data = sNotificationData })
     end
@@ -1155,4 +1125,5 @@ end
 RegisterCommand("tsa", function ()
     --exports['ps-dispatch-esx']:ATMRobbery()
     exports[Config.dispatchName]:Shooting()
+    print(ESX.PlayerLoaded)
 end, false)

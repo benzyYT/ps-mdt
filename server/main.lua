@@ -267,7 +267,12 @@ lib.callback.register('mdt:server:SearchProfile', function(source, sentData)
     if Player then
         local JobType = GetJobType(Player.job.name)
         if JobType ~= nil then
-            local people = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.dateofbirth, md.pfp, md.fingerprint FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(CONCAT(u.firstname, ' ', u.lastname)) LIKE :query OR LOWER(u.dateofbirth) LIKE :query OR LOWER(u.identifier) LIKE :query OR LOWER(md.fingerprint) LIKE :query AND jobtype = :jobtype LIMIT 20", { query = string.lower('%'..sentData..'%'), jobtype = JobType })
+
+			-- We execute this request to insert the profiles that are not in mdt_data yet for the given jobtype
+			MySQL.query.await("INSERT INTO mdt_data (identifier, jobtype, pfp, tags, gallery, fingerprint)	SELECT u.identifier, :jobtype AS jobtype, NULL AS pfp, '[]' AS tags, '[]' AS gallery, NULL AS fingerprint FROM users u	LEFT JOIN mdt_data md ON u.identifier = md.identifier AND md.jobtype = :jobtype	WHERE md.identifier IS NULL", { jobtype = JobType })
+
+            local people = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.dateofbirth, u.sex, md.pfp, md.fingerprint FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE jobtype = :jobtype AND LOWER(CONCAT(u.firstname, ' ', u.lastname)) LIKE :query OR LOWER(u.dateofbirth) LIKE :query OR LOWER(md.fingerprint) LIKE :query LIMIT 20", { query = string.lower('%'..sentData..'%'), jobtype = JobType })
+
             local identifiers = {}
             local identifiersMap = {}
             if not next(people) then return {} end
@@ -277,7 +282,7 @@ lib.callback.register('mdt:server:SearchProfile', function(source, sentData)
                 people[index]['warrant'] = false
                 people[index]['convictions'] = 0
                 people[index]['licences'] = GetPlayerLicenses(data.identifier)
-                people[index]['pp'] = ProfPic(data.gender, data.pfp)
+                people[index]['pp'] = ProfPic(data.sex, data.pfp)
 				if data.fingerprint and data.fingerprint ~= "" then
 					people[index]['fingerprint'] = data.fingerprint
 				else
@@ -565,7 +570,7 @@ RegisterNetEvent("mdt:server:saveProfile", function(pfp, information, identifier
     --UpdateAllLicenses(identifier, licenses)
     if Player then
         local JobType = GetJobType(Player.job.name)
-
+		print(pfp)
         if JobType == 'doj' then JobType = 'police' end
 
         MySQL.Async.insert('INSERT INTO mdt_data (identifier, information, pfp, jobtype, tags, gallery, fingerprint) VALUES (:identifier, :information, :pfp, :jobtype, :tags, :gallery, :fingerprint) ON DUPLICATE KEY UPDATE identifier = :identifier, information = :information, pfp = :pfp, jobtype = :jobtype, tags = :tags, gallery = :gallery, fingerprint = :fingerprint', {
