@@ -24,7 +24,7 @@ var DispatchNum = 0;
 var playerJob = "";
 let rosterLink  = "";
 let sopLink = "";
-const licenseTypesGlobal = ['business', 'pilot', 'weapon', 'driver', 'weed'];
+const licenseTypesGlobal = ['dmv', 'drive', 'drive_bike', 'drive_truck', 'weapon_a', 'weapon_b', 'weapon_c'];
 
 //Set this to false if you don't want to show the send to community service button on the incidents page
 const canSendToCommunityService = false
@@ -238,7 +238,7 @@ $(document).ready(() => {
     let licencesHTML = '<div style="color: #fff; text-align:center;">Aucun Permis</div>';
     let tagsHTML = '<div style="color: #fff; text-align:center;">Aucun Tags</div>';
     let convHTML = '<div style="color: #fff; text-align:center;">Vider Registre ?</div>';
-    let incidentsHTML = '<div style="color: #fff; text-align:center;">No Incidents</div>';
+    let incidentsHTML = '<div style="color: #fff; text-align:center;">Aucun Incidents</div>';
     let vehHTML = '<div style="color: #fff; text-align:center;">Aucun véhicules</div>';
     let galleryHTML = '<div style="color: #fff; text-align:center;">Aucunes photos</div>';
     let propertyHTML = '<div style="color: #fff; text-align:center;">Aucunes propriétés</div>';
@@ -352,7 +352,7 @@ $(document).ready(() => {
                 <span contenteditable="true" class="bulletin-item-title"></span>
                 <span contenteditable="true" class="bulletin-item-info"></span>
                 <div class="bulletin-bottom-info">
-                <div class="bulletin-date">${MyName} - Just Now</div>
+                <div class="bulletin-date">${MyName} - A l'instant</div>
                 </div>
             </div>`);
     } else {
@@ -757,20 +757,20 @@ $(document).ready(() => {
     function () {
       let template = `
       <div style="color: white;">
-          <p><strong>📝 Summary:</strong></p>
-          <p><em>[Insert Report Summary Here]</em></p>
+          <p><strong>📝 Résumé:</strong></p>
+          <p><em>[Insérez résumé du rapport]</em></p>
           <p>&nbsp;</p>
-          <p><strong>🧍 Hostage:</strong> [Name Here]</p>
+          <p><strong>🧍 Otage:</strong> [Name Here]</p>
           <p>&nbsp;</p>
-          <p><strong>🗄️ Evidence Location:</strong> Stash # | Drawer #</p>
+          <p><strong>🗄️ N° Casier de Preuve:</strong> Stash # | Drawer #</p>
           <p>&nbsp;</p>
-          <p><strong>🔪 Weapons/Items Confiscated:</strong></p>
-          <p><em>· [Insert List Here]</em></p>
+          <p><strong>🔪 Armes / Objets Saisis:</strong></p>
+          <p><em>· [Insérez la liste]</em></p>
           <p>&nbsp;</p>
           <p>-----</p>
-          <p><strong style="background-color: var(--color-1);">💸 Fine:</strong></p>
+          <p><strong style="background-color: var(--color-1);">💸 Amende:</strong></p>
           <p>&nbsp;</p>
-          <p><strong>⌚ Sentence:</strong></p>
+          <p><strong>⌚ Peine:</strong></p>
           <p>-----</p>
       </div>
   `;
@@ -1385,12 +1385,12 @@ $(document).ready(() => {
         template = `
         <div style="color: white;">
             <p><strong>📝 Salle USI #: [ # ]</strong></p>
-            <p><strong>Report ID: [ Report ID ]</strong></p>
+            <p><strong>ID Rapport: [ Report ID ]</strong></p>
             <p><em><br></em></p>
-            <p><strong>🧍Heure Admission: [ Date and Time Here ]</strong>&nbsp;</p>
-            <p><strong>Chirurgie: [Yes/No]</strong></p>
-            <p><strong>Blessures/Maladies:</strong></p>
-            <p><em>· [Insérez la liste des bléssures]</em><br></p>
+            <p><strong>🧍Horaire Admission: [ Date and Time Here ]</strong>&nbsp;</p>
+            <p><strong>Chirurgie: [Oui/Non]</strong></p>
+            <p><strong>Blessures / Maladies:</strong></p>
+            <p><em>· [Insérez la liste des blessures]</em><br></p>
             <p>&nbsp;</p>
             <p>-----</p>
             <p><strong style="background-color: var(--color-1);">Additional Attending:</strong><br></p>
@@ -1398,7 +1398,7 @@ $(document).ready(() => {
             <p><strong style="background-color: var(--color-1);">🧑‍🤝‍🧑 Additional Emergency Contacts:</strong><br></p>
             <p><em>· [ Name And Number ]</em></p>
             <p><strong style="background-color: var(--color-1);">Notes:</strong><br></p>
-            <p><em>· [Additional Notes Here]</em></p>
+            <p><em>· [Notes Suppl.]</em></p>
             <p>-----</p>
         </div>
     `;
@@ -1913,14 +1913,14 @@ $(document).ready(() => {
         {
           className: "expand-image",
           icon: "fas fa-expand",
-          text: "Expand Image",
+          text: "Aggrandir Image",
           info: $(this).attr("src"),
           status: $(this).css("filter"),
         },
         {
           className: "copy-image-link",
           icon: "fa-regular fa-copy",
-          text: "Copy Image Link",
+          text: "Copier lien image",
           info: $(this).attr("src"),
           status: $(this).css("filter"),
         },
@@ -2102,16 +2102,16 @@ $(document).ready(() => {
                     <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Processed</div>
                     <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Associated</div>
                 </div>
-                <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Right click below to add and/or modify charges.</div>
+                <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Clique droit pour ajouter / modifier les charges.</div>
                 <div class="associated-incidents-user-holder" data-name="${$(this).data("identifier")}"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Recommended Fine</div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Amende Recommandée</div>
                 <div class="associated-incidents-fine-input" data-id="${$(this).data("identifier")}"><img src="img/h7S5f9J.webp"> <input disabled placeholder="0" class="fine-recommended-amount" id="fine-recommended-amount" data-id="${$(this).data("identifier")}" type="number"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Recommended Sentence</div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Peine Recommandée</div>
                 <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input disabled placeholder="0" class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${$(this).data("identifier")}" type="number"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Fine</div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Amende</div>
                 <div class="associated-incidents-fine-input" data-id="${$(this).data("identifier")}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${$(this).data("identifier")}" type="number"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Sentence</div>
-                <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez months here..." value="0" class="sentence-amount" data-id="${$(this).data("identifier")}" type="number"></div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Peine</div>
+                <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez mois here..." value="0" class="sentence-amount" data-id="${$(this).data("identifier")}" type="number"></div>
                 <div class="associated-incidents-controls" data-id="${$(this).data("identifier")}">
                     <div id="jail-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-building-columns" style="margin-top: 3.5px;"></span> Jail</div>
                     <div id="fine-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Fine</div>
@@ -2426,14 +2426,14 @@ $(document).ready(() => {
         {
           className: "expand-image",
           icon: "fas fa-expand",
-          text: "Expand Image",
+          text: "Aggrandir Image",
           info: $(this).attr("src"),
           status: $(this).css("filter"),
         },
         {
           className: "copy-image-link",
           icon: "fa-regular fa-copy",
-          text: "Copy Image Link",
+          text: "Copier lien Image",
           info: $(this).attr("src"),
           status: $(this).css("filter"),
         },
@@ -2466,7 +2466,7 @@ $(document).ready(() => {
       if ($(".badge-logo").attr("src") == "img/ems_badge.webp") {
         template = `
     <div style="color: white;">
-        <p><strong>Submitted to USI?: [Yes/No]</strong></p>
+        <p><strong>Envoyé en USI ?: [Yes/No]</strong></p>
         <p><strong>Incident Report:</strong></p>
         <p><em>· [ Brief summary of what happened and who did what while on scene. Note anything that stood out about the scene as well as what was done to treat the patient ]</em></p>
         <p><strong>List of Injuries:</strong></p>
@@ -2836,7 +2836,7 @@ $(document).ready(() => {
           {
             className: "mark-code-5",
             icon: "fas fa-check",
-            text: "Mark as Code 5",
+            text: "Marquer comme Code 5",
             info: plate,
             status: "",
           },
@@ -2846,7 +2846,7 @@ $(document).ready(() => {
           {
             className: "remove-code-5",
             icon: "fas fa-times",
-            text: "Retirer Code 5 Status",
+            text: "Retirer statut Code 5",
             info: plate,
             status: "",
           },
@@ -2880,7 +2880,7 @@ $(document).ready(() => {
           {
             className: "mark-stolen",
             icon: "fas fa-check",
-            text: "Mark as Stolen",
+            text: "Marquer comme Volé",
             info: plate,
             status: "",
           },
@@ -2890,7 +2890,7 @@ $(document).ready(() => {
           {
             className: "remove-stolen",
             icon: "fas fa-times",
-            text: "Retirer Code 5 Status",
+            text: "Retirer statut Volé",
             info: plate,
             status: "",
           },
@@ -2907,7 +2907,7 @@ $(document).ready(() => {
     $(".impound-fee").val("").removeAttr("disabled");
     $(".impound-time").val("").removeAttr("disabled");
     $(".impound-fee").css("color", "white");
-    $(".impound-cancel").html("Cancel");
+    $(".impound-cancel").html("Annuler");
     $(".impound-submit").fadeIn(250);
     $(".impound-form").slideDown(250);
     $(".impound-form").fadeIn(250);
@@ -3038,7 +3038,7 @@ $(document).ready(() => {
           {
             className: "impound-vehicle",
             icon: "fas fa-check",
-            text: "State Impound",
+            text: "En Fourrière",
             info: plate,
             status: "",
           },
@@ -3048,14 +3048,14 @@ $(document).ready(() => {
           {
             className: "remove-impound",
             icon: "fas fa-times",
-            text: "Unimpound Vehicle",
+            text: "Retrait Fourrière",
             info: plate,
             status: "",
           },
           {
             className: "status-impound",
             icon: "fas fa-info-circle",
-            text: "View Impound Status",
+            text: "Voir statut Fourrière",
             info: plate,
             status: "",
           },
@@ -3131,7 +3131,7 @@ $(document).ready(() => {
 
                                 <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
                                 <div style="display: flex; flex-direction: column;">
-                                    <div class="profile-item-title">No Weapons Matching that search</div>
+                                    <div class="profile-item-title">Aucunes Armes trouvées</div>
                                     </div>
                                     <div class="profile-bottom-info">
                                     </div>
@@ -3152,11 +3152,11 @@ $(document).ready(() => {
                             <img src="${value.image}" class="weapons-image">
                             <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
                               <div style="display: flex; flex-direction: column;">
-                                <div class="weapons-item-title">${value.weapModel} - Class ${value.weapClass}</div>
+                                <div class="weapons-item-title">${value.weapModel} - Classe ${value.weapClass}</div>
 
                                 </div>
                                 <div class="weapons-bottom-info">
-                                  <div class="weapons-id">Serial Number: ${value.serial} · Owner: ${value.owner} · ID: ${value.id}</div>
+                                  <div class="weapons-id">N° de Série: ${value.serial} · Propriétaire: ${value.owner} · ID: ${value.id}</div>
                                 </div>
                             </div>
                         </div>
@@ -3340,14 +3340,14 @@ $(document).ready(() => {
       {
         className: "view-profile",
         icon: "far fa-eye",
-        text: "View Profile",
+        text: "Voir Profile",
         info: $(this).data("identifier"),
         status: "",
       },
       {
         className: "view-incident",
         icon: "fas fa-search",
-        text: `View Incident #${$(this).data("id")}`,
+        text: `Voir Incident #${$(this).data("id")}`,
         info: $(this).data("id"),
         status: "",
       },
@@ -3707,7 +3707,7 @@ $(document).ready(() => {
         {
           className: "dispatch-reply",
           icon: "fas fa-reply",
-          text: "Reply",
+          text: "Répondre",
           info: mySubString,
           status: "",
         },
@@ -4132,7 +4132,7 @@ $(document).ready(() => {
         );
         $(".manage-bolos-title").html("Gestion admission USI");
         $(".manage-bolos-editing-title").html(
-          "Vous créé une admission en USI"
+          "Vous créez une admission en USI"
         );
         $(".boloplate-title").html("Durée rétablissement");
         $(".boloowner-title").html("Contact d'urgence");
@@ -4364,7 +4364,7 @@ window.addEventListener("message", function (event) {
                 <div class="warrant-title">${value.name}</div>
             </div>
             <div class="warrant-bottom-info">
-                <div class="warrant-id">Incident ID: ${value.linkedincident}</div>
+                <div class="warrant-id">ID Incident: ${value.linkedincident}</div>
             </div>
         </div></div>`)
     })
