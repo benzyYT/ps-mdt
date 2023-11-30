@@ -160,11 +160,11 @@ end)
 
 RegisterNetEvent("ps-mdt:server:ToggleDuty", function()
     local src = source
-    local Player = ESX.GetPlayerFromId(src)
-    if not Player(Player.source).state.onduty then
+    local xPlayer = ESX.GetPlayerFromId(src)
+    if not Player(xPlayer.source).state.onduty then
 		--// Remove from MDT
-		if GetActiveData(Player.identifier) then
-			activeUnits[Player.identifier] = nil
+		if GetActiveData(xPlayer.identifier) then
+			activeUnits[xPlayer.identifier] = nil
 		end
     end
 end)
@@ -177,7 +177,7 @@ lib.addCommand('mdtleaderboard', {
 	local job = PlayerData.job.name
 
     if not IsPoliceOrEms(job) then
-        TriggerClientEvent('esx:showNotification', source, "You don't have permission to use this command.", 'error')
+        TriggerClientEvent('esx:showNotification', source, "Vous n'avez pas la permission d'utiliser cette commande.", 'error')
         return
     end
 
@@ -205,7 +205,7 @@ RegisterNetEvent("ps-mdt:server:ClockSystem", function()
     local lastName = PlayerData.get('lastName')
     if Player(PlayerData.source).state.onduty  then
         
-        TriggerClientEvent('esx:showNotification', source, "You're clocked-in", 'success')
+        TriggerClientEvent('esx:showNotification', source, "Vous êtes en service !", 'success')
 		MySQL.Async.insert('INSERT INTO mdt_clocking (user_id, firstname, lastname, clock_in_time) VALUES (:user_id, :firstname, :lastname, :clock_in_time) ON DUPLICATE KEY UPDATE user_id = :user_id, firstname = :firstname, lastname = :lastname, clock_in_time = :clock_in_time', {
 			user_id = PlayerData.identifier,
 			firstname = firstName,
@@ -401,8 +401,6 @@ lib.callback.register('mdt:server:GetProfileData', function(source, sentId)
 			end
 		end
 	end
-
-	--local job, grade = UnpackJob(target.job)
 
 	if SVConfig.HousingScript == "ps" then
 		local propertyData = GetPlayerPropertiesByCitizenId(target.identifier)
