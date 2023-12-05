@@ -2700,22 +2700,27 @@ $(document).ready(() => {
             stolen = "green-tag";
           }
 
+          vehiclePaintHtml = `<div class="dmv-tag ${paint}-color">${vehicle.colorName}</div>`
+          
+          if (typeof(vehicle.color) === "object") {
+            vehiclePaintHtml = `<div style="background-color: rgb(${vehicle.color})" class="dmv-tag">${vehicle.colorName}</div>`
+          }
+
           vehicleHTML += `
                         <div class="dmv-item" data-id="${vehicle.id}" data-dbid="${vehicle.dbid}" data-plate="${vehicle.plate}">
                             <img src="${vehicle.image}" class="dmv-image">
                             <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
                             <div style="display: flex; flex-direction: column;">
-                                <div class="dmv-item-title">${vehicle.model}</div>
+                                <div class="dmv-item-title">
+                                  <div class="dmv-id">Modèle: ${vehicle.model} Plaque: ${vehicle.plate} · Propriétaire: ${vehicle.owner}</div>
+                                </div>
                                     <div class="dmv-tags">
-                                        <div class="dmv-tag ${paint}-color">${vehicle.colorName}</div>
+                                        ${vehiclePaintHtml}
                                         <div class="dmv-tag ${impound}">En fourrière</div>
                                         <div class="dmv-tag ${bolo}">Recherché</div>
                                         <div class="dmv-tag ${stolen}">Volé</div>
                                         <div class="dmv-tag ${codefive}">Code 5</div>
                                     </div>
-                                </div>
-                                <div class="dmv-bottom-info">
-                                    <div class="dmv-id">Plaque: ${vehicle.plate} · Propriétaire: ${vehicle.owner}</div>
                                 </div>
                             </div>
                         </div>
@@ -5202,48 +5207,48 @@ window.addEventListener("message", function (event) {
 
     } else if (eventData.type == "getVehicleData") {
       impoundChanged = false;
-      let table = eventData.data;
+      let vehicle = eventData.data;
 
       $(".vehicle-information-title-holder").data(
         "dbid",
         Number(table["dbid"])
       );
 
-      $(".vehicle-info-plate-input").val(table["plate"]);
-      $(".vehicle-info-owner-input").val(table["name"]);
-      $(".vehicle-info-class-input").val(table["class"]);
-      $(".vehicle-info-model-input").val(table["model"]);
-      $(".vehicle-info-imageurl-input").val(table["image"]);
-      let vehiclePoints = table["points"] != null ? table["points"] : 0;
+      $(".vehicle-info-plate-input").val(vehicle["plate"]);
+      $(".vehicle-info-owner-input").val(vehicle["name"]);
+      $(".vehicle-info-class-input").val(vehicle["class"]);
+      $(".vehicle-info-model-input").val(vehicle["model"]);
+      $(".vehicle-info-imageurl-input").val(vehicle["image"]);
+      let vehiclePoints = vehicle["points"] != null ? vehicle["points"] : 0;
       $("#vehiclePointsSlider").val(vehiclePoints);
       $("#vehiclePointsSliderValue").html(vehiclePoints);
 
-      $(".vehicle-info-content").val(table["information"]);
+      $(".vehicle-info-content").val(vehicle["information"]);
 
       $(".vehicle-tags").empty();
-      $(".vehicle-info-image").attr("src", table["image"]);
+      $(".vehicle-info-image").attr("src", vehicle["image"]);
       $(".vehicle-tags").prepend(
-        `<div class="dmv-tag ${table.color}-color">${table.colorName}</div>`
+        `<div class="dmv-tag ${vehicle.color}-color">${vehicle.colorName}</div>`
       );
-
+      console.log("TODO : TERMINEE CETTE PARTIE AVEC LA COULEUR")
       let impound = "red-tag";
       let bolo = "red-tag";
       let codefive = "red-tag";
       let stolen = "red-tag";
 
-      if (table.impound) {
+      if (vehicle.impound) {
         impound = "green-tag";
       }
 
-      if (table.bolo) {
+      if (vehicle.bolo) {
         bolo = "green-tag";
       }
 
-      if (table.code) {
+      if (vehicle.code) {
         codefive = "green-tag";
       }
 
-      if (table.stolen) {
+      if (vehicle.stolen) {
         stolen = "green-tag";
       }
 
@@ -5251,7 +5256,7 @@ window.addEventListener("message", function (event) {
       $(".vehicle-tags").append(`<div class="vehicle-tag ${bolo}">BOLO</div>`);
       $(".vehicle-tags").append(`<div class="vehicle-tag ${codefive} code5-tag">Code 5</div>`);
       $(".vehicle-tags").append(`<div class="vehicle-tag ${stolen} stolen-tag">Stolen</div>`);
-      $(".vehicle-info-imageurl-input").val(table["image"]);
+      $(".vehicle-info-imageurl-input").val(vehicle["image"]);
     } else if (eventData.type == "getWeaponData") {
       impoundChanged = false;
       let table = eventData.data;

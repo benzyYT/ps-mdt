@@ -64,6 +64,7 @@ AddEventHandler('onResourceStart', function(resourceName)
     PlayerData = ESX.GetPlayerData()
     callSign = LocalPlayer.state.callsign
     LocalPlayer.state:set("isLoggedIn", ESX.PlayerLoaded, true)
+    TriggerServerEvent("ps-mdt:GetVehiclesFromDB")
 end)
 
 AddEventHandler('onResourceStop', function(resourceName)
@@ -622,9 +623,10 @@ RegisterNUICallback("searchVehicles", function(data, cb)
 
     if foundVehicles then
         for k, veh in pairs(foundVehicles) do
-            veh['plate'] = string.upper(veh['plate'])
-            veh['color'] = Config.ColorInformation[veh.vehicle['color1']]
-            veh['colorName'] = Config.ColorNames[veh.vehicle['color1']]
+            print(json.encode(veh.vehicle.color1, { indent = true }))
+            veh.plate = string.upper(veh.plate)
+            veh.color = Config.ColorInformation[veh.vehicle.color1] or veh.vehicle.customPrimaryColor
+            veh.colorName = Config.ColorNames[veh.vehicle.color1] or Config.ColorNames[999]
             if not veh.infos and not veh.model then
                 veh.model = GetDisplayNameFromVehicleModel(veh.vehicle.model)
             end
@@ -778,8 +780,8 @@ end)
 RegisterNetEvent('mdt:client:getVehicleData', function(veh)
     if veh then
         local mods = veh.vehicle
-        veh.color = Config.ColorInformation[mods.color1]
-        veh.colorName = Config.ColorNames[mods.color1]
+        veh.color = Config.ColorInformation[mods.color1] or mods.customPrimaryColor
+        veh.colorName = Config.ColorNames[mods.color1] or Config.ColorNames[999]
         veh.model = veh.infos.name
         veh.class = Config.ClassList[GetVehicleClassFromName(mods.model)]
         SendNUIMessage({ type = "getVehicleData", data = veh })

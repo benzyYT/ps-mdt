@@ -503,7 +503,7 @@ for index, value in pairs(Config.DojJobs) do
     Config.AllowedJobs[index] = value
 end
 
-Config.NomsCouleurs = {
+Config.ColorNames = {
     [0] = "Noir Métallisé",
     [1] = "Noir Graphite Métallisé",
     [2] = "Noir Acier Métallisé",
@@ -663,6 +663,7 @@ Config.NomsCouleurs = {
     [156] = "COULEUR DE JANTE PAR DÉFAUT",
     [157] = "Bleu Epsilon",
     [158] = "Inconnu",
+    [999] = "Couleur Custom",
 }
 
 Config.ColorInformation = {

@@ -89,7 +89,6 @@ end
 
 AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() ~= resourceName then return end
-	Wait(3000)
 	if MugShotWebhook == '' then
 		print("\27[31mA webhook is missing in: MugShotWebhook (server > main.lua > line 16)\27[0m")
     end
@@ -1071,6 +1070,7 @@ lib.callback.register('mdt:server:SearchVehicles', function(source, sentData)
 			
 			for _, veh in ipairs(vehicles) do
 				veh.vehicle = json.decode(veh.vehicle)
+				
 				local vName = GetVehicleHashByName(veh.vehicle.model)
 				local infos = MySQL.single.await("SELECT * FROM vehicles WHERE model = ?", {vName})
 				if infos then
@@ -1120,9 +1120,9 @@ end)
 RegisterNetEvent('mdt:server:getVehicleData', function(plate)
 	if plate then
 		local src = source
-		local Player = ESX.GetPlayerFromId(src)
-		if Player then
-			local JobType = GetJobType(Player.job.name)
+		local xPlayer = ESX.GetPlayerFromId(src)
+		if xPlayer then
+			local JobType = GetJobType(xPlayer.job.name)
 			if JobType == 'police' or JobType == 'doj' then
 				local veh = MySQL.single.await("select ov.*, u.firstname, u.lastname from owned_vehicles ov LEFT JOIN users u ON ov.owner = u.identifier where ov.plate = :plate", { plate = string.gsub(plate, "^%s*(.-)%s*$", "%1")})
 				if veh then
@@ -1166,7 +1166,7 @@ RegisterNetEvent('mdt:server:getVehicleData', function(plate)
 					if veh.image == nil then veh.image = "img/not-found.webp" end -- Image
 				end
 
-				TriggerClientEvent('mdt:client:getVehicleData', Player.source, veh)
+				TriggerClientEvent('mdt:client:getVehicleData', xPlayer.source, veh)
 			end
 		end
 	end

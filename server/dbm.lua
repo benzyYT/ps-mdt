@@ -221,3 +221,4 @@ function GetVehiclesFromDB()
     end
 end
 
+RegisterNetEvent("ps-mdt:GetVehiclesFromDB", GetVehiclesFromDB)
