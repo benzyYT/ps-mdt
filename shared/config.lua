@@ -784,7 +784,7 @@ Config.ColorInformation = {
     [114] = "brown",
     [115] = "brown",
     [116] = "beige",
-    [117] = "steel",
+    [117] = "steel", 
     [118] = "blacksteel",
     [119] = "aluminium",
     [120] = "chrome",
@@ -837,20 +837,149 @@ Config.ClassList = {
     [5] = "Sport Classic",
     [6] = "Sport",
     [7] = "Super",
-    [8] = "Motorbike",
+    [8] = "Moto",
     [9] = "Off-Road",
-    [10] = "Industrial",
-    [11] = "Utility",
+    [10] = "Industriels",
+    [11] = "Utilitaire",
     [12] = "Van",
-    [13] = "Bike",
-    [14] = "Boat",
-    [15] = "Helicopter",
-    [16] = "Plane",
-    [17] = "Service",
-    [18] = "Emergency",
-    [19] = "Military",
+    [13] = "Vélo",
+    [14] = "Bateau",
+    [15] = "Helicoptère",
+    [16] = "Avion",
+    [17] = "Services",
+    [18] = "Urgence",
+    [19] = "Militaire",
     [20] = "Commercial",
     [21] = "Train"
+}
+
+Config.WeaponClasses = {
+    ['LIGHT_IMPACT'] = "Classe 0",
+    ['HEAVY_IMPACT'] = "Classe 1",
+    ['SMALL_CALIBER'] = "Classe 2",
+    ['MEDIUM_CALIBER'] = "Classe 3",
+    ['HIGH_CALIBER'] = "Classe 4",
+    ['SHOTGUN'] = "Classe 5",
+    ['CUTTING'] = "Classe 6",   
+    ['FIRE'] = "Classe 8",
+    ['SUFFOCATING'] = "Classe 9",
+    ['OTHER'] = "Classe 10",
+    ['EXPLOSIVE'] = "Classe 99",
+    ['NOTHING'] = "Classe X",
+}
+
+Config.WeaponClass = {
+    --[[ Small Caliber ]]--
+    ['WEAPON_PISTOL'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_COMBATPISTOL'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_APPISTOL'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_COMBATPDW'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_MACHINEPISTOL'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_MICROSMG'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_MINISMG'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_PISTOL_MK2'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_SNSPISTOL'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_SNSPISTOL_MK2'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_VINTAGEPISTOL'] = Config.WeaponClasses['SMALL_CALIBER'],
+
+    --[[ Medium Caliber ]]--
+    ['WEAPON_ADVANCEDRIFLE'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_ASSAULTSMG'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_BULLPUPRIFLE'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_BULLPUPRIFLE_MK2'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_CARBINERIFLE'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_CARBINERIFLE_MK2'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_COMPACTRIFLE'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_DOUBLEACTION'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_GUSENBERG'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_HEAVYPISTOL'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_MARKSMANPISTOL'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_PISTOL50'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_REVOLVER'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_REVOLVER_MK2'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_SMG'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_SMG_MK2'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_SPECIALCARBINE'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_SPECIALCARBINE_MK2'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+
+    --[[ High Caliber ]]--
+    ['WEAPON_ASSAULTRIFLE'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_ASSAULTRIFLE_MK2'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_COMBATMG'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_COMBATMG_MK2'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_HEAVYSNIPER'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_HEAVYSNIPER_MK2'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_MARKSMANRIFLE'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_MARKSMANRIFLE_MK2'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_MG'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_MINIGUN'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_MUSKET'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_RAILGUN'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_HEAVYRIFLE'] = Config.WeaponClasses['HIGH_CALIBER'],
+
+    --[[ Shotguns ]]--
+    ['WEAPON_ASSAULTSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_BULLUPSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_DBSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_HEAVYSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_PUMPSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_PUMPSHOTGUN_MK2'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_SAWNOFFSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_SWEEPERSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    
+    --[[ Cutting Weapons ]]--
+    ['WEAPON_BATTLEAXE'] = Config.WeaponClasses['CUTTING'],
+    ['WEAPON_BOTTLE'] = Config.WeaponClasses['CUTTING'],
+    ['WEAPON_DAGGER'] = Config.WeaponClasses['CUTTING'],
+    ['WEAPON_HATCHET'] = Config.WeaponClasses['CUTTING'],
+    ['WEAPON_KNIFE'] = Config.WeaponClasses['CUTTING'],
+    ['WEAPON_MACHETE'] = Config.WeaponClasses['CUTTING'],
+    ['WEAPON_SWITCHBLADE'] = Config.WeaponClasses['CUTTING'],
+
+    --[[ Light Impact ]]--
+    ['WEAPON_STUNGUN'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    ['WEAPON_GARBAGEBAG'] = Config.WeaponClasses['LIGHT_IMPACT'], -- Garbage Bag
+    ['WEAPON_BRIEFCASE'] = Config.WeaponClasses['LIGHT_IMPACT'], -- Briefcase
+    ['WEAPON_BRIEFCASE_02'] = Config.WeaponClasses['LIGHT_IMPACT'], -- Briefcase 2
+    ['WEAPON_BALL'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    ['WEAPON_FLASHLIGHT'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    ['WEAPON_KNUCKLE'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    ['WEAPON_NIGHTSTICK'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    ['WEAPON_SNOWBALL'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    ['WEAPON_UNARMED'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    
+    --[[ Heavy Impact ]]--
+    ['WEAPON_BAT'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_CROWBAR'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_FIREEXTINGUISHER'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_FIRWORK'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_GOLFLCUB'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_HAMMER'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_PETROLCAN'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_POOLCUE'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_WRENCH'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    
+    --[[ Explosives ]]--
+    ['WEAPON_EXPLOSION'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_GRENADE'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_COMPACTLAUNCHER'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_HOMINGLAUNCHER'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_PIPEBOMB'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_PROXMINE'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_RPG'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_STICKYBOMB'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_EMPLAUNCHER'] = Config.WeaponClasses['EXPLOSIVE'],
+    
+    --[[ Fire ]]--
+    ['WEAPON_ELECTRIC_FENCE'] = Config.WeaponClasses['FIRE'], -- Electric Fence 
+    ['WEAPON_FIRE'] = Config.WeaponClasses['FIRE'], -- Fire
+    ['WEAPON_MOLOTOV'] = Config.WeaponClasses['FIRE'],
+    ['WEAPON_FLARE'] = Config.WeaponClasses['FIRE'],
+    ['WEAPON_FLAREGUN'] = Config.WeaponClasses['FIRE'],
+
+    --[[ Suffocate ]]--
+    ['WEAPON_BZGAS'] = Config.WeaponClasses['SUFFOCATING'],
+    ['WEAPON_SMOKEGRENADE'] = Config.WeaponClasses['SUFFOCATING'],
 }
 
 function GetJobType(job)

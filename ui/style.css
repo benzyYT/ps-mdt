@@ -6282,8 +6282,8 @@ span.tag-reports-input[contenteditable]:empty::before {
 }
 
 .weapon-info-image {
-    width: 444px;
-    height: 269px;
+    width: 30vh;
+    height: 30vh;
     object-fit: cover;
 }
 

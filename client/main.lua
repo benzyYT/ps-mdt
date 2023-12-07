@@ -315,17 +315,6 @@ RegisterNUICallback("getProfileData", function(data, cb)
     local vehicles = result.vehicles
     local licenses = result.licences
 
-    -- for i=1,#vehicles do
-    --     local vehicle = result.vehicles[i]
-    --     local vehData = QBCore.Shared.Vehicles[vehicle['vehicle']] VEHICLESTOHASH[]
-        
-    --     if vehData == nil then
-    --         print("Vehicle not found for profile:", vehicle['vehicle']) -- Do not remove print, is a guide for a nil error. 
-    --         print("Make sure the profile you're trying to load has all cars added to the core under vehicles.lua.") -- Do not remove print, is a guide for a nil error. 
-    --     else
-    --         result.vehicles[i]['model'] = vehData["name"]
-    --     end
-    -- end
     p = nil
 
     result['fingerprint'] = result['searchFingerprint']
@@ -513,6 +502,7 @@ end)
 
 RegisterNUICallback("deleteWeapons", function(data, cb)
     local id = data.id
+    print(json.encode(data))
     TriggerServerEvent('mdt:server:deleteWeapons', id)
     cb(true)
 end)
@@ -623,7 +613,6 @@ RegisterNUICallback("searchVehicles", function(data, cb)
 
     if foundVehicles then
         for k, veh in pairs(foundVehicles) do
-            print(json.encode(veh.vehicle.color1, { indent = true }))
             veh.plate = string.upper(veh.plate)
             veh.color = Config.ColorInformation[veh.vehicle.color1] or veh.vehicle.customPrimaryColor
             veh.colorName = Config.ColorNames[veh.vehicle.color1] or Config.ColorNames[999]
@@ -631,15 +620,6 @@ RegisterNUICallback("searchVehicles", function(data, cb)
                 veh.model = GetDisplayNameFromVehicleModel(veh.vehicle.model)
             end
         end
-        -- for i=1, #result do
-        --     local vehicle = result[i]
-        --     local mods = json.decode(result[i].mods)
-        --     result[i]['plate'] = string.upper(result[i]['plate'])
-        --     result[i]['color'] = Config.ColorInformation[mods['color1']]
-        --     result[i]['colorName'] = Config.ColorNames[mods['color1']]
-        --     local vehData = QBCore.Shared.Vehicles[vehicle['vehicle']]
-        --     result[i]['model'] = vehData["brand"] .. ' ' .. vehData["name"]
-        -- end
         cb(foundVehicles)
     end
 end)
@@ -844,8 +824,6 @@ end)
 
 RegisterNetEvent('dispatch:clNotify', function(sNotificationData, sNotificationId)
     if LocalPlayer.state.isLoggedIn then
-
-        print(LocalPlayer.state.isLoggedIn)
         sNotificationData.playerJob = PlayerData.job.name
         SendNUIMessage({ type = "call", data = sNotificationData })
     end
@@ -1001,7 +979,7 @@ AddEventHandler('ps-mdt:client:selfregister', function()
         if weaponInfos and #weaponInfos > 0 then
             for _, weaponInfo in ipairs(weaponInfos) do
                 TriggerServerEvent('mdt:server:registerweapon', weaponInfo.serialnumber, weaponInfo.weaponurl, weaponInfo.notes, weaponInfo.owner, weaponInfo.weapClass, weaponInfo.weaponmodel)
-                ESX.ShowNotification("Weapon " .. weaponInfo.weaponmodel .. " has been added to police database.")
+                ESX.ShowNotification("L'arme " .. weaponInfo.weaponmodel .. " a été ajouté à la base de donnée SAPD.")
                 --print("Weapon added to database")
             end
         else
@@ -1012,19 +990,19 @@ end)
 
 -- Uncomment if you want to use this instead.
 
---[[ RegisterCommand('registerweapon', function(source)
+RegisterCommand('registerweapon', function(source)
     GetPlayerWeaponInfos(function(weaponInfos)
         if weaponInfos and #weaponInfos > 0 then
             for _, weaponInfo in ipairs(weaponInfos) do
                 TriggerServerEvent('mdt:server:registerweapon', weaponInfo.serialnumber, weaponInfo.weaponurl, weaponInfo.notes, weaponInfo.owner, weaponInfo.weapClass, weaponInfo.weaponmodel)
-                ESX.ShowNotification("Weapon " .. weaponInfo.weaponmodel .. " has been added to police database.")
+                ESX.ShowNotification("L'arme " .. weaponInfo.weaponmodel .. " a été ajouté à la base de donnée SAPD.")
                 --print("Weapon added to database")
             end
         else
             --print("No weapons found")
         end
     end)
-end, false) ]]
+end, false)
 
 --====================================================================================
 ------------------------------------------
@@ -1126,5 +1104,4 @@ end
 RegisterCommand("tsa", function ()
     --exports['ps-dispatch-esx']:ATMRobbery()
     exports[Config.dispatchName]:Shooting()
-    print(ESX.PlayerLoaded)
 end, false)

@@ -783,15 +783,16 @@ end)
 
 RegisterNetEvent('mdt:server:deleteWeapons', function(id)
 	if id then
+		print(id)
 		local src = source
-		local Player = ESX.GetPlayerFromId(src)
-		if Config.RemoveWeaponsPerms[Player.job.name] then
-			if Config.RemoveWeaponsPerms[Player.job.name][Player.job.grade] then
-				local fullName = Player.name
+		local xPlayer = ESX.GetPlayerFromId(src)
+		if Config.RemoveWeaponsPerms[xPlayer.job.name] then
+			if Config.RemoveWeaponsPerms[xPlayer.job.name][xPlayer.job.grade] then
+				local fullName = xPlayer.name
 				MySQL.update("DELETE FROM `mdt_weaponinfo` WHERE id=:id", { id = id })
 				TriggerEvent('mdt:server:AddLog', "A Weapon Info was deleted by "..fullName.." with the ID ("..id..")")
 			else
-				local fullname = Player.name
+				local fullname = xPlayer.name
 				TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
 				TriggerEvent('mdt:server:AddLog', fullname.." tryed to delete a Weapon Info with the ID ("..id..")")
 			end
@@ -865,8 +866,6 @@ RegisterNetEvent('mdt:server:deleteICU', function(id)
 end)
 
 RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname)
-	print(type(firstname), firstname ~= "")
-	print(type(lastname), lastname ~= "")
     if firstname or lastname then
         local src = source
         local Player = ESX.GetPlayerFromId(src)
@@ -921,16 +920,6 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname
 						callsign = person.callsign
 					}
 				end
-                -- for i=1, #result do					
-                --     --local metadata = json.decode(result[i].metadata)
-                --     data[i] = {
-                --         id = result[i].identifier,
-                --         firstname = result[i].firstname,
-                --         lastname = result[i].lastname,
-                --         profilepic = ProfPic(result[i].sex, result[i].pfp),
-                --         callsign = result[i].callsign
-                --     }
-                -- end
                 TriggerClientEvent('mdt:client:incidentSearchPerson', src, data)
             end
         end
@@ -1264,10 +1253,8 @@ lib.callback.register('mdt:server:SearchWeapons', function(source, sentData)
 	if not sentData then return {} end
 	local PlayerData = ESX.GetPlayerFromId(source)
 	if not PermCheck(source, PlayerData) then return {} end
-
-	local Player = PlayerData
-	if Player then
-		local JobType = GetJobType(Player.job.name)
+	if PlayerData then
+		local JobType = GetJobType(PlayerData.job.name)
 		if JobType == 'police' or JobType == 'doj' then
 			local matches = MySQL.query.await('SELECT * FROM mdt_weaponinfo WHERE LOWER(`serial`) LIKE :query OR LOWER(`weapModel`) LIKE :query OR LOWER(`owner`) LIKE :query LIMIT 25', {
 				query = string.lower('%'..sentData..'%')
@@ -1310,7 +1297,7 @@ RegisterNetEvent('mdt:server:saveWeaponInfo', function(serial, imageurl, notes, 
 end)
 
 function CreateWeaponInfo(serial, imageurl, notes, owner, weapClass, weapModel)
-
+	print(serial, imageurl, notes, owner, weapClass, weapModel)
 	local results = MySQL.query.await('SELECT * FROM mdt_weaponinfo WHERE serial = ?', { serial })
 	if results[1] then
 		return
@@ -1318,6 +1305,8 @@ function CreateWeaponInfo(serial, imageurl, notes, owner, weapClass, weapModel)
 
 	if serial == nil then return end
 	if imageurl == nil then imageurl = 'img/not-found.webp' end
+
+	
 
 	MySQL.Async.insert('INSERT INTO mdt_weaponinfo (serial, owner, information, weapClass, weapModel, image) VALUES (:serial, :owner, :notes, :weapClass, :weapModel, :imageurl) ON DUPLICATE KEY UPDATE owner = :owner, information = :notes, weapClass = :weapClass, weapModel = :weapModel, image = :imageurl', {
 		['serial'] = serial,
@@ -1333,12 +1322,12 @@ exports('CreateWeaponInfo', CreateWeaponInfo)
 
 RegisterNetEvent('mdt:server:getWeaponData', function(serial)
 	if serial then
-		local Player = ESX.GetPlayerFromId(source)
-		if Player then
-			local JobType = GetJobType(Player.job.name)
+		local xPlayer = ESX.GetPlayerFromId(source)
+		if xPlayer then
+			local JobType = GetJobType(xPlayer.job.name)
 			if JobType == 'police' or JobType == 'doj' then
 				local results = MySQL.query.await('SELECT * FROM mdt_weaponinfo WHERE serial = ?', { serial })
-				TriggerClientEvent('mdt:client:getWeaponData', Player.source, results)
+				TriggerClientEvent('mdt:client:getWeaponData', xPlayer.source, results)
 			end
 		end
 	end
@@ -1938,28 +1927,31 @@ lib.callback.register('mdt:server:GetPlayerSourceId', function(source, targetCit
         TriggerClientEvent('esx:showNotification', source, "Citizen seems Asleep / Missing", "error")
         return
     end
-    local targetSource = targetPlayer.PlayerData.source
+    local targetSource = targetPlayer.source
 
     return targetSource
 end)
 
 lib.callback.register('getWeaponInfo', function(source)
-    local Player = ESX.GetPlayerFromId(source)
+    local xPlayer = ESX.GetPlayerFromId(source)
     local weaponInfos = {}
 	if Config.InventoryForWeaponsImages == "ox_inventory" then
-		local inv = exports.ox_inventory:GetInventoryItems(source)
+		local inv = exports.ox_inventory:GetInventoryItems(xPlayer.source)
 		for _, item in pairs(inv) do
 			if string.find(item.name, "WEAPON_") then
 				local invImage = ("https://cfx-nui-ox_inventory/web/images/%s.png"):format(item.name)
 				if invImage then
+					print(Items[item.name].label)
+					--print(json.encode(Items, { indent = true }))
 					weaponInfo = {
 						serialnumber = item.metadata.serial,
-						owner = Player.name,
-						weaponmodel = Items[string.lower(item.name)].label,
+						owner = xPlayer.name,
+						weaponmodel = Items[item.name].label,
 						weaponurl = invImage,
-						notes = "Self Registered",
-						weapClass = "Class 1",
+						notes = ("Enregistré le %s"):format(os.date("%d/%m/%Y à %X")),
+						weapClass = Config.WeaponClass[item.name],
 					}
+					weaponInfos[#weaponInfos+1] = weaponInfo
 					break
 				end
 			end
@@ -1985,7 +1977,7 @@ lib.callback.register('getWeaponInfo', function(source)
     return weaponInfos
 end)
 
-RegisterNetEvent('mdt:server:registerweapon', function(serial, imageurl, notes, owner, weapClass, weapModel) 
+RegisterNetEvent('mdt:server:registerweapon', function(serial, imageurl, notes, owner, weapClass, weapModel)
     exports['ps-mdt']:CreateWeaponInfo(serial, imageurl, notes, owner, weapClass, weapModel)
 end)
 

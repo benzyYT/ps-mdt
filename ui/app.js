@@ -3157,7 +3157,7 @@ $(document).ready(() => {
                             <img src="${value.image}" class="weapons-image">
                             <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
                               <div style="display: flex; flex-direction: column;">
-                                <div class="weapons-item-title">${value.weapModel} - Classe ${value.weapClass}</div>
+                                <div class="weapons-item-title">${value.weapModel} - ${value.weapClass}</div>
 
                                 </div>
                                 <div class="weapons-bottom-info">
@@ -4626,76 +4626,75 @@ window.addEventListener("message", function (event) {
     } else if (eventData.type == "calls") {
       const table = eventData.data;
       $(".active-calls-list").empty();
-      $.each(table, function (index, value) {
-        console.log(value)
-        if (value && value?.job?.includes(playerJob) || value?.jobs.includes(PlayerJobType)) {
+      $.each(table, function (index, call) {
+        if (call && call?.job?.includes(playerJob) || call?.jobs.includes(PlayerJobType)) {
 
-          const prio = value["priority"];
-          let DispatchItem = `<div class="active-calls-item" data-id="${value.callId || value.id}" data-canrespond="false"><div class="active-call-inner-container"><div class="call-item-top"><div class="call-number">#${value.callId || value.id}</div><div class="call-code priority-${value.priority}">${value.dispatchCode || value.code}</div><div class="call-title">${value.dispatchMessage || value.message}</div><div class="call-radio">${value.units.length}</div></div><div class="call-item-bottom">`;
+          const prio = call["priority"];
+          let DispatchItem = `<div class="active-calls-item" data-id="${call.callId || call.id}" data-canrespond="false"><div class="active-call-inner-container"><div class="call-item-top"><div class="call-number">#${call.callId || call.id}</div><div class="call-code priority-${call.priority}">${call.dispatchCode || call.code}</div><div class="call-title">${call.dispatchMessage || call.message}</div><div class="call-radio">${call.units.length}</div></div><div class="call-item-bottom">`;
 
           if (
-            value.dispatchCode == "911" ||
-            value.dispatchCode == "311"
+            call.dispatchCode == "911" ||
+            call.dispatchCode == "311"
           ) {
-            DispatchItem = `<div class="active-calls-item" data-id="${value.callId || value.id}" data-canrespond="true"><div class="active-call-inner-container"><div class="call-item-top"><div class="call-number">#${value.callId || value.id}</div><div class="call-code priority-${value.priority}">${value.dispatchCode || value.code}</div><div class="call-title">${value.dispatchMessage || value.message}</div><div class="call-radio">${value.units.length}</div></div><div class="call-item-bottom">`;
+            DispatchItem = `<div class="active-calls-item" data-id="${call.callId || call.id}" data-canrespond="true"><div class="active-call-inner-container"><div class="call-item-top"><div class="call-number">#${call.callId || value.id}</div><div class="call-code priority-${call.priority}">${call.dispatchCode || call.code}</div><div class="call-title">${call.dispatchMessage || call.message}</div><div class="call-radio">${call.units.length}</div></div><div class="call-item-bottom">`;
           }
 
-          if (value["time"]) {
+          if (call["time"]) {
             DispatchItem += `<div class="call-bottom-info"><span class="fas fa-clock" style="margin-left: -0.1vh;"></span>${timeAgo(
-              value.time
+              call.time
             )}</div>`;
           }
 
-          if (value["firstStreet"] || value['street']) {
-            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-map-pin"></span>${value.firstStreet || value.street}</div>`;
+          if (call["firstStreet"] || call['street']) {
+            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-map-pin"></span>${call.firstStreet || call.street}</div>`;
           }
 
-          if (value['camId']) {
-            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-camera"></span>${value.camId}</div>`;
+          if (call['camId']) {
+            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-camera"></span>${call.camId}</div>`;
           }
 
-          if (value["heading"]) {
-            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-share"></span>${value.heading}</div>`;
+          if (call["heading"]) {
+            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-share"></span>${call.heading}</div>`;
           }
 
-          if (value["weapon"]) {
-            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-gun"></span>${value.weapon}</div>`;
+          if (call["weapon"]) {
+            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-gun"></span>${call.weapon}</div>`;
           }
 
-          if (value["gender"]) {
+          if (call["gender"]) {
             let gender = "Male";
-            if (value["gender"] == 0 || value["gender"] == 2) {
+            if (call["gender"] == 0 || call["gender"] == 2) {
               gender = "Female";
             }
             DispatchItem += `<div class="call-bottom-info"><span class="fas fa-genderless"></span>${gender}</div>`;
           }
 
-          if (value["model"] && value["plate"]) {
-            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-car"></span>${value["model"]}<span class="fas fa-digital-tachograph" style="margin-left: 2vh;"></span>${value["plate"]}</div>`;
-          } else if (value["plate"]) {
-            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-digital-tachograph"></span>${value["plate"]}</div>`;
-          } else if (value["model"]) {
-            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-car"></span>${value["model"]}</div>`;
+          if (call["model"] && call["plate"]) {
+            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-car"></span>${call["model"]}<span class="fas fa-digital-tachograph" style="margin-left: 2vh;"></span>${call["plate"]}</div>`;
+          } else if (call["plate"]) {
+            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-digital-tachograph"></span>${call["plate"]}</div>`;
+          } else if (call["model"]) {
+            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-car"></span>${call["model"]}</div>`;
           }
 
-          if (value["firstColor"] || value["color"]) {
-            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-spray-can"></span>${value["firstColor"] || value["color"]}</div>`;
+          if (call["firstColor"] || call["color"]) {
+            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-spray-can"></span>${call["firstColor"] || call["color"]}</div>`;
           }
 
-          if (value["automaticGunfire"] == true) {
+          if (call["automaticGunfire"] == true) {
             DispatchItem += `<div class="call-bottom-info"><span class="fab fa-blackberry"></span>Automatic Gunfire</div>`;
           }
 
-          if (value["name"] && value["number"]) {
-            DispatchItem += `<div class="call-bottom-info"><span class="far fa-id-badge"></span>${value["name"]}<span class="fas fa-mobile-alt" style="margin-left: 2vh;"></span>${value["number"]}</div>`;
-          } else if (value["number"]) {
-            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-mobile-alt"></span>${value["number"]}</div>`;
-          } else if (value["name"]) {
-            DispatchItem += `<div class="call-bottom-info"><span class="far fa-id-badge"></span>${value["name"]}</div>`;
+          if (call["name"] && call["number"]) {
+            DispatchItem += `<div class="call-bottom-info"><span class="far fa-id-badge"></span>${call["name"]}<span class="fas fa-mobile-alt" style="margin-left: 2vh;"></span>${call["number"]}</div>`;
+          } else if (call["number"]) {
+            DispatchItem += `<div class="call-bottom-info"><span class="fas fa-mobile-alt"></span>${call["number"]}</div>`;
+          } else if (call["name"]) {
+            DispatchItem += `<div class="call-bottom-info"><span class="far fa-id-badge"></span>${call["name"]}</div>`;
           }
 
-          if (value["information"]) {
-            DispatchItem += `<div class="call-bottom-info call-bottom-information"><span class="far fa-question-circle"></span>${value["information"]}</div>`;
+          if (call["information"]) {
+            DispatchItem += `<div class="call-bottom-info call-bottom-information"><span class="far fa-question-circle"></span>${call["information"]}</div>`;
           }
 
           DispatchItem += `</div></div></div>`;
@@ -5211,7 +5210,7 @@ window.addEventListener("message", function (event) {
 
       $(".vehicle-information-title-holder").data(
         "dbid",
-        Number(table["dbid"])
+        Number(vehicle["dbid"])
       );
 
       $(".vehicle-info-plate-input").val(vehicle["plate"]);
@@ -5227,10 +5226,18 @@ window.addEventListener("message", function (event) {
 
       $(".vehicle-tags").empty();
       $(".vehicle-info-image").attr("src", vehicle["image"]);
-      $(".vehicle-tags").prepend(
-        `<div class="dmv-tag ${vehicle.color}-color">${vehicle.colorName}</div>`
-      );
-      console.log("TODO : TERMINEE CETTE PARTIE AVEC LA COULEUR")
+      if (typeof(vehicle.color) === "object") {
+        vehiclePaintHtml = `<div style="background-color: rgb(${vehicle.color})" class="dmv-tag">${vehicle.colorName}</div>`
+      }
+      if (typeof(vehicle.color) === "object") {
+        $(".vehicle-tags").prepend(
+          `<div style="background-color: rgb(${vehicle.color})" class="dmv-tag">${vehicle.colorName}</div>`
+        );
+      } else {
+        $(".vehicle-tags").prepend(
+          `<div class="dmv-tag ${vehicle.color}-color">${vehicle.colorName}</div>`
+        );
+      }
       let impound = "red-tag";
       let bolo = "red-tag";
       let codefive = "red-tag";
@@ -5259,21 +5266,21 @@ window.addEventListener("message", function (event) {
       $(".vehicle-info-imageurl-input").val(vehicle["image"]);
     } else if (eventData.type == "getWeaponData") {
       impoundChanged = false;
-      let table = eventData.data;
+      let weapon = eventData.data;
 
-      $(".weapon-information-title-holder").data( "dbid", table["id"] );
+      $(".weapon-information-title-holder").data( "dbid", weapon["id"] );
 
-      $(".weapon-info-serial-input").val(table["serial"]);
-      $(".weapon-info-owner-input").val(table["owner"]);
-      $(".weapon-info-class-input").val(table["weapClass"]);
-      $(".weapon-info-model-input").val(table["weapModel"]);
-      $(".weapon-info-imageurl-input").val(table["image"]);
+      $(".weapon-info-serial-input").val(weapon["serial"]);
+      $(".weapon-info-owner-input").val(weapon["owner"]);
+      $(".weapon-info-class-input").val(weapon["weapClass"]);
+      $(".weapon-info-model-input").val(weapon["weapModel"]);
+      $(".weapon-info-imageurl-input").val(weapon["image"]);
 
-      $(".weapon-info-content").val(table["information"]);
+      $(".weapon-info-content").val(weapon["information"]);
 
-      $(".weapon-info-image").attr("src", table["image"]);
+      $(".weapon-info-image").attr("src", weapon["image"]);
 
-      $(".weapon-info-imageurl-input").val(table["image"]);
+      $(".weapon-info-imageurl-input").val(weapon["image"]);
       $(".contextmenu").on("click", ".weapons-delete", function () {
         $(".weapons-items")
           .find(`[data-id="${$(this).data("info")}"]`)
@@ -5288,11 +5295,12 @@ window.addEventListener("message", function (event) {
 
       $(".weapons-items").on("contextmenu", ".weapons-item", function (e) {
         var args = "";
+        console.log($(this).data("id"))
         args = [
           {
             className: "weapons-delete",
             icon: "fas fa-times",
-            text: "Delete Weapon Info",
+            text: "Supprimer Arme",
             info: $(this).data("id"),
             status: "",
           },
