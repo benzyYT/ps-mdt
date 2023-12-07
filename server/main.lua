@@ -68,17 +68,40 @@ if Config.UseWolfknightRadar == true then
 		local vehicleOwner = GetVehicleOwner(plate)
 		local bolo, title, boloId = GetBoloStatus(plate)
 		local warrant, owner, incidentId = GetWarrantStatus(plate)
-		local driversLicense = PlayerData.metadata['licences'].driver
+		--local driversLicense = PlayerData.metadata['licences'].driver
 
 		if bolo == true then
-			TriggerClientEvent('esx:showNotification', src, 'BOLO ID: '..boloId..' | Title: '..title..' | Registered Owner: '..vehicleOwner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
-		end
-		if warrant == true then
-			TriggerClientEvent('esx:showNotification', src, 'WANTED - INCIDENT ID: '..incidentId..' | Registered Owner: '..owner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
-		end
+			--TriggerClientEvent('esx:showNotification', src, 'BOLO ID: '..boloId..' | Title: '..title..' | Registered Owner: '..vehicleOwner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
+			TriggerClientEvent('ox_lib:notify', src, {
+				title = "Véhicule Recherché",
+				description = ("#### Mandat Routier n°**%s**\n- Titre: **%s**\n- Propriétaire Enregistré: **%s**\n- Plaque: **%s**\n"):format(boloId, title, vehicleOwner, plate),
+				duration = Config.WolfknightNotifyTime,
+				position = "top",
+				type = "warning",
+				icon = "person-military-pointing",
+			})
 
-		if Config.PlateScanForDriversLicense and driversLicense == false and vehicleOwner then
-			TriggerClientEvent('esx:showNotification', src, 'NO DRIVERS LICENCE | Registered Owner: '..vehicleOwner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
+		elseif warrant == true then
+			--TriggerClientEvent('esx:showNotification', src, 'WANTED - INCIDENT ID: '..incidentId..' | Registered Owner: '..owner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
+			TriggerClientEvent('ox_lib:notify', src, {
+				title = "Véhicule Recherché",
+				description = ("#### Incident n°%s\n- Propriétaire Enregistré: **%s**\n- Plaque: **%s**\n"):format(incidentId, vehicleOwner, plate),
+				duration = Config.WolfknightNotifyTime,
+				position = "top",
+				type = "warning",
+				icon = "person-military-pointing",
+			})
+		elseif Config.PlateScanForDriversLicense and driversLicense == false and vehicleOwner then
+			--TriggerClientEvent('esx:showNotification', src, 'NO DRIVERS LICENCE | Registered Owner: '..vehicleOwner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
+			TriggerClientEvent('ox_lib:notify', src, {
+				title = "Véhicule Recherché",
+				description = ("#### Pas de permis !\n- Propriétaire Enregistré: **%s**\n- Plaque: **%s**\n"):format(vehicleOwner, plate),
+				duration = Config.WolfknightNotifyTime,
+				position = "top",
+				type = "warning",
+				icon = "person-military-pointing",
+			})
+			
 		end
 
 		if bolo or warrant or (Config.PlateScanForDriversLicense and not driversLicense) and vehicleOwner then
@@ -657,19 +680,21 @@ RegisterNetEvent('mdt:server:getIncidentData', function(sentId)
 				data['civsinvolved'] = json.decode(data['civsinvolved'])
 				data['evidence'] = json.decode(data['evidence'])
 
-
-				local convictions = MySQL.query.await("SELECT * FROM `mdt_convictions` WHERE `linkedincident` = :id", {
+				local convictions = MySQL.query.await("SELECT  c.* FROM `mdt_convictions` c WHERE `linkedincident` = :id", {
 					id = sentId
 				})
 				if convictions ~= nil then
-					for i=1, #convictions do
-						local xPlayer = ESX.GetPlayerFromIdentifier(convictions[i]['identifier'])
-						if res ~= nil then
-							convictions[i]['name'] = xPlayer.name
+					for cId, conviction in pairs(convictions) do
+						local player = MySQL.single.await("SELECT `identifier`, `firstname`, `lastname` FROM `users` WHERE identifier = ?", {
+							conviction.identifier
+						})
+						--local xPlayer = ESX.GetPlayerFromIdentifier(convictions[i]['identifier'])
+						if player ~= nil then
+							conviction.name = ("%s %s"):format(player.firstname, player.lastname)
 						else
-							convictions[i]['name'] = "Unknown"
+							conviction.name = "Inconnu"
 						end
-						convictions[i]['charges'] = json.decode(convictions[i]['charges'])
+						conviction.charges = json.decode(conviction.charges)
 					end
 				end
 				TriggerClientEvent('mdt:client:getIncidentData', src, data, convictions)
@@ -1048,9 +1073,6 @@ lib.callback.register('mdt:server:SearchVehicles', function(source, sentData)
 	if PlayerData then
 		local JobType = GetJobType(PlayerData.job.name)
 		if JobType == 'police' or JobType == 'doj' then
-			-- local vehicles = MySQL.query.await("SELECT pv.id, pv.identifier, pv.plate, pv.vehicle, pv.mods, pv.state, p.charinfo FROM `player_vehicles` pv LEFT JOIN players p ON pv.identifier = p.identifier WHERE LOWER(`plate`) LIKE :query OR LOWER(`vehicle`) LIKE :query LIMIT 25", {
-			-- 	query = string.lower('%'..sentData..'%')
-			-- })
 			local vehicles = MySQL.query.await("SELECT ov.*, u.firstname, u.lastname FROM `owned_vehicles` ov LEFT JOIN users u ON ov.owner = u.identifier WHERE LOWER(`plate`) LIKE :query OR LOWER(`vehicle`) LIKE :query LIMIT 25", {
 				query = string.lower('%'..sentData..'%')
 			})
@@ -1889,9 +1911,9 @@ function GetBoloStatus(plate)
 end
 
 function GetWarrantStatus(plate)
-    local result = MySQL.query.await("SELECT p.plate, p.identifier, m.id FROM player_vehicles p INNER JOIN mdt_convictions m ON p.identifier = m.identifier WHERE m.warrant =1 AND p.plate =?", {plate})
+    local result = MySQL.query.await("SELECT ow.owner, ow.plate, m.id FROM owned_vehicles ow INNER JOIN mdt_convictions m ON ow.owner = m.identifier WHERE m.warrant = 1 AND ow.plate = ?", {plate})
 	if result and result[1] then
-		local identifier = result[1]['identifier']
+		local identifier = result[1]['owner']
 		local Player = ESX.GetPlayerFromIdentifier(identifier)
 		local owner = Player.name
 		local incidentId = result[1]['id']
@@ -1901,9 +1923,9 @@ function GetWarrantStatus(plate)
 end
 
 function GetVehicleInformation(plate)
-	local result = MySQL.query.await('SELECT * FROM mdt_vehicleinfo WHERE plate = @plate', {['@plate'] = plate})
-    if result[1] then
-        return result[1]
+	local vehInfos = MySQL.single.await('SELECT * FROM mdt_vehicleinfo WHERE plate = @plate', {['@plate'] = plate})
+    if vehInfos then
+        return vehInfos
     else
         return false
     end
@@ -1911,9 +1933,9 @@ end
 
 function GetVehicleOwner(plate)
 
-	local result = MySQL.query.await('SELECT plate, identifier, id FROM player_vehicles WHERE plate = @plate', {['@plate'] = plate})
-	if result and result[1] then
-		local identifier = result[1]['identifier']
+	local vehData = MySQL.single.await('SELECT owner, plate FROM owned_vehicles WHERE plate = @plate', {['@plate'] = plate})
+	if vehData then
+		local identifier = vehData['owner']
 		local Player = ESX.GetPlayerFromIdentifier(identifier)
 		local owner = Player.name
 		return owner

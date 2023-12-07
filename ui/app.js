@@ -3152,6 +3152,7 @@ $(document).ready(() => {
         let weaponHTML = "";
 
         result.forEach((value) => {
+          console.log(value)
           weaponHTML += `
                         <div class="weapons-item" data-id="${value.id}" data-dbid="${value.id}" data-serial="${value.serial}">
                             <img src="${value.image}" class="weapons-image">
@@ -4064,10 +4065,10 @@ $(document).ready(() => {
           } else if (sentJob == "doc") {
             applyCustomTheme(customThemes.doc)
           }
-        $(".bolo-nav-item").html("Mandats");
-        $(".bolos-search-title").html("Mandats");
-        $("#bolos-search-input").attr("placeholder", "Rechercher Mandats...");
-        $(".manage-bolos-title").html("Gestion Mandats");
+        $(".bolo-nav-item").html("Mandats Routiers");
+        $(".bolos-search-title").html("Mandats Routiers");
+        $("#bolos-search-input").attr("placeholder", "Rechercher Mandats Routiers...");
+        $(".manage-bolos-title").html("Gestion Mandats Routiers");
         $(".manage-bolos-editing-title").html(
           "Vous rédigez un nouveau Mandat"
         );
@@ -4101,10 +4102,10 @@ $(document).ready(() => {
         $(".manage-profile-name-input-1").attr("readonly", true);
         $(".manage-profile-name-input-2").attr("readonly", true);
         $("#reports-officers-involved-tag-title").html(
-          "Officers Involved"
+          "Officiers Impliqués"
         );
         $("#bolos-officers-involved-tag-title").html(
-          "Officers Involved"
+          "Officiers Impliqués"
         );
         $(".roster-iframe").attr("src", rosterLink);
         $(".sop-iframe").attr("src", sopLink);
@@ -4884,7 +4885,7 @@ window.addEventListener("message", function (event) {
         $(".associated-incidents-tags-holder").prepend(
           `<div class="associated-incidents-tag" data-id="${value.identifier}">${value.name}</div>`
         );
-
+        console.log(value)
         var warrantTag = "red-tag";
         var guiltyTag = "red-tag";
         var processedTag = "red-tag";
@@ -5260,7 +5261,7 @@ window.addEventListener("message", function (event) {
       }
 
       $(".vehicle-tags").append(`<div class="vehicle-tag ${impound} impound-tag">Impound</div>`);
-      $(".vehicle-tags").append(`<div class="vehicle-tag ${bolo}">BOLO</div>`);
+      $(".vehicle-tags").append(`<div class="vehicle-tag ${bolo}">Recherché</div>`);
       $(".vehicle-tags").append(`<div class="vehicle-tag ${codefive} code5-tag">Code 5</div>`);
       $(".vehicle-tags").append(`<div class="vehicle-tag ${stolen} stolen-tag">Stolen</div>`);
       $(".vehicle-info-imageurl-input").val(vehicle["image"]);
@@ -5305,6 +5306,7 @@ window.addEventListener("message", function (event) {
             status: "",
           },
         ];
+        console.log(args)
         openContextMenu(e, args);
       });
     } else if (eventData.type == "updateVehicleDbId") {
@@ -5652,7 +5654,7 @@ function searchProfilesResults(result) {
     }
     
     let name = `${profile.firstname} ${profile.lastname}`;
-    let warrant = "red-tag";
+    let warrant = "green-tag";
     let convictions = "red-tag";
 
     let licencesHTML = "";
@@ -5673,7 +5675,7 @@ function searchProfilesResults(result) {
     }
 
     if (profile.warrant == true) {
-      warrant = "green-tag";
+      warrant = "red-tag";
     }
 
     if (profile.convictions < 5) {
@@ -5699,7 +5701,7 @@ function searchProfilesResults(result) {
                 ${licencesHTML}
             </div>
             <div class="profile-criminal-tags">
-                <span class="license-tag ${warrant}">${profile.warrant ? "Active" : "No"} Warrant</span>
+                <span class="license-tag ${warrant}">${profile.warrant ? "Recherché" : "Non Recherché"}</span>
                 <span class="license-tag ${convictions}">${profile.convictions} Condamnations </span>
             </div>
         </div>
@@ -5754,9 +5756,9 @@ function updateOfficerData(officerData) {
 function getPosition(rank) {
   const ordinal = rank % 10;
   if (rank === 11 || rank === 12 || rank === 13) {
-    return rank + 'th';
+    return rank + 'ème';
   }
-  return rank + (ordinal === 1 ? 'st' : ordinal === 2 ? 'nd' : ordinal === 3 ? 'rd' : 'th');
+  return rank + (ordinal === 1 ? 'er' : ordinal === 2 ? 'ème' : ordinal === 3 ? 'ème' : 'ème');
 }
 
 function timeStringToSeconds(t) {
