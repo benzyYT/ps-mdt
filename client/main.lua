@@ -351,7 +351,11 @@ end)
 RegisterNUICallback("incidentSearchPerson", function(data, cb)
     local firstname = data.firstname
     local lastname = data.lastname
-    TriggerServerEvent('mdt:server:incidentSearchPerson', firstname, lastname)
+    local isJobEmployee = false
+    if data.isJobEmployee ~= "" and data.isJobEmployee ~= nil then
+        isJobEmployee = true
+    end
+    TriggerServerEvent('mdt:server:incidentSearchPerson', firstname, lastname, isJobEmployee)
     cb(true)
   end)
 

@@ -2896,7 +2896,7 @@ span.tag-incident-input[contenteditable]:empty::before {
     user-select: none;
 }
 
-.incidents-person-search-firstname-input {
+.incidents-person-search-job {
     background-color: rgba(0, 0, 0, 0);
     border: none;
     outline: none;

@@ -890,7 +890,7 @@ RegisterNetEvent('mdt:server:deleteICU', function(id)
 	end
 end)
 
-RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname)
+RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname, isJobEmployee)
     if firstname or lastname then
         local src = source
         local Player = ESX.GetPlayerFromId(src)
@@ -902,49 +902,53 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname
                     if gender == "f" then return "img/female.png" end;
                     return "img/male.png"
                 end
-
-                -- local firstname, lastname = query:match("^(%S+)%s*(%S*)$")
-                -- firstname = firstname or query
-                -- lastname = lastname or query
-				-- OR LOWER(u.firstname) LIKE :firstname OR LOWER(u.lastname) LIKE :lastname
-				-- local result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname OR LOWER(u.identifier) LIKE :identifier AND `jobtype` = :jobtype LIMIT 50", {
-                --     firstname = string.lower('%' .. firstname .. '%'),
-                --     lastname = string.lower('%' .. lastname .. '%'),
-                --     identifier = string.lower('%' .. query .. '%'),
-                --     jobtype = JobType
-                -- })
+				
 				local result = nil
 				if firstname ~= "" and lastname ~= "" then
-					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
 						firstname = string.lower('%' .. firstname .. '%'),
 						lastname = string.lower('%' .. lastname .. '%'),
 						jobtype = JobType
 					})
 				elseif firstname ~= "" and lastname == "" then
-					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND `jobtype` = :jobtype LIMIT 50", {
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND `jobtype` = :jobtype LIMIT 50", {
 						firstname = string.lower('%' .. firstname .. '%'),
 						jobtype = JobType
 					})
 				elseif firstname == "" and lastname ~= "" then
-					print("ok3")
-					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
 						lastname = string.lower('%' .. lastname .. '%'),
 						jobtype = JobType
 					})
 				end
-				print(result)
                 local data = {}
-				for k, person in pairs(result) do
-					print(person.firstname)
-					print(person.lastname)
-					data[k] = {
-						id = person.identifier,
-						firstname = person.firstname,
-						lastname = person.lastname,
-						profilepic = ProfPic(person.sex, person.pfp),
-						callsign = person.callsign
-					}
+				if result then
+					if isJobEmployee == true then
+						for k, person in pairs(result) do
+							if person.job == Player.job.name then
+								data[k] = {
+									id = person.identifier,
+									firstname = person.firstname,
+									lastname = person.lastname,
+									profilepic = ProfPic(person.sex, person.pfp),
+									callsign = person.callsign
+								}
+							end							
+						end
+					else
+						for k, person in pairs(result) do
+							data[k] = {
+								id = person.identifier,
+								firstname = person.firstname,
+								lastname = person.lastname,
+								profilepic = ProfPic(person.sex, person.pfp),
+								callsign = person.callsign
+							}
+						end
+					end
+					
 				end
+				print(json.encode(data, { indent = true }))
                 TriggerClientEvent('mdt:client:incidentSearchPerson', src, data)
             end
         end

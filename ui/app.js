@@ -1254,40 +1254,33 @@ $(document).ready(() => {
       id,
     }));
   }
-
-  // $(".incidents-person-search-name-input").on("keydown", "", function (e) {
-  //   if (e.keyCode === 13) {
-  //     let name = $(".incidents-person-search-name-input").val();
-  //     $.post(
-  //       `https://${GetParentResourceName()}/incidentSearchPerson`,
-  //       JSON.stringify({
-  //         name: name,
-  //       })
-  //     );
-  //   }
-  // });
+  
   $(".incidents-person-search-firstname-input").on("keydown", "", function (e) {
     if (e.keyCode === 13) {
-      let firstname = $(".incidents-person-search-firstname-input").val();
-      let lastname = $(".incidents-person-search-lastname-input").val();
+      const firstname = $(".incidents-person-search-firstname-input").val();
+      const lastname = $(".incidents-person-search-lastname-input").val();
+      const isJobEmployee = $('.incidents-person-search-job').val();
       $.post(
         `https://${GetParentResourceName()}/incidentSearchPerson`,
         JSON.stringify({
           firstname: firstname,
           lastname: lastname,
+          isJobEmployee: isJobEmployee
         })
       );
     }
   });
   $(".incidents-person-search-lastname-input").on("keydown", "", function (e) {
     if (e.keyCode === 13) {
-      let firstname = $(".incidents-person-search-firstname-input").val();
-      let lastname = $(".incidents-person-search-lastname-input").val();
+      const firstname = $(".incidents-person-search-firstname-input").val();
+      const lastname = $(".incidents-person-search-lastname-input").val();
+      const isJobEmployee = $('.incidents-person-search-job').val();
       $.post(
         `https://${GetParentResourceName()}/incidentSearchPerson`,
         JSON.stringify({
           firstname: firstname,
           lastname: lastname,
+          isJobEmployee: isJobEmployee
         })
       );
     }
@@ -1318,6 +1311,7 @@ $(document).ready(() => {
     document.addEventListener("mouseup", onMouseDownIncidents);
     $(".incidents-person-search-holder").attr("data-source", source);
     $(".incidents-person-search-container").fadeIn(250); // makes the container visible
+    $(".incidents-person-search-job").val(playerJob);
     $(".close-all").css("filter", "brightness(15%)");
   });
 
@@ -1326,6 +1320,7 @@ $(document).ready(() => {
     document.addEventListener("mouseup", onMouseDownIncidents);
     $(".incidents-person-search-holder").attr("data-source", source);
     $(".incidents-person-search-container").fadeIn(250); // makes the container visible
+    $('.incidents-person-search-job').val("");
     $(".close-all").css("filter", "brightness(15%)");
   });
 
@@ -1934,6 +1929,7 @@ $(document).ready(() => {
     const source = "bolos-officers";
     $(".incidents-person-search-holder").attr("data-source", source);
     $(".incidents-person-search-container").fadeIn(250); // makes the container visible
+    $('.incidents-person-search-job').val(playerJob);
     $(".close-all").css("filter", "brightness(15%)");
   });
 
@@ -2116,9 +2112,9 @@ $(document).ready(() => {
       // Clear the search results and source
       $(".incidents-person-search-holder").removeData("source"); // Without using this line, we end up reading stale data from the data-source attribute rather than the data-source from the field we clicked on
       $(".incidents-person-search-holder").empty(); // Clear the search results
-      //$('.incidents-person-search-name-input').val(''); // Reset the search input field
       $('.incidents-person-search-firstname-input').val(''); // Reset the search input field
       $('.incidents-person-search-lastname-input').val(''); // Reset the search input field
+      $('.incidents-person-search-job').val(''); // Reset the search input field      
     }
   );
 
@@ -2438,6 +2434,7 @@ $(document).ready(() => {
     document.addEventListener("mouseup", onMouseDownIncidents);
     $(".incidents-person-search-holder").attr("data-source", source);
     $(".incidents-person-search-container").fadeIn(250); // makes the container visible
+    $('.incidents-person-search-job').val(playerJob);
     $(".close-all").css("filter", "brightness(15%)");
   });
 
@@ -2446,6 +2443,7 @@ $(document).ready(() => {
     const source = "reports-civilians";
     $(".incidents-person-search-holder").attr("data-source", source);
     $(".incidents-person-search-container").fadeIn(250); // makes the container visible
+    $('.incidents-person-search-job').val("");
     $(".close-all").css("filter", "brightness(15%)");
   });
 
@@ -4159,6 +4157,7 @@ $(document).ready(() => {
         $("#bolos-officers-involved-tag-title").html(
           "EMS Impliqués"
         );
+        $(".incidents-person-search-job").val(playerJob);
         $(".dispatch-title-ofsomesort").html("Dispatch");
         $(".dispatch-comms-container").fadeIn(0);
         $(".manage-profile-name-input-1").attr("readonly", true);
