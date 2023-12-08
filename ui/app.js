@@ -1985,14 +1985,6 @@ $(document).ready(() => {
     }
   );
 
-  $('.incidents-ghost-holder').on('click', '#jail-button', function() {
-    // Get the current sentence and recommended sentence values
-    const identifier = $(this).data("id");
-    const sentence = $(".sentence-amount").filter(`[data-id=${identifier}]`).val();
-    const recommendSentence = $(".sentence-recommended-amount").filter(`[data-id=${identifier}]`).val();
-    sendToJail(identifier, sentence, recommendSentence);
-  });
-
   $('.incidents-ghost-holder').on('click', '#fine-button', function() {
     // Get the current fine and recommended fine values
     const identifier = $(this).data("id");
@@ -2112,9 +2104,8 @@ $(document).ready(() => {
                 <div class="associated-incidents-fine-input" data-id="${$(this).data("identifier")}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${$(this).data("identifier")}" type="number"></div>
                 <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Peine</div>
                 <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez mois here..." value="0" class="sentence-amount" data-id="${$(this).data("identifier")}" type="number"></div>
-                <div class="associated-incidents-controls" data-id="${$(this).data("identifier")}">
-                    <div id="jail-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-building-columns" style="margin-top: 3.5px;"></span> Jail</div>
-                    <div id="fine-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Fine</div>
+                <div class="associated-incidents-controls" data-id="${$(this).data("identifier")}">                    
+                    <div id="fine-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Amender</div>
                     ${canSendToCommunityService ? `<div id="community-service-button" class="control-button" data-id="${$(this).data("identifier")}"> <span class="fa-solid fa-person-digging" style="margin-top: 3.5px;"></span>Community Service</div>` : ''}
                 </div>
             </div>
@@ -4917,9 +4908,8 @@ window.addEventListener("message", function (event) {
           <div class="associated-incidents-fine-input" data-id="${identifier}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${identifier}" type="number"></div>
           <div class="manage-incidents-title-tag" data-id="${identifier}">Sentence</div>
           <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez months here..." value="0" class="sentence-amount" data-id="${identifier}" type="number"></div>
-          <div class="associated-incidents-controls" data-id="${identifier}">
-            <div id="jail-button" class="control-button" data-id="${identifier}"><span class="fa-solid fa-building-columns" style="margin-top: 3.5px;"></span> Jail</div>
-            <div id="fine-button" class="control-button" data-id="${identifier}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Fine</div>
+          <div class="associated-incidents-controls" data-id="${identifier}">            
+            <div id="fine-button" class="control-button" data-id="${identifier}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Amender</div>
             ${canSendToCommunityService ? `<div id="community-service-button" class="control-button" data-id="${identifier}"> <span class="fa-solid fa-person-digging" style="margin-top: 3.5px;"></span>Community Service</div>` : ''}
           </div>
         `;

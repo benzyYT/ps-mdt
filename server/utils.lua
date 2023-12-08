@@ -33,18 +33,6 @@ function ProfPic(gender, profilepic)
 	return "img/male.png"
 end
 
-function IsJobAllowedToMDT(job)
-	if Config.PoliceJobs[job] then
-		return true
-	elseif Config.AmbulanceJobs[job] then
-		return true
-	elseif Config.DojJobs[job] then
-		return true
-	else
-		return false
-	end
-end
-
 function GetNameFromPlayerData(PlayerData)
 	return ('%s %s'):format(PlayerData.charinfo.firstname, PlayerData.charinfo.lastname)
 end

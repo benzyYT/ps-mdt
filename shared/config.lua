@@ -6,6 +6,42 @@ Config.UseCQCMugshot = true
 -- Front, Back Side. Use 4 for both sides, we recommend leaving at 1 for default.
 Config.MugPhotos = 1
 
+Config.MugShotSpots = {
+    ["missionrow"] = {
+        signLabel = "LSPD Mission Row",
+        camX = 479.0,
+        camY = -984.8743,
+        camZ = 21.8,
+        camRot = {x = 0.0, y = 0.0, z = 90.0},
+        suspectHeading = 269.6102,
+        suspectX = 477.5081,
+        suspectY = -984.9333,
+        suspectZ = 20.5595,
+    },    
+    ["boling"] = {
+        signLabel = "Pénitentier de Bolingbroke",
+        camX = 1828.69,
+        camY = 2581.72,
+        camZ = 46.3,
+        camRot = {x = 0.0, y = 0.0, z = 92.23},
+        suspectHeading = 265.00,
+        suspectX = 1827.63,
+        suspectY = 2581.7,
+        suspectZ = 44.89,
+    },
+    ["sandy"] = {
+        signLabel = "BCSO Sandy Shore",
+        camX = 1814.5914,
+        camY = 3664.3955,
+        camZ = 34.1892,
+        camRot = {x = 0.0, y = 0.0, z = 92.0},
+        suspectHeading = 298.7003,
+        suspectX = 1813.3495,
+        suspectY = 3663.9260,
+        suspectZ = 33.1893,
+    },
+}
+
 -- If set to true = Fine gets automatically removed from bank automatically charging the player.
 -- If set to false = The fine gets sent as an Invoice to their phone and it us to the player to pay for it, can remain unpaid and ignored.
 Config.BillVariation = true
@@ -991,5 +1027,17 @@ function GetJobType(job)
 		return 'doj'
 	else
 		return nil
+	end
+end
+
+function IsJobAllowedToMDT(job)
+	if Config.PoliceJobs[job] then
+		return true
+	elseif Config.AmbulanceJobs[job] then
+		return true
+	elseif Config.DojJobs[job] then
+		return true
+	else
+		return false
 	end
 end

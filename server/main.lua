@@ -607,8 +607,8 @@ end)
 
 
 -- Mugshotd
-RegisterNetEvent('cqc-mugshot:server:triggerSuspect', function(suspect)
-    TriggerClientEvent('cqc-mugshot:client:trigger', suspect, suspect)
+RegisterNetEvent('cqc-mugshot:server:triggerSuspect', function(suspect, spot)
+    TriggerClientEvent('cqc-mugshot:client:trigger', suspect, spot or "missionrow")
 end)
 
 RegisterNetEvent('psmdt-mugshot:server:MDTupload', function(identifier, MugShotURLs)

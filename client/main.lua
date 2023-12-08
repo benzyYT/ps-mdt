@@ -356,7 +356,7 @@ RegisterNUICallback("incidentSearchPerson", function(data, cb)
   end)
 
 -- Handle sending a fine to a player
--- Uses the QB-Core bill command to send a fine to a player
+-- Uses the QB-Core bill command to send a fine to a playerf
 -- If you use a different fine system, you will need to change this
 RegisterNUICallback("sendFine", function(data, cb)
     local identifier, fine, incidentId = data.identifier, data.fine, data.incidentId
@@ -364,14 +364,8 @@ RegisterNUICallback("sendFine", function(data, cb)
     local targetSourceId = lib.callback.await('mdt:server:GetPlayerSourceId', false, identifier)
     if targetSourceId then
         if fine > 0 then
-            if Config.BillVariation then
-                -- Uses QB-Core removeMoney Functions
-                TriggerServerEvent("mdt:server:removeMoney", identifier, fine, incidentId)
-            else
-                -- Uses QB-Core /bill command
-                ExecuteCommand(('bill %s %s'):format(targetSourceId, fine))
-                TriggerServerEvent("mdt:server:giveCitationItem", identifier, fine, incidentId)
-            end
+            local societyAccount = ("society_%s"):format(LocalPlayer.state.job.name)
+            TriggerServerEvent('esx_billing:sendBill', targetSourceId, societyAccount, ("Amende dossier n°%s"):format(incidentId), fine)
         end
     end    
 end)

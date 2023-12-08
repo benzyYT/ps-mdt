@@ -4,15 +4,9 @@ local handle, board, board_scaleform, overlay, ped, pedcoords, x, y, z, r, suspe
 local MugShots = {}
 
 -- Mugshot location  ( Position is the default QBCore Prison Interior )
-	x = 1828.69
-    y = 2581.72
-    z = 46.3
-    r = {x = 0.0, y = 0.0, z = 92.23}
-    suspectheading = 265.00
-    suspectx = 1827.63
-    suspecty = 2581.7
-    suspectz = 44.89
 	
+	-- 477.4782, -984.8716, 21.5595, 269.2493
+    -- 479.0509, -984.8743, 21.5595, 88.1577
 -- Mugshot functions
 
 local function TakeMugShot()
@@ -26,8 +20,8 @@ local function TakeMugShot()
     end
 end
 
-local function PhotoProcess(ped)
-    local rotation = suspectheading
+local function PhotoProcess(ped, spot)
+    local rotation = spot.suspectHeading
     for photo = 1, Config.MugPhotos, 1 do
         Wait(1500)
         TakeMugShot()
@@ -38,14 +32,14 @@ local function PhotoProcess(ped)
     end
 end
 
-local function MugShotCamera()
+local function MugShotCamera(spot)
     if createdCamera ~= 0 then
         DestroyCam(createdCamera, 0)
         createdCamera = 0
     end
     local cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", 1)
-    SetCamCoord(cam, x, y, z)
-    SetCamRot(cam, r.x, r.y, r.z, 2)
+    SetCamCoord(cam, spot.camX, spot.camY, spot.camZ)
+    SetCamRot(cam, spot.camRot.x, spot.camRot.y, spot.camRot.z, 2)
     RenderScriptCams(1, 0, 0, 1, 1)
     Wait(250)
     createdCamera = cam
@@ -125,11 +119,11 @@ local function PrepBoard()
     end)
 end
 
-local function MakeBoard()
-    title = "Bolingbroke Penitentiary"
-    center = playerData.name
-    footer = playerData.identifier
-    header = playerData.charinfo.birthdate
+local function MakeBoard(label)
+    title = label
+    center = ESX.PlayerData.name
+    footer = ESX.PlayerData.identifier
+    header = ESX.PlayerData.dateofbirth
 	CallScaleformMethod(board_scaleform, 'SET_BOARD', title, center, footer, header, 0, 1337, 116)
 end
 
@@ -162,9 +156,15 @@ local function DestoryCamera()
     createdCamera = 0
 end
 
-RegisterNetEvent('cqc-mugshot:client:trigger', function()
+RegisterNetEvent('cqc-mugshot:client:trigger', function(spot)
     ped = PlayerPedId()
     pedcoords = GetEntityCoords(ped)
+    print(spot)
+    if not spot then
+        spot = Config.MugShotSpots["missionrow"]
+    else
+        spot = Config.MugShotSpots[spot]
+    end
     CreateThread(function()
         playerData = ESX.GetPlayerData()
         MugshotArray, mugshotInProgress = {}, true
@@ -173,16 +173,16 @@ RegisterNetEvent('cqc-mugshot:client:trigger', function()
         lib.requestAnimDict(animDict)
         PrepBoard()
         Wait(250)
-        MakeBoard()
-        MugShotCamera()
-        SetEntityCoords(ped, suspectx, suspecty, suspectz)
-        SetEntityHeading(ped, suspectheading)
+        MakeBoard(spot.signLabel)
+        MugShotCamera(spot)
+        SetEntityCoords(ped, spot.suspectX, spot.suspectY, spot.suspectZ)
+        SetEntityHeading(ped, spot.suspectHeading)
         PlayerBoard()
         TaskPlayAnim(ped, animDict, "loop_raised", 8.0, 8.0, -1, 49, 0, false, false, false)
-        PhotoProcess(ped)
+        PhotoProcess(ped, spot)
         if createdCamera ~= 0 then
             DestoryCamera()
-            SetEntityHeading(ped, suspectheading)
+            SetEntityHeading(ped, spot.suspectHeading)
             ClearPedSecondaryTask(GetPlayerPed(ped))
         end
            TriggerServerEvent('psmdt-mugshot:server:MDTupload', playerData.identifier, MugshotArray)
@@ -190,23 +190,29 @@ RegisterNetEvent('cqc-mugshot:client:trigger', function()
     end)
 end)
 
-RegisterNUICallback("sendToJail", function(data, cb)
-    local MugShotWebhook = lib.callback.await('ps-mdt:server:MugShotWebhook', false)
-    if MugShotWebhook then
-        local identifier, sentence = data.identifier, data.sentence
+-- RegisterNUICallback("sendToJail", function(data, cb)
+--     local MugShotWebhook = lib.callback.await('ps-mdt:server:MugShotWebhook', false)
+--     if MugShotWebhook then
+--         local identifier, sentence = data.identifier, data.sentence
 
-        -- Gets the player id from the identifier
-        local targetSourceId = lib.callback.await('mdt:server:GetPlayerSourceId', false, identifier)
+--         -- Gets the player id from the identifier
+--         local targetSourceId = lib.callback.await('mdt:server:GetPlayerSourceId', false, identifier)
 
-        if targetSourceId then
-            if sentence > 0 then
-                if Config.UseCQCMugshot then
-                    TriggerServerEvent('cqc-mugshot:server:triggerSuspect', targetSourceId)
-                end
-                Citizen.Wait(5000)
-                -- Uses qb-policejob JailPlayer event
-                TriggerServerEvent("police:server:JailPlayer", targetSourceId, sentence)
-            end
-        end
+--         if targetSourceId then
+--             if sentence > 0 then
+--                 if Config.UseCQCMugshot then
+--                     TriggerServerEvent('cqc-mugshot:server:triggerSuspect', targetSourceId)
+--                 end
+--                 Citizen.Wait(5000)
+--                 -- Uses qb-policejob JailPlayer event
+--                 TriggerServerEvent("police:server:JailPlayer", targetSourceId, sentence)
+--             end
+--         end
+--     end
+-- end)
+
+RegisterCommand("testmugshotself", function(source)
+    if Config.UseCQCMugshot then
+        TriggerServerEvent('cqc-mugshot:server:triggerSuspect', GetPlayerServerId(PlayerId()))
     end
-end)
+end, false)
