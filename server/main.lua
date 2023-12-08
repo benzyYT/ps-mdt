@@ -1319,16 +1319,13 @@ RegisterNetEvent('mdt:server:saveWeaponInfo', function(serial, imageurl, notes, 
 end)
 
 function CreateWeaponInfo(serial, imageurl, notes, owner, weapClass, weapModel)
-	print(serial, imageurl, notes, owner, weapClass, weapModel)
 	local results = MySQL.query.await('SELECT * FROM mdt_weaponinfo WHERE serial = ?', { serial })
 	if results[1] then
 		return
 	end
 
 	if serial == nil then return end
-	if imageurl == nil then imageurl = 'img/not-found.webp' end
-
-	
+	if imageurl == nil then imageurl = 'img/not-found.webp' end	
 
 	MySQL.Async.insert('INSERT INTO mdt_weaponinfo (serial, owner, information, weapClass, weapModel, image) VALUES (:serial, :owner, :notes, :weapClass, :weapModel, :imageurl) ON DUPLICATE KEY UPDATE owner = :owner, information = :notes, weapClass = :weapClass, weapModel = :weapModel, image = :imageurl', {
 		['serial'] = serial,
@@ -1955,6 +1952,7 @@ lib.callback.register('mdt:server:GetPlayerSourceId', function(source, targetCit
 end)
 
 lib.callback.register('getWeaponInfo', function(source)
+	print("GET WEAPON INFOS")
     local xPlayer = ESX.GetPlayerFromId(source)
     local weaponInfos = {}
 	if Config.InventoryForWeaponsImages == "ox_inventory" then
@@ -1963,8 +1961,6 @@ lib.callback.register('getWeaponInfo', function(source)
 			if string.find(item.name, "WEAPON_") then
 				local invImage = ("https://cfx-nui-ox_inventory/web/images/%s.png"):format(item.name)
 				if invImage then
-					print(Items[item.name].label)
-					--print(json.encode(Items, { indent = true }))
 					weaponInfo = {
 						serialnumber = item.metadata.serial,
 						owner = xPlayer.name,
@@ -2231,3 +2227,20 @@ lib.cron.new('*/15 * * * *', function()
 	end
 	TriggerClientEvent('mdt:client:dashboardMessages', -1, dispatchMessages)
 end)
+
+local hookId = exports.ox_inventory:registerHook('buyItem', function(payload)
+	if payload.shopType == "Ammunation" and string.find(payload.itemName, "WEAPON_") and payload.currency == "money" then
+		local weaponInfo = {
+			serialnumber = payload.metadata.serial,
+			owner = Player(payload.source).state.name,
+			weaponmodel = Items[payload.itemName].label,
+			imageurl = ("https://cfx-nui-ox_inventory/web/images/%s.png"):format(payload.itemName),
+			notes = ("Enregistré le %s"):format(os.date("%d/%m/%Y à %X")),
+			weapClass = Config.WeaponClass[payload.itemName],
+		}
+		exports['ps-mdt']:CreateWeaponInfo(weaponInfo.serialnumber, weaponInfo.imageurl, weaponInfo.notes, weaponInfo.owner, weaponInfo.weapClass, weaponInfo.weaponmodel)
+		return true
+	end
+end, {
+    print = true,
+})
