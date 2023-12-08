@@ -1594,15 +1594,19 @@ RegisterNetEvent('mdt:server:removeIncidentCriminal', function(identifier, incid
 end)
 
 -- Dispatch
-
 RegisterNetEvent('mdt:server:setWaypoint', function(callid)
 	local src = source
-	local Player = ESX.GetPlayerFromId(source)
+	local Player = ESX.GetPlayerFromId(src)
+	local callid = tonumber(callid)
 	local JobType = GetJobType(Player.job.name)
+	if not callid then return end
 	if JobType == 'police' or JobType == 'ambulance' then
-		if callid then
-			if isDispatchRunning then
-				TriggerClientEvent('mdt:client:setWaypoint', src, calls[callid])
+		if isDispatchRunning then
+			for i = 1, #calls do
+				if calls[i]['id'] == callid then
+					TriggerClientEvent('mdt:client:setWaypoint', src, calls[i])
+					return
+				end
 			end
 		end
 	end
@@ -1655,6 +1659,7 @@ RegisterNetEvent('mdt:server:attachedUnits', function(callid)
 	local src = source
 	local Player = ESX.GetPlayerFromId(src)
 	local JobType = GetJobType(Player.job.name)
+	if not callid then return end
 	if JobType == 'police' or JobType == 'ambulance' then
 		if callid then
 			if isDispatchRunning then
@@ -1691,14 +1696,15 @@ RegisterNetEvent('mdt:server:setDispatchWaypoint', function(callid, identifier)
 	local callid = tonumber(callid)
 	local JobType = GetJobType(Player.job.name)
 	if JobType == 'police' or JobType == 'ambulance' then
-		if callid then
-			if isDispatchRunning then
-				
-				TriggerClientEvent('mdt:client:setWaypoint', src, calls[callid])
+		if isDispatchRunning then
+			for i = 1, #calls do
+				if calls[i]['id'] == callid then
+					TriggerClientEvent('mdt:client:setWaypoint', src, calls[i])
+					return
+				end
 			end
 		end
 	end
-
 end)
 
 RegisterNetEvent('mdt:server:callDragAttach', function(callid, identifier)
