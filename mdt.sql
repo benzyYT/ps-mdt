@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `mdt_data` (
   `jobtype` VARCHAR(25) DEFAULT 'police',
   `pfp` TEXT DEFAULT NULL,
   `fingerprint` VARCHAR(50) DEFAULT NULL,
-  PRIMARY KEY (`identifier`,`jobtype`) USING BTREE,,
+  PRIMARY KEY (`identifier`,`jobtype`) USING BTREE,
   KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
