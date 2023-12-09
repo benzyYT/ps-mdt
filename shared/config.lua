@@ -115,6 +115,7 @@ Config.AmbulanceJobs = {
 }
 
 Config.DojJobs = {
+    ['gouv'] = true,
     ['lawyer'] = false,
     ['judge'] = false
 }

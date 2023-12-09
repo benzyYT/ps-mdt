@@ -45,9 +45,11 @@ const PoliceJobs = {
 
 const AmbulanceJobs = {
   ['ambulance']: true,
+  ['pompier']: true,
 }
 
 const DojJobs = {
+  ['gouv']: true,
   ['lawyer']: true,
   ['judge']: true
 }
