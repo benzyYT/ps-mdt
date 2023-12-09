@@ -72,12 +72,13 @@
     <div class="incidents-person-search">
         <div class="incidents-person-search-container">
             <div class="incidents-person-search-title">Rechercher Personne</div>
-            <div class="incidents-person-search-name-title">Prénom</div>
-            <div style="width: 95%; margin: auto; border-bottom: 2px solid #2C537B;"><input class="incidents-person-search-firstname-input"></div>
-            <div class="incidents-person-search-name-title">Nom de Famille</div>
-            <div style="width: 95%; margin: auto; border-bottom: 2px solid #2C537B;"><input class="incidents-person-search-lastname-input"></div>
-            <input type="hidden" class="incidents-person-search-job"></div>
-            <div class="incidents-person-search-holder">
+            <div style="display: flex; flex-direction: column;">
+                <div style="display: flex;color: white;margin-top: 10px; margin-left: 10px; margin-right: 10px;">
+                    <div style="border-bottom: 2px solid #ffffff; flex: 5;"><div class="incidents-person-search-name-title">Prénom</div> <input class="incidents-person-search-firstname-input"></div>
+                    <div style="border-bottom: 2px solid #ffffff; flex: 5;"><div class="incidents-person-search-name-title">Nom de Famille</div> <input class="incidents-person-search-lastname-input"></div>   
+                </div>
+                <div class="incidents-person-search-holder"></div>
+                <input type="hidden" class="incidents-person-search-job">
             </div>
         </div>
     </div>

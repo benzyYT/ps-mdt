@@ -1962,7 +1962,6 @@ lib.callback.register('mdt:server:GetPlayerSourceId', function(source, targetCit
 end)
 
 lib.callback.register('getWeaponInfo', function(source)
-	print("GET WEAPON INFOS")
     local xPlayer = ESX.GetPlayerFromId(source)
     local weaponInfos = {}
 	if Config.InventoryForWeaponsImages == "ox_inventory" then
