@@ -244,19 +244,6 @@ Config.RemoveWeaponsPerms = {
 	},
 }
 
--- Config.PenalCodeTitles = {
---     [1] = 'OFFENSES AGAINST PERSONS',
---     [2] = 'OFFENSES INVOLVING THEFT',
---     [3] = 'OFFENSES INVOLVING FRAUD',
---     [4] = 'OFFENSES INVOLVING DAMAGE TO PROPERTY',
---     [5] = 'OFFENSES AGAINST PUBLIC ADMINISTRATION',
---     [6] = 'OFFENSES AGAINST PUBLIC ORDER',
---     [7] = 'OFFENSES AGAINST HEALTH AND MORALS',
---     [8] = 'OFFENSES AGAINST PUBLIC SAFETY',
---     [9] = 'OFFENSES INVOLVING THE OPERATION OF A VEHICLE',
---     [10] = 'OFFENSES INVOLVING THE WELL-BEING OF WILDLIFE',
--- }
-
 Config.PenalCodeTitles = {
     [1] = "INFRACTIONS CONTRE LES PERSONNES",
     [2] = "INFRACTIONS INCLUANT LE VOL",
@@ -272,7 +259,7 @@ Config.PenalCodeTitles = {
 
 
 Config.PenalCode = {
-    
+
 	[1] = {
 	    [1] = {title = "Voies de fait simples", class = "Délit", id = "C.P. 1001", months = 7, fine = 500, color = "green", description = "Quand une personne cause intentionnellement ou sciemment un contact physique avec une autre (sans arme)"},
 	    [2] = {title = "Agression", class = "Délit", id = "C.P. 1002", months = 15, fine = 850, color = "orange", description = "Si une personne cause intentionnellement ou sciemment des blessures à une autre (sans arme)"},
