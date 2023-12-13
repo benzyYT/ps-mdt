@@ -26,6 +26,7 @@ client_scripts{
     'client/main.lua',
     'client/cl_impound.lua',
     'client/cl_mugshot.lua'
+    'client/camera.lua'
 } 
 
 ui_page 'ui/dashboard.html'
