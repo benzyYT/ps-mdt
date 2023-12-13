@@ -2896,7 +2896,7 @@ span.tag-incident-input[contenteditable]:empty::before {
     user-select: none;
 }
 
-.incidents-person-search-firstname-input {
+.incidents-person-search-job {
     background-color: rgba(0, 0, 0, 0);
     border: none;
     outline: none;
@@ -6282,8 +6282,8 @@ span.tag-reports-input[contenteditable]:empty::before {
 }
 
 .weapon-info-image {
-    width: 444px;
-    height: 269px;
+    width: 30vh;
+    height: 30vh;
     object-fit: cover;
 }
 

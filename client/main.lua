@@ -25,6 +25,9 @@ RegisterNetEvent('esx:playerLoaded', function(xPlayer, isNew)
 	ESX.PlayerLoaded = true
 	PlayerData = ESX.PlayerData
     LocalPlayer.state:set("isLoggedIn", ESX.PlayerLoaded, true)
+    if IsJobAllowedToMDT(ESX.PlayerData.job.name) then
+        TriggerServerEvent("ps-mdt:GetVehiclesFromDB")
+    end
 end)
 
 RegisterNetEvent('esx:playerLogout', function()
@@ -34,24 +37,8 @@ RegisterNetEvent('esx:playerLogout', function()
 end)
 
 RegisterNetEvent('esx:setJob', function(job)
+    TriggerServerEvent("ps-mdt:GetVehiclesFromDB")
 	ESX.PlayerData.job = job
-end)
-
-RegisterNetEvent("QBCore:Client:SetDuty", function(job, state)
-    if AllowedJob(job) then
-        TriggerServerEvent("ps-mdt:server:ToggleDuty")
-	    TriggerServerEvent("ps-mdt:server:ClockSystem")
-        TriggerServerEvent('QBCore:ToggleDuty')
-        if PlayerData.job.name == "police" or PlayerData.job.type == "leo" then
-            TriggerServerEvent("police:server:UpdateCurrentCops")
-        end
-        if (PlayerData.job.name == "ambulance" or PlayerData.job.type == "ems") and job then
-            TriggerServerEvent('hospital:server:AddDoctor', 'ambulance')
-        elseif (PlayerData.job.name == "ambulance" or PlayerData.job.type == "ems") and not job then
-            TriggerServerEvent('hospital:server:RemoveDoctor', 'ambulance')
-        end
-        TriggerServerEvent("police:server:UpdateBlips")
-    end
 end)
 
 RegisterNetEvent('police:SetCopCount', function(amount)
@@ -64,6 +51,7 @@ AddEventHandler('onResourceStart', function(resourceName)
     PlayerData = ESX.GetPlayerData()
     callSign = LocalPlayer.state.callsign
     LocalPlayer.state:set("isLoggedIn", ESX.PlayerLoaded, true)
+    TriggerServerEvent("ps-mdt:GetVehiclesFromDB")
 end)
 
 AddEventHandler('onResourceStop', function(resourceName)
@@ -314,17 +302,6 @@ RegisterNUICallback("getProfileData", function(data, cb)
     local vehicles = result.vehicles
     local licenses = result.licences
 
-    -- for i=1,#vehicles do
-    --     local vehicle = result.vehicles[i]
-    --     local vehData = QBCore.Shared.Vehicles[vehicle['vehicle']] VEHICLESTOHASH[]
-        
-    --     if vehData == nil then
-    --         print("Vehicle not found for profile:", vehicle['vehicle']) -- Do not remove print, is a guide for a nil error. 
-    --         print("Make sure the profile you're trying to load has all cars added to the core under vehicles.lua.") -- Do not remove print, is a guide for a nil error. 
-    --     else
-    --         result.vehicles[i]['model'] = vehData["name"]
-    --     end
-    -- end
     p = nil
 
     result['fingerprint'] = result['searchFingerprint']
@@ -374,12 +351,16 @@ end)
 RegisterNUICallback("incidentSearchPerson", function(data, cb)
     local firstname = data.firstname
     local lastname = data.lastname
-    TriggerServerEvent('mdt:server:incidentSearchPerson', firstname, lastname)
+    local isJobEmployee = false
+    if data.isJobEmployee ~= "" and data.isJobEmployee ~= nil then
+        isJobEmployee = true
+    end
+    TriggerServerEvent('mdt:server:incidentSearchPerson', firstname, lastname, isJobEmployee)
     cb(true)
   end)
 
 -- Handle sending a fine to a player
--- Uses the QB-Core bill command to send a fine to a player
+-- Uses the QB-Core bill command to send a fine to a playerf
 -- If you use a different fine system, you will need to change this
 RegisterNUICallback("sendFine", function(data, cb)
     local identifier, fine, incidentId = data.identifier, data.fine, data.incidentId
@@ -387,14 +368,8 @@ RegisterNUICallback("sendFine", function(data, cb)
     local targetSourceId = lib.callback.await('mdt:server:GetPlayerSourceId', false, identifier)
     if targetSourceId then
         if fine > 0 then
-            if Config.BillVariation then
-                -- Uses QB-Core removeMoney Functions
-                TriggerServerEvent("mdt:server:removeMoney", identifier, fine, incidentId)
-            else
-                -- Uses QB-Core /bill command
-                ExecuteCommand(('bill %s %s'):format(targetSourceId, fine))
-                TriggerServerEvent("mdt:server:giveCitationItem", identifier, fine, incidentId)
-            end
+            local societyAccount = ("society_%s"):format(LocalPlayer.state.job.name)
+            TriggerServerEvent('esx_billing:sendBill', targetSourceId, societyAccount, ("Amende dossier n°%s"):format(incidentId), fine)
         end
     end    
 end)
@@ -512,6 +487,7 @@ end)
 
 RegisterNUICallback("deleteWeapons", function(data, cb)
     local id = data.id
+    print(json.encode(data))
     TriggerServerEvent('mdt:server:deleteWeapons', id)
     cb(true)
 end)
@@ -622,22 +598,13 @@ RegisterNUICallback("searchVehicles", function(data, cb)
 
     if foundVehicles then
         for k, veh in pairs(foundVehicles) do
-            veh['plate'] = string.upper(veh['plate'])
-            veh['color'] = Config.ColorInformation[veh.vehicle['color1']]
-            veh['colorName'] = Config.ColorNames[veh.vehicle['color1']]
+            veh.plate = string.upper(veh.plate)
+            veh.color = Config.ColorInformation[veh.vehicle.color1] or veh.vehicle.customPrimaryColor
+            veh.colorName = Config.ColorNames[veh.vehicle.color1] or Config.ColorNames[999]
             if not veh.infos and not veh.model then
                 veh.model = GetDisplayNameFromVehicleModel(veh.vehicle.model)
             end
         end
-        -- for i=1, #result do
-        --     local vehicle = result[i]
-        --     local mods = json.decode(result[i].mods)
-        --     result[i]['plate'] = string.upper(result[i]['plate'])
-        --     result[i]['color'] = Config.ColorInformation[mods['color1']]
-        --     result[i]['colorName'] = Config.ColorNames[mods['color1']]
-        --     local vehData = QBCore.Shared.Vehicles[vehicle['vehicle']]
-        --     result[i]['model'] = vehData["brand"] .. ' ' .. vehData["name"]
-        -- end
         cb(foundVehicles)
     end
 end)
@@ -778,8 +745,8 @@ end)
 RegisterNetEvent('mdt:client:getVehicleData', function(veh)
     if veh then
         local mods = veh.vehicle
-        veh.color = Config.ColorInformation[mods.color1]
-        veh.colorName = Config.ColorNames[mods.color1]
+        veh.color = Config.ColorInformation[mods.color1] or mods.customPrimaryColor
+        veh.colorName = Config.ColorNames[mods.color1] or Config.ColorNames[999]
         veh.model = veh.infos.name
         veh.class = Config.ClassList[GetVehicleClassFromName(mods.model)]
         SendNUIMessage({ type = "getVehicleData", data = veh })
@@ -842,8 +809,6 @@ end)
 
 RegisterNetEvent('dispatch:clNotify', function(sNotificationData, sNotificationId)
     if LocalPlayer.state.isLoggedIn then
-
-        print(LocalPlayer.state.isLoggedIn)
         sNotificationData.playerJob = PlayerData.job.name
         SendNUIMessage({ type = "call", data = sNotificationData })
     end
@@ -999,7 +964,7 @@ AddEventHandler('ps-mdt:client:selfregister', function()
         if weaponInfos and #weaponInfos > 0 then
             for _, weaponInfo in ipairs(weaponInfos) do
                 TriggerServerEvent('mdt:server:registerweapon', weaponInfo.serialnumber, weaponInfo.weaponurl, weaponInfo.notes, weaponInfo.owner, weaponInfo.weapClass, weaponInfo.weaponmodel)
-                ESX.ShowNotification("Weapon " .. weaponInfo.weaponmodel .. " has been added to police database.")
+                ESX.ShowNotification("L'arme " .. weaponInfo.weaponmodel .. " a été ajouté à la base de donnée SAPD.")
                 --print("Weapon added to database")
             end
         else
@@ -1010,19 +975,19 @@ end)
 
 -- Uncomment if you want to use this instead.
 
---[[ RegisterCommand('registerweapon', function(source)
+RegisterCommand('registerweapon', function(source)
     GetPlayerWeaponInfos(function(weaponInfos)
         if weaponInfos and #weaponInfos > 0 then
             for _, weaponInfo in ipairs(weaponInfos) do
                 TriggerServerEvent('mdt:server:registerweapon', weaponInfo.serialnumber, weaponInfo.weaponurl, weaponInfo.notes, weaponInfo.owner, weaponInfo.weapClass, weaponInfo.weaponmodel)
-                ESX.ShowNotification("Weapon " .. weaponInfo.weaponmodel .. " has been added to police database.")
+                ESX.ShowNotification("L'arme " .. weaponInfo.weaponmodel .. " a été ajouté à la base de donnée SAPD.")
                 --print("Weapon added to database")
             end
         else
             --print("No weapons found")
         end
     end)
-end, false) ]]
+end, false)
 
 --====================================================================================
 ------------------------------------------
@@ -1124,5 +1089,4 @@ end
 RegisterCommand("tsa", function ()
     --exports['ps-dispatch-esx']:ATMRobbery()
     exports[Config.dispatchName]:Shooting()
-    print(ESX.PlayerLoaded)
 end, false)

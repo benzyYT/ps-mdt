@@ -6,6 +6,42 @@ Config.UseCQCMugshot = true
 -- Front, Back Side. Use 4 for both sides, we recommend leaving at 1 for default.
 Config.MugPhotos = 1
 
+Config.MugShotSpots = {
+    ["missionrow"] = {
+        signLabel = "LSPD Mission Row",
+        camX = 479.0,
+        camY = -984.8743,
+        camZ = 21.8,
+        camRot = {x = 0.0, y = 0.0, z = 90.0},
+        suspectHeading = 269.6102,
+        suspectX = 477.5081,
+        suspectY = -984.9333,
+        suspectZ = 20.5595,
+    },    
+    ["boling"] = {
+        signLabel = "Pénitentier de Bolingbroke",
+        camX = 1828.69,
+        camY = 2581.72,
+        camZ = 46.3,
+        camRot = {x = 0.0, y = 0.0, z = 92.23},
+        suspectHeading = 265.00,
+        suspectX = 1827.63,
+        suspectY = 2581.7,
+        suspectZ = 44.89,
+    },
+    ["sandy"] = {
+        signLabel = "BCSO Sandy Shore",
+        camX = 1814.5914,
+        camY = 3664.3955,
+        camZ = 34.1892,
+        camRot = {x = 0.0, y = 0.0, z = 92.0},
+        suspectHeading = 298.7003,
+        suspectX = 1813.3495,
+        suspectY = 3663.9260,
+        suspectZ = 33.1893,
+    },
+}
+
 -- If set to true = Fine gets automatically removed from bank automatically charging the player.
 -- If set to false = The fine gets sent as an Invoice to their phone and it us to the player to pay for it, can remain unpaid and ignored.
 Config.BillVariation = true
@@ -93,8 +129,8 @@ Config.ImpoundLocations = {
 
 -- Support for Wraith ARS 2X. 
 
-Config.UseWolfknightRadar = false
-Config.WolfknightNotifyTime = 5000 -- How long the notification displays for in milliseconds (30000 = 30 seconds)
+Config.UseWolfknightRadar = true
+Config.WolfknightNotifyTime = 15000 -- How long the notification displays for in milliseconds (30000 = 30 seconds)
 Config.PlateScanForDriversLicense = false -- If true, plate scanner will check if the owner of the scanned vehicle has a drivers license
 
 -- IMPORTANT: To avoid making excessive database queries, modify this config to true 'CONFIG.use_sonorancad = true' setting in the configuration file located at 'wk_wars2x/config.lua'. 
@@ -543,7 +579,47 @@ Config.SecurityCameras = {
     },
 }
 
-Config.NomsCouleurs = {
+Config.SecurityCameras = {
+    hideradar = false,
+    cameras = {
+        [1] = { label = 'Pacific Bank CAM#1', coords = vector3(257.45, 210.07, 109.08), r = { x = -25.0, y = 0.0, z = 28.05 }, canRotate = false, isOnline = true },
+        [2] = { label = 'Pacific Bank CAM#2', coords = vector3(232.86, 221.46, 107.83), r = { x = -25.0, y = 0.0, z = -140.91 }, canRotate = false, isOnline = true },
+        [3] = { label = 'Pacific Bank CAM#3', coords = vector3(252.27, 225.52, 103.99), r = { x = -35.0, y = 0.0, z = -74.87 }, canRotate = false, isOnline = true },
+        [4] = { label = 'Limited Ltd Grove St. CAM#1', coords = vector3(-53.1433, -1746.714, 31.546), r = { x = -35.0, y = 0.0, z = -168.9182 }, canRotate = false, isOnline = true },
+        [5] = { label = "Rob's Liqour Prosperity St. CAM#1", coords = vector3(-1482.9, -380.463, 42.363), r = { x = -35.0, y = 0.0, z = 79.53281 }, canRotate = false, isOnline = true },
+        [6] = { label = "Rob's Liqour San Andreas Ave. CAM#1", coords = vector3(-1224.874, -911.094, 14.401), r = { x = -35.0, y = 0.0, z = -6.778894 }, canRotate = false, isOnline = true },
+        [7] = { label = 'Limited Ltd Ginger St. CAM#1', coords = vector3(-718.153, -909.211, 21.49), r = { x = -35.0, y = 0.0, z = -137.1431 }, canRotate = false, isOnline = true },
+        [8] = { label = '24/7 Supermarkt Innocence Blvd. CAM#1', coords = vector3(23.885, -1342.441, 31.672), r = { x = -35.0, y = 0.0, z = -142.9191 }, canRotate = false, isOnline = true },
+        [9] = { label = "Rob's Liqour El Rancho Blvd. CAM#1", coords = vector3(1133.024, -978.712, 48.515), r = { x = -35.0, y = 0.0, z = -137.302 }, canRotate = false, isOnline = true },
+        [10] = { label = 'Limited Ltd West Mirror Drive CAM#1', coords = vector3(1151.93, -320.389, 71.33), r = { x = -35.0, y = 0.0, z = -119.4468 }, canRotate = false, isOnline = true },
+        [11] = { label = '24/7 Supermarkt Clinton Ave CAM#1', coords = vector3(383.402, 328.915, 105.541), r = { x = -35.0, y = 0.0, z = 118.585 }, canRotate = false, isOnline = true },
+        [12] = { label = 'Limited Ltd Banham Canyon Dr CAM#1', coords = vector3(-1832.057, 789.389, 140.436), r = { x = -35.0, y = 0.0, z = -91.481 }, canRotate = false, isOnline = true },
+        [13] = { label = "Rob's Liqour Great Ocean Hwy CAM#1", coords = vector3(-2966.15, 387.067, 17.393), r = { x = -35.0, y = 0.0, z = 32.92229 }, canRotate = false, isOnline = true },
+        [14] = { label = '24/7 Supermarkt Ineseno Road CAM#1', coords = vector3(-3046.749, 592.491, 9.808), r = { x = -35.0, y = 0.0, z = -116.673 }, canRotate = false, isOnline = true },
+        [15] = { label = '24/7 Supermarkt Barbareno Rd. CAM#1', coords = vector3(-3246.489, 1010.408, 14.705), r = { x = -35.0, y = 0.0, z = -135.2151 }, canRotate = false, isOnline = true },
+        [16] = { label = '24/7 Supermarkt Route 68 CAM#1', coords = vector3(539.773, 2664.904, 44.056), r = { x = -35.0, y = 0.0, z = -42.947 }, canRotate = false, isOnline = true },
+        [17] = { label = "Rob's Liqour Route 68 CAM#1", coords = vector3(1169.855, 2711.493, 40.432), r = { x = -35.0, y = 0.0, z = 127.17 }, canRotate = false, isOnline = true },
+        [18] = { label = '24/7 Supermarkt Senora Fwy CAM#1', coords = vector3(2673.579, 3281.265, 57.541), r = { x = -35.0, y = 0.0, z = -80.242 }, canRotate = false, isOnline = true },
+        [19] = { label = '24/7 Supermarkt Alhambra Dr. CAM#1', coords = vector3(1966.24, 3749.545, 34.143), r = { x = -35.0, y = 0.0, z = 163.065 }, canRotate = false, isOnline = true },
+        [20] = { label = '24/7 Supermarkt Senora Fwy CAM#2', coords = vector3(1729.522, 6419.87, 37.262), r = { x = -35.0, y = 0.0, z = -160.089 }, canRotate = false, isOnline = true },
+        [21] = { label = 'Fleeca Bank Hawick Ave CAM#1', coords = vector3(309.341, -281.439, 55.88), r = { x = -35.0, y = 0.0, z = -146.1595 }, canRotate = false, isOnline = true },
+        [22] = { label = 'Fleeca Bank Legion Square CAM#1', coords = vector3(144.871, -1043.044, 31.017), r = { x = -35.0, y = 0.0, z = -143.9796 }, canRotate = false, isOnline = true },
+        [23] = { label = 'Fleeca Bank Hawick Ave CAM#2', coords = vector3(-355.7643, -52.506, 50.746), r = { x = -35.0, y = 0.0, z = -143.8711 }, canRotate = false, isOnline = true },
+        [24] = { label = 'Fleeca Bank Del Perro Blvd CAM#1', coords = vector3(-1214.226, -335.86, 39.515), r = { x = -35.0, y = 0.0, z = -97.862 }, canRotate = false, isOnline = true },
+        [25] = { label = 'Fleeca Bank Great Ocean Hwy CAM#1', coords = vector3(-2958.885, 478.983, 17.406), r = { x = -35.0, y = 0.0, z = -34.69595 }, canRotate = false, isOnline = true },
+        [26] = { label = 'Paleto Bank CAM#1', coords = vector3(-102.939, 6467.668, 33.424), r = { x = -35.0, y = 0.0, z = 24.66 }, canRotate = false, isOnline = true },
+        [27] = { label = 'Del Vecchio Liquor Paleto Bay', coords = vector3(-163.75, 6323.45, 33.424), r = { x = -35.0, y = 0.0, z = 260.00 }, canRotate = false, isOnline = true },
+        [28] = { label = "Don's Country Store Paleto Bay CAM#1", coords = vector3(166.42, 6634.4, 33.69), r = { x = -35.0, y = 0.0, z = 32.00 }, canRotate = false, isOnline = true },
+        [29] = { label = "Don's Country Store Paleto Bay CAM#2", coords = vector3(163.74, 6644.34, 33.69), r = { x = -35.0, y = 0.0, z = 168.00 }, canRotate = false, isOnline = true },
+        [30] = { label = "Don's Country Store Paleto Bay CAM#3", coords = vector3(169.54, 6640.89, 33.69), r = { x = -35.0, y = 0.0, z = 5.78 }, canRotate = false, isOnline = true },
+        [31] = { label = 'Vangelico Jewelery CAM#1', coords = vector3(-627.54, -239.74, 40.33), r = { x = -35.0, y = 0.0, z = 5.78 }, canRotate = true, isOnline = true },
+        [32] = { label = 'Vangelico Jewelery CAM#2', coords = vector3(-627.51, -229.51, 40.24), r = { x = -35.0, y = 0.0, z = -95.78 }, canRotate = true, isOnline = true },
+        [33] = { label = 'Vangelico Jewelery CAM#3', coords = vector3(-620.3, -224.31, 40.23), r = { x = -35.0, y = 0.0, z = 165.78 }, canRotate = true, isOnline = true },
+        [34] = { label = 'Vangelico Jewelery CAM#4', coords = vector3(-622.57, -236.3, 40.31), r = { x = -35.0, y = 0.0, z = 5.78 }, canRotate = true, isOnline = true },
+    },
+}
+
+Config.ColorNames = {
     [0] = "Noir Métallisé",
     [1] = "Noir Graphite Métallisé",
     [2] = "Noir Acier Métallisé",
@@ -703,6 +779,7 @@ Config.NomsCouleurs = {
     [156] = "COULEUR DE JANTE PAR DÉFAUT",
     [157] = "Bleu Epsilon",
     [158] = "Inconnu",
+    [999] = "Couleur Custom",
 }
 
 Config.ColorInformation = {
@@ -823,7 +900,7 @@ Config.ColorInformation = {
     [114] = "brown",
     [115] = "brown",
     [116] = "beige",
-    [117] = "steel",
+    [117] = "steel", 
     [118] = "blacksteel",
     [119] = "aluminium",
     [120] = "chrome",
@@ -876,20 +953,149 @@ Config.ClassList = {
     [5] = "Sport Classic",
     [6] = "Sport",
     [7] = "Super",
-    [8] = "Motorbike",
+    [8] = "Moto",
     [9] = "Off-Road",
-    [10] = "Industrial",
-    [11] = "Utility",
+    [10] = "Industriels",
+    [11] = "Utilitaire",
     [12] = "Van",
-    [13] = "Bike",
-    [14] = "Boat",
-    [15] = "Helicopter",
-    [16] = "Plane",
-    [17] = "Service",
-    [18] = "Emergency",
-    [19] = "Military",
+    [13] = "Vélo",
+    [14] = "Bateau",
+    [15] = "Helicoptère",
+    [16] = "Avion",
+    [17] = "Services",
+    [18] = "Urgence",
+    [19] = "Militaire",
     [20] = "Commercial",
     [21] = "Train"
+}
+
+Config.WeaponClasses = {
+    ['LIGHT_IMPACT'] = "Classe 0",
+    ['HEAVY_IMPACT'] = "Classe 1",
+    ['SMALL_CALIBER'] = "Classe 2",
+    ['MEDIUM_CALIBER'] = "Classe 3",
+    ['HIGH_CALIBER'] = "Classe 4",
+    ['SHOTGUN'] = "Classe 5",
+    ['CUTTING'] = "Classe 6",   
+    ['FIRE'] = "Classe 8",
+    ['SUFFOCATING'] = "Classe 9",
+    ['OTHER'] = "Classe 10",
+    ['EXPLOSIVE'] = "Classe 99",
+    ['NOTHING'] = "Classe X",
+}
+
+Config.WeaponClass = {
+    --[[ Small Caliber ]]--
+    ['WEAPON_PISTOL'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_COMBATPISTOL'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_APPISTOL'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_COMBATPDW'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_MACHINEPISTOL'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_MICROSMG'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_MINISMG'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_PISTOL_MK2'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_SNSPISTOL'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_SNSPISTOL_MK2'] = Config.WeaponClasses['SMALL_CALIBER'],
+    ['WEAPON_VINTAGEPISTOL'] = Config.WeaponClasses['SMALL_CALIBER'],
+
+    --[[ Medium Caliber ]]--
+    ['WEAPON_ADVANCEDRIFLE'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_ASSAULTSMG'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_BULLPUPRIFLE'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_BULLPUPRIFLE_MK2'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_CARBINERIFLE'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_CARBINERIFLE_MK2'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_COMPACTRIFLE'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_DOUBLEACTION'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_GUSENBERG'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_HEAVYPISTOL'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_MARKSMANPISTOL'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_PISTOL50'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_REVOLVER'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_REVOLVER_MK2'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_SMG'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_SMG_MK2'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_SPECIALCARBINE'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+    ['WEAPON_SPECIALCARBINE_MK2'] = Config.WeaponClasses['MEDIUM_CALIBER'],
+
+    --[[ High Caliber ]]--
+    ['WEAPON_ASSAULTRIFLE'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_ASSAULTRIFLE_MK2'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_COMBATMG'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_COMBATMG_MK2'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_HEAVYSNIPER'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_HEAVYSNIPER_MK2'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_MARKSMANRIFLE'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_MARKSMANRIFLE_MK2'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_MG'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_MINIGUN'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_MUSKET'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_RAILGUN'] = Config.WeaponClasses['HIGH_CALIBER'],
+    ['WEAPON_HEAVYRIFLE'] = Config.WeaponClasses['HIGH_CALIBER'],
+
+    --[[ Shotguns ]]--
+    ['WEAPON_ASSAULTSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_BULLUPSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_DBSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_HEAVYSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_PUMPSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_PUMPSHOTGUN_MK2'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_SAWNOFFSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    ['WEAPON_SWEEPERSHOTGUN'] = Config.WeaponClasses['SHOTGUN'],
+    
+    --[[ Cutting Weapons ]]--
+    ['WEAPON_BATTLEAXE'] = Config.WeaponClasses['CUTTING'],
+    ['WEAPON_BOTTLE'] = Config.WeaponClasses['CUTTING'],
+    ['WEAPON_DAGGER'] = Config.WeaponClasses['CUTTING'],
+    ['WEAPON_HATCHET'] = Config.WeaponClasses['CUTTING'],
+    ['WEAPON_KNIFE'] = Config.WeaponClasses['CUTTING'],
+    ['WEAPON_MACHETE'] = Config.WeaponClasses['CUTTING'],
+    ['WEAPON_SWITCHBLADE'] = Config.WeaponClasses['CUTTING'],
+
+    --[[ Light Impact ]]--
+    ['WEAPON_STUNGUN'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    ['WEAPON_GARBAGEBAG'] = Config.WeaponClasses['LIGHT_IMPACT'], -- Garbage Bag
+    ['WEAPON_BRIEFCASE'] = Config.WeaponClasses['LIGHT_IMPACT'], -- Briefcase
+    ['WEAPON_BRIEFCASE_02'] = Config.WeaponClasses['LIGHT_IMPACT'], -- Briefcase 2
+    ['WEAPON_BALL'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    ['WEAPON_FLASHLIGHT'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    ['WEAPON_KNUCKLE'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    ['WEAPON_NIGHTSTICK'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    ['WEAPON_SNOWBALL'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    ['WEAPON_UNARMED'] = Config.WeaponClasses['LIGHT_IMPACT'],
+    
+    --[[ Heavy Impact ]]--
+    ['WEAPON_BAT'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_CROWBAR'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_FIREEXTINGUISHER'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_FIRWORK'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_GOLFLCUB'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_HAMMER'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_PETROLCAN'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_POOLCUE'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    ['WEAPON_WRENCH'] = Config.WeaponClasses['HEAVY_IMPACT'],
+    
+    --[[ Explosives ]]--
+    ['WEAPON_EXPLOSION'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_GRENADE'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_COMPACTLAUNCHER'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_HOMINGLAUNCHER'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_PIPEBOMB'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_PROXMINE'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_RPG'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_STICKYBOMB'] = Config.WeaponClasses['EXPLOSIVE'],
+    ['WEAPON_EMPLAUNCHER'] = Config.WeaponClasses['EXPLOSIVE'],
+    
+    --[[ Fire ]]--
+    ['WEAPON_ELECTRIC_FENCE'] = Config.WeaponClasses['FIRE'], -- Electric Fence 
+    ['WEAPON_FIRE'] = Config.WeaponClasses['FIRE'], -- Fire
+    ['WEAPON_MOLOTOV'] = Config.WeaponClasses['FIRE'],
+    ['WEAPON_FLARE'] = Config.WeaponClasses['FIRE'],
+    ['WEAPON_FLAREGUN'] = Config.WeaponClasses['FIRE'],
+
+    --[[ Suffocate ]]--
+    ['WEAPON_BZGAS'] = Config.WeaponClasses['SUFFOCATING'],
+    ['WEAPON_SMOKEGRENADE'] = Config.WeaponClasses['SUFFOCATING'],
 }
 
 function GetJobType(job)
@@ -901,5 +1107,17 @@ function GetJobType(job)
 		return 'doj'
 	else
 		return nil
+	end
+end
+
+function IsJobAllowedToMDT(job)
+	if Config.PoliceJobs[job] then
+		return true
+	elseif Config.AmbulanceJobs[job] then
+		return true
+	elseif Config.DojJobs[job] then
+		return true
+	else
+		return false
 	end
 end

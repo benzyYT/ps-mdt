@@ -68,17 +68,40 @@ if Config.UseWolfknightRadar == true then
 		local vehicleOwner = GetVehicleOwner(plate)
 		local bolo, title, boloId = GetBoloStatus(plate)
 		local warrant, owner, incidentId = GetWarrantStatus(plate)
-		local driversLicense = PlayerData.metadata['licences'].driver
+		--local driversLicense = PlayerData.metadata['licences'].driver
 
 		if bolo == true then
-			TriggerClientEvent('esx:showNotification', src, 'BOLO ID: '..boloId..' | Title: '..title..' | Registered Owner: '..vehicleOwner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
-		end
-		if warrant == true then
-			TriggerClientEvent('esx:showNotification', src, 'WANTED - INCIDENT ID: '..incidentId..' | Registered Owner: '..owner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
-		end
+			--TriggerClientEvent('esx:showNotification', src, 'BOLO ID: '..boloId..' | Title: '..title..' | Registered Owner: '..vehicleOwner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
+			TriggerClientEvent('ox_lib:notify', src, {
+				title = "Véhicule Recherché",
+				description = ("#### Mandat Routier n°**%s**\n- Titre: **%s**\n- Propriétaire Enregistré: **%s**\n- Plaque: **%s**\n"):format(boloId, title, vehicleOwner, plate),
+				duration = Config.WolfknightNotifyTime,
+				position = "top",
+				type = "warning",
+				icon = "person-military-pointing",
+			})
 
-		if Config.PlateScanForDriversLicense and driversLicense == false and vehicleOwner then
-			TriggerClientEvent('esx:showNotification', src, 'NO DRIVERS LICENCE | Registered Owner: '..vehicleOwner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
+		elseif warrant == true then
+			--TriggerClientEvent('esx:showNotification', src, 'WANTED - INCIDENT ID: '..incidentId..' | Registered Owner: '..owner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
+			TriggerClientEvent('ox_lib:notify', src, {
+				title = "Véhicule Recherché",
+				description = ("#### Incident n°%s\n- Propriétaire Enregistré: **%s**\n- Plaque: **%s**\n"):format(incidentId, vehicleOwner, plate),
+				duration = Config.WolfknightNotifyTime,
+				position = "top",
+				type = "warning",
+				icon = "person-military-pointing",
+			})
+		elseif Config.PlateScanForDriversLicense and driversLicense == false and vehicleOwner then
+			--TriggerClientEvent('esx:showNotification', src, 'NO DRIVERS LICENCE | Registered Owner: '..vehicleOwner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
+			TriggerClientEvent('ox_lib:notify', src, {
+				title = "Véhicule Recherché",
+				description = ("#### Pas de permis !\n- Propriétaire Enregistré: **%s**\n- Plaque: **%s**\n"):format(vehicleOwner, plate),
+				duration = Config.WolfknightNotifyTime,
+				position = "top",
+				type = "warning",
+				icon = "person-military-pointing",
+			})
+			
 		end
 
 		if bolo or warrant or (Config.PlateScanForDriversLicense and not driversLicense) and vehicleOwner then
@@ -89,7 +112,6 @@ end
 
 AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() ~= resourceName then return end
-	Wait(3000)
 	if MugShotWebhook == '' then
 		print("\27[31mA webhook is missing in: MugShotWebhook (server > main.lua > line 16)\27[0m")
     end
@@ -585,8 +607,8 @@ end)
 
 
 -- Mugshotd
-RegisterNetEvent('cqc-mugshot:server:triggerSuspect', function(suspect)
-    TriggerClientEvent('cqc-mugshot:client:trigger', suspect, suspect)
+RegisterNetEvent('cqc-mugshot:server:triggerSuspect', function(suspect, spot)
+    TriggerClientEvent('cqc-mugshot:client:trigger', suspect, spot or "missionrow")
 end)
 
 RegisterNetEvent('psmdt-mugshot:server:MDTupload', function(identifier, MugShotURLs)
@@ -658,19 +680,21 @@ RegisterNetEvent('mdt:server:getIncidentData', function(sentId)
 				data['civsinvolved'] = json.decode(data['civsinvolved'])
 				data['evidence'] = json.decode(data['evidence'])
 
-
-				local convictions = MySQL.query.await("SELECT * FROM `mdt_convictions` WHERE `linkedincident` = :id", {
+				local convictions = MySQL.query.await("SELECT  c.* FROM `mdt_convictions` c WHERE `linkedincident` = :id", {
 					id = sentId
 				})
 				if convictions ~= nil then
-					for i=1, #convictions do
-						local xPlayer = ESX.GetPlayerFromIdentifier(convictions[i]['identifier'])
-						if res ~= nil then
-							convictions[i]['name'] = xPlayer.name
+					for cId, conviction in pairs(convictions) do
+						local player = MySQL.single.await("SELECT `identifier`, `firstname`, `lastname` FROM `users` WHERE identifier = ?", {
+							conviction.identifier
+						})
+						--local xPlayer = ESX.GetPlayerFromIdentifier(convictions[i]['identifier'])
+						if player ~= nil then
+							conviction.name = ("%s %s"):format(player.firstname, player.lastname)
 						else
-							convictions[i]['name'] = "Unknown"
+							conviction.name = "Inconnu"
 						end
-						convictions[i]['charges'] = json.decode(convictions[i]['charges'])
+						conviction.charges = json.decode(conviction.charges)
 					end
 				end
 				TriggerClientEvent('mdt:client:getIncidentData', src, data, convictions)
@@ -784,15 +808,16 @@ end)
 
 RegisterNetEvent('mdt:server:deleteWeapons', function(id)
 	if id then
+		print(id)
 		local src = source
-		local Player = ESX.GetPlayerFromId(src)
-		if Config.RemoveWeaponsPerms[Player.job.name] then
-			if Config.RemoveWeaponsPerms[Player.job.name][Player.job.grade] then
-				local fullName = Player.name
+		local xPlayer = ESX.GetPlayerFromId(src)
+		if Config.RemoveWeaponsPerms[xPlayer.job.name] then
+			if Config.RemoveWeaponsPerms[xPlayer.job.name][xPlayer.job.grade] then
+				local fullName = xPlayer.name
 				MySQL.update("DELETE FROM `mdt_weaponinfo` WHERE id=:id", { id = id })
 				TriggerEvent('mdt:server:AddLog', "A Weapon Info was deleted by "..fullName.." with the ID ("..id..")")
 			else
-				local fullname = Player.name
+				local fullname = xPlayer.name
 				TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
 				TriggerEvent('mdt:server:AddLog', fullname.." tryed to delete a Weapon Info with the ID ("..id..")")
 			end
@@ -865,9 +890,7 @@ RegisterNetEvent('mdt:server:deleteICU', function(id)
 	end
 end)
 
-RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname)
-	print(type(firstname), firstname ~= "")
-	print(type(lastname), lastname ~= "")
+RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname, isJobEmployee)
     if firstname or lastname then
         local src = source
         local Player = ESX.GetPlayerFromId(src)
@@ -879,59 +902,53 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname
                     if gender == "f" then return "img/female.png" end;
                     return "img/male.png"
                 end
-
-                -- local firstname, lastname = query:match("^(%S+)%s*(%S*)$")
-                -- firstname = firstname or query
-                -- lastname = lastname or query
-				-- OR LOWER(u.firstname) LIKE :firstname OR LOWER(u.lastname) LIKE :lastname
-				-- local result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname OR LOWER(u.identifier) LIKE :identifier AND `jobtype` = :jobtype LIMIT 50", {
-                --     firstname = string.lower('%' .. firstname .. '%'),
-                --     lastname = string.lower('%' .. lastname .. '%'),
-                --     identifier = string.lower('%' .. query .. '%'),
-                --     jobtype = JobType
-                -- })
+				
 				local result = nil
 				if firstname ~= "" and lastname ~= "" then
-					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
 						firstname = string.lower('%' .. firstname .. '%'),
 						lastname = string.lower('%' .. lastname .. '%'),
 						jobtype = JobType
 					})
 				elseif firstname ~= "" and lastname == "" then
-					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND `jobtype` = :jobtype LIMIT 50", {
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND `jobtype` = :jobtype LIMIT 50", {
 						firstname = string.lower('%' .. firstname .. '%'),
 						jobtype = JobType
 					})
 				elseif firstname == "" and lastname ~= "" then
-					print("ok3")
-					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
 						lastname = string.lower('%' .. lastname .. '%'),
 						jobtype = JobType
 					})
 				end
-				print(result)
                 local data = {}
-				for k, person in pairs(result) do
-					print(person.firstname)
-					print(person.lastname)
-					data[k] = {
-						id = person.identifier,
-						firstname = person.firstname,
-						lastname = person.lastname,
-						profilepic = ProfPic(person.sex, person.pfp),
-						callsign = person.callsign
-					}
+				if result then
+					if isJobEmployee == true then
+						for k, person in pairs(result) do
+							if person.job == Player.job.name then
+								data[k] = {
+									id = person.identifier,
+									firstname = person.firstname,
+									lastname = person.lastname,
+									profilepic = ProfPic(person.sex, person.pfp),
+									callsign = person.callsign
+								}
+							end							
+						end
+					else
+						for k, person in pairs(result) do
+							data[k] = {
+								id = person.identifier,
+								firstname = person.firstname,
+								lastname = person.lastname,
+								profilepic = ProfPic(person.sex, person.pfp),
+								callsign = person.callsign
+							}
+						end
+					end
+					
 				end
-                -- for i=1, #result do					
-                --     --local metadata = json.decode(result[i].metadata)
-                --     data[i] = {
-                --         id = result[i].identifier,
-                --         firstname = result[i].firstname,
-                --         lastname = result[i].lastname,
-                --         profilepic = ProfPic(result[i].sex, result[i].pfp),
-                --         callsign = result[i].callsign
-                --     }
-                -- end
+				print(json.encode(data, { indent = true }))
                 TriggerClientEvent('mdt:client:incidentSearchPerson', src, data)
             end
         end
@@ -1060,9 +1077,6 @@ lib.callback.register('mdt:server:SearchVehicles', function(source, sentData)
 	if PlayerData then
 		local JobType = GetJobType(PlayerData.job.name)
 		if JobType == 'police' or JobType == 'doj' then
-			-- local vehicles = MySQL.query.await("SELECT pv.id, pv.identifier, pv.plate, pv.vehicle, pv.mods, pv.state, p.charinfo FROM `player_vehicles` pv LEFT JOIN players p ON pv.identifier = p.identifier WHERE LOWER(`plate`) LIKE :query OR LOWER(`vehicle`) LIKE :query LIMIT 25", {
-			-- 	query = string.lower('%'..sentData..'%')
-			-- })
 			local vehicles = MySQL.query.await("SELECT ov.*, u.firstname, u.lastname FROM `owned_vehicles` ov LEFT JOIN users u ON ov.owner = u.identifier WHERE LOWER(`plate`) LIKE :query OR LOWER(`vehicle`) LIKE :query LIMIT 25", {
 				query = string.lower('%'..sentData..'%')
 			})
@@ -1071,6 +1085,7 @@ lib.callback.register('mdt:server:SearchVehicles', function(source, sentData)
 			
 			for _, veh in ipairs(vehicles) do
 				veh.vehicle = json.decode(veh.vehicle)
+				
 				local vName = GetVehicleHashByName(veh.vehicle.model)
 				local infos = MySQL.single.await("SELECT * FROM vehicles WHERE model = ?", {vName})
 				if infos then
@@ -1120,9 +1135,9 @@ end)
 RegisterNetEvent('mdt:server:getVehicleData', function(plate)
 	if plate then
 		local src = source
-		local Player = ESX.GetPlayerFromId(src)
-		if Player then
-			local JobType = GetJobType(Player.job.name)
+		local xPlayer = ESX.GetPlayerFromId(src)
+		if xPlayer then
+			local JobType = GetJobType(xPlayer.job.name)
 			if JobType == 'police' or JobType == 'doj' then
 				local veh = MySQL.single.await("select ov.*, u.firstname, u.lastname from owned_vehicles ov LEFT JOIN users u ON ov.owner = u.identifier where ov.plate = :plate", { plate = string.gsub(plate, "^%s*(.-)%s*$", "%1")})
 				if veh then
@@ -1166,7 +1181,7 @@ RegisterNetEvent('mdt:server:getVehicleData', function(plate)
 					if veh.image == nil then veh.image = "img/not-found.webp" end -- Image
 				end
 
-				TriggerClientEvent('mdt:client:getVehicleData', Player.source, veh)
+				TriggerClientEvent('mdt:client:getVehicleData', xPlayer.source, veh)
 			end
 		end
 	end
@@ -1264,10 +1279,8 @@ lib.callback.register('mdt:server:SearchWeapons', function(source, sentData)
 	if not sentData then return {} end
 	local PlayerData = ESX.GetPlayerFromId(source)
 	if not PermCheck(source, PlayerData) then return {} end
-
-	local Player = PlayerData
-	if Player then
-		local JobType = GetJobType(Player.job.name)
+	if PlayerData then
+		local JobType = GetJobType(PlayerData.job.name)
 		if JobType == 'police' or JobType == 'doj' then
 			local matches = MySQL.query.await('SELECT * FROM mdt_weaponinfo WHERE LOWER(`serial`) LIKE :query OR LOWER(`weapModel`) LIKE :query OR LOWER(`owner`) LIKE :query LIMIT 25', {
 				query = string.lower('%'..sentData..'%')
@@ -1310,14 +1323,13 @@ RegisterNetEvent('mdt:server:saveWeaponInfo', function(serial, imageurl, notes, 
 end)
 
 function CreateWeaponInfo(serial, imageurl, notes, owner, weapClass, weapModel)
-
 	local results = MySQL.query.await('SELECT * FROM mdt_weaponinfo WHERE serial = ?', { serial })
 	if results[1] then
 		return
 	end
 
 	if serial == nil then return end
-	if imageurl == nil then imageurl = 'img/not-found.webp' end
+	if imageurl == nil then imageurl = 'img/not-found.webp' end	
 
 	MySQL.Async.insert('INSERT INTO mdt_weaponinfo (serial, owner, information, weapClass, weapModel, image) VALUES (:serial, :owner, :notes, :weapClass, :weapModel, :imageurl) ON DUPLICATE KEY UPDATE owner = :owner, information = :notes, weapClass = :weapClass, weapModel = :weapModel, image = :imageurl', {
 		['serial'] = serial,
@@ -1333,12 +1345,12 @@ exports('CreateWeaponInfo', CreateWeaponInfo)
 
 RegisterNetEvent('mdt:server:getWeaponData', function(serial)
 	if serial then
-		local Player = ESX.GetPlayerFromId(source)
-		if Player then
-			local JobType = GetJobType(Player.job.name)
+		local xPlayer = ESX.GetPlayerFromId(source)
+		if xPlayer then
+			local JobType = GetJobType(xPlayer.job.name)
 			if JobType == 'police' or JobType == 'doj' then
 				local results = MySQL.query.await('SELECT * FROM mdt_weaponinfo WHERE serial = ?', { serial })
-				TriggerClientEvent('mdt:client:getWeaponData', Player.source, results)
+				TriggerClientEvent('mdt:client:getWeaponData', xPlayer.source, results)
 			end
 		end
 	end
@@ -1586,15 +1598,19 @@ RegisterNetEvent('mdt:server:removeIncidentCriminal', function(identifier, incid
 end)
 
 -- Dispatch
-
 RegisterNetEvent('mdt:server:setWaypoint', function(callid)
 	local src = source
-	local Player = ESX.GetPlayerFromId(source)
+	local Player = ESX.GetPlayerFromId(src)
+	local callid = tonumber(callid)
 	local JobType = GetJobType(Player.job.name)
+	if not callid then return end
 	if JobType == 'police' or JobType == 'ambulance' then
-		if callid then
-			if isDispatchRunning then
-				TriggerClientEvent('mdt:client:setWaypoint', src, calls[callid])
+		if isDispatchRunning then
+			for i = 1, #calls do
+				if calls[i]['id'] == callid then
+					TriggerClientEvent('mdt:client:setWaypoint', src, calls[i])
+					return
+				end
 			end
 		end
 	end
@@ -1647,6 +1663,7 @@ RegisterNetEvent('mdt:server:attachedUnits', function(callid)
 	local src = source
 	local Player = ESX.GetPlayerFromId(src)
 	local JobType = GetJobType(Player.job.name)
+	if not callid then return end
 	if JobType == 'police' or JobType == 'ambulance' then
 		if callid then
 			if isDispatchRunning then
@@ -1683,14 +1700,15 @@ RegisterNetEvent('mdt:server:setDispatchWaypoint', function(callid, identifier)
 	local callid = tonumber(callid)
 	local JobType = GetJobType(Player.job.name)
 	if JobType == 'police' or JobType == 'ambulance' then
-		if callid then
-			if isDispatchRunning then
-				
-				TriggerClientEvent('mdt:client:setWaypoint', src, calls[callid])
+		if isDispatchRunning then
+			for i = 1, #calls do
+				if calls[i]['id'] == callid then
+					TriggerClientEvent('mdt:client:setWaypoint', src, calls[i])
+					return
+				end
 			end
 		end
 	end
-
 end)
 
 RegisterNetEvent('mdt:server:callDragAttach', function(callid, identifier)
@@ -1900,9 +1918,9 @@ function GetBoloStatus(plate)
 end
 
 function GetWarrantStatus(plate)
-    local result = MySQL.query.await("SELECT p.plate, p.identifier, m.id FROM player_vehicles p INNER JOIN mdt_convictions m ON p.identifier = m.identifier WHERE m.warrant =1 AND p.plate =?", {plate})
+    local result = MySQL.query.await("SELECT ow.owner, ow.plate, m.id FROM owned_vehicles ow INNER JOIN mdt_convictions m ON ow.owner = m.identifier WHERE m.warrant = 1 AND ow.plate = ?", {plate})
 	if result and result[1] then
-		local identifier = result[1]['identifier']
+		local identifier = result[1]['owner']
 		local Player = ESX.GetPlayerFromIdentifier(identifier)
 		local owner = Player.name
 		local incidentId = result[1]['id']
@@ -1912,9 +1930,9 @@ function GetWarrantStatus(plate)
 end
 
 function GetVehicleInformation(plate)
-	local result = MySQL.query.await('SELECT * FROM mdt_vehicleinfo WHERE plate = @plate', {['@plate'] = plate})
-    if result[1] then
-        return result[1]
+	local vehInfos = MySQL.single.await('SELECT * FROM mdt_vehicleinfo WHERE plate = @plate', {['@plate'] = plate})
+    if vehInfos then
+        return vehInfos
     else
         return false
     end
@@ -1922,9 +1940,9 @@ end
 
 function GetVehicleOwner(plate)
 
-	local result = MySQL.query.await('SELECT plate, identifier, id FROM player_vehicles WHERE plate = @plate', {['@plate'] = plate})
-	if result and result[1] then
-		local identifier = result[1]['identifier']
+	local vehData = MySQL.single.await('SELECT owner, plate FROM owned_vehicles WHERE plate = @plate', {['@plate'] = plate})
+	if vehData then
+		local identifier = vehData['owner']
 		local Player = ESX.GetPlayerFromIdentifier(identifier)
 		local owner = Player.name
 		return owner
@@ -1938,28 +1956,30 @@ lib.callback.register('mdt:server:GetPlayerSourceId', function(source, targetCit
         TriggerClientEvent('esx:showNotification', source, "Citizen seems Asleep / Missing", "error")
         return
     end
-    local targetSource = targetPlayer.PlayerData.source
+    local targetSource = targetPlayer.source
 
     return targetSource
 end)
 
 lib.callback.register('getWeaponInfo', function(source)
-    local Player = ESX.GetPlayerFromId(source)
+	print("GET WEAPON INFOS")
+    local xPlayer = ESX.GetPlayerFromId(source)
     local weaponInfos = {}
 	if Config.InventoryForWeaponsImages == "ox_inventory" then
-		local inv = exports.ox_inventory:GetInventoryItems(source)
+		local inv = exports.ox_inventory:GetInventoryItems(xPlayer.source)
 		for _, item in pairs(inv) do
 			if string.find(item.name, "WEAPON_") then
 				local invImage = ("https://cfx-nui-ox_inventory/web/images/%s.png"):format(item.name)
 				if invImage then
 					weaponInfo = {
 						serialnumber = item.metadata.serial,
-						owner = Player.name,
-						weaponmodel = Items[string.lower(item.name)].label,
+						owner = xPlayer.name,
+						weaponmodel = Items[item.name].label,
 						weaponurl = invImage,
-						notes = "Self Registered",
-						weapClass = "Class 1",
+						notes = ("Enregistré le %s"):format(os.date("%d/%m/%Y à %X")),
+						weapClass = Config.WeaponClass[item.name],
 					}
+					weaponInfos[#weaponInfos+1] = weaponInfo
 					break
 				end
 			end
@@ -1985,7 +2005,7 @@ lib.callback.register('getWeaponInfo', function(source)
     return weaponInfos
 end)
 
-RegisterNetEvent('mdt:server:registerweapon', function(serial, imageurl, notes, owner, weapClass, weapModel) 
+RegisterNetEvent('mdt:server:registerweapon', function(serial, imageurl, notes, owner, weapClass, weapModel)
     exports['ps-mdt']:CreateWeaponInfo(serial, imageurl, notes, owner, weapClass, weapModel)
 end)
 
@@ -2217,3 +2237,20 @@ lib.cron.new('*/15 * * * *', function()
 	end
 	TriggerClientEvent('mdt:client:dashboardMessages', -1, dispatchMessages)
 end)
+
+local hookId = exports.ox_inventory:registerHook('buyItem', function(payload)
+	if payload.shopType == "Ammunation" and string.find(payload.itemName, "WEAPON_") and payload.currency == "money" then
+		local weaponInfo = {
+			serialnumber = payload.metadata.serial,
+			owner = Player(payload.source).state.name,
+			weaponmodel = Items[payload.itemName].label,
+			imageurl = ("https://cfx-nui-ox_inventory/web/images/%s.png"):format(payload.itemName),
+			notes = ("Enregistré le %s"):format(os.date("%d/%m/%Y à %X")),
+			weapClass = Config.WeaponClass[payload.itemName],
+		}
+		exports['ps-mdt']:CreateWeaponInfo(weaponInfo.serialnumber, weaponInfo.imageurl, weaponInfo.notes, weaponInfo.owner, weaponInfo.weapClass, weaponInfo.weaponmodel)
+		return true
+	end
+end, {
+    print = true,
+})

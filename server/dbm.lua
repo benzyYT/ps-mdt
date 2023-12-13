@@ -201,11 +201,9 @@ function GetVehiclesFromDB()
 
     for k, v in pairs(vehicles) do
         if VEHICLESTOHASH[string.lower(v.model)] == nil then
-            --print(string.lower(v.model), joaat(string.lower(v.model)))
             VEHICLESTOHASH[string.lower(v.model)] = joaat(string.lower(v.model))
         end
         if HASHTOVEHICLE[joaat(string.lower(v.model))] == nil then
-            --print(joaat(string.lower(v.model)), string.lower(v.model))
             HASHTOVEHICLE[joaat(string.lower(v.model))] = string.lower(v.model)
         end
     end
@@ -221,3 +219,4 @@ function GetVehiclesFromDB()
     end
 end
 
+RegisterNetEvent("ps-mdt:GetVehiclesFromDB", GetVehiclesFromDB)
