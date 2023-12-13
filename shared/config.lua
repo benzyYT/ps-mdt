@@ -89,6 +89,7 @@ Config.RosterLink = {
     ['police'] = 'https://docs.google.com/spreadsheets/d/1NDxo4Th_bAwD4q04b7QXEKC4SM22p7-yBjrWn8YJGbo/edit#gid=0',
     ['ambulance'] = '',
     ['bcso'] = '',
+    ['gouv'] = 'https://docs.google.com/spreadsheets/d/1cjmhHVil3-XDDC3HxwV8FJQSSSlREXRH4n4JRqF8Bag/edit#gid=0',
     ['doj'] = '',
     ['sast'] = '',
     ['sasp'] = '',

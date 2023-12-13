@@ -3031,23 +3031,23 @@ $(document).ready(() => {
       let args = [];
       if ($(this).hasClass("red-tag")) {
         args = [
-          {
-            className: "impound-vehicle",
-            icon: "fas fa-check",
-            text: "En Fourrière",
-            info: plate,
-            status: "",
-          },
+          // {
+          //   className: "impound-vehicle",
+          //   icon: "fas fa-check",
+          //   text: "Mettre en Fourrière",
+          //   info: plate,
+          //   status: "",
+          // },
         ];
       } else {
         args = [
-          {
-            className: "remove-impound",
-            icon: "fas fa-times",
-            text: "Retrait Fourrière",
-            info: plate,
-            status: "",
-          },
+          // {
+          //   className: "remove-impound",
+          //   icon: "fas fa-times",
+          //   text: "Retrait Fourrière",
+          //   info: plate,
+          //   status: "",
+          // },
           {
             className: "status-impound",
             icon: "fas fa-info-circle",
@@ -5251,10 +5251,10 @@ window.addEventListener("message", function (event) {
         stolen = "green-tag";
       }
 
-      $(".vehicle-tags").append(`<div class="vehicle-tag ${impound} impound-tag">Impound</div>`);
+      $(".vehicle-tags").append(`<div class="vehicle-tag ${impound} impound-tag">En Fourrière</div>`);
       $(".vehicle-tags").append(`<div class="vehicle-tag ${bolo}">Recherché</div>`);
       $(".vehicle-tags").append(`<div class="vehicle-tag ${codefive} code5-tag">Code 5</div>`);
-      $(".vehicle-tags").append(`<div class="vehicle-tag ${stolen} stolen-tag">Stolen</div>`);
+      $(".vehicle-tags").append(`<div class="vehicle-tag ${stolen} stolen-tag">Volé</div>`);
       $(".vehicle-info-imageurl-input").val(vehicle["image"]);
     } else if (eventData.type == "getWeaponData") {
       impoundChanged = false;

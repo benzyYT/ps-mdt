@@ -773,7 +773,7 @@ RegisterNetEvent('mdt:client:setRadio', function(radio)
     if type(tonumber(radio)) == "number" then
         exports["pma-voice"]:setVoiceProperty("radioEnabled", true)
         exports["pma-voice"]:setRadioChannel(tonumber(radio))
-        ESX.ShowNotification("You have set your radio frequency to "..radio..".", "success")
+        ESX.ShowNotification("Vous êtes maintenant sur la fréquence "..radio..".", "success")
     else
         ESX.ShowNotification("Invalid Station(Please enter a number)", "error")
     end

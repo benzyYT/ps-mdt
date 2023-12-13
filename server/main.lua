@@ -1803,11 +1803,11 @@ RegisterNetEvent('mdt:server:setRadio', function(identifier, newRadio)
 	local src = source
 	local targetPlayer = ESX.GetPlayerFromIdentifier(identifier)
 
-	local radio = targetPlayer.Functions.GetItemByName("radio")
+	local radio = exports.ox_inventory:GetItemCount(targetPlayer.source, "radio")
 	if radio ~= nil then
 		TriggerClientEvent('mdt:client:setRadio', targetPlayer.source, newRadio)
 	else
-		TriggerClientEvent('esx:showAdvancedNotification', src, targetPlayer.name..' does not have a radio!', 'error')
+		TriggerClientEvent('esx:showAdvancedNotification', src, targetPlayer.name.." ne possède pas de radio !", 'error')
 	end
 end)
 
