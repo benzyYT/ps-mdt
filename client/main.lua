@@ -945,7 +945,7 @@ end)
 
 RegisterNUICallback('openCamera', function(data)
     local camId = tonumber(data.cam)
-    TriggerEvent('police:client:ActiveCamera', camId)
+    TriggerEvent('ps-mdt:client:ActiveCamera', camId)
 end)
 
 RegisterNetEvent('mdt:client:attachedUnits', function(sentData, callid)
