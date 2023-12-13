@@ -890,7 +890,6 @@ RegisterNetEvent('mdt:server:deleteICU', function(id)
 end)
 
 RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname, isJobEmployee)
-	print(firstname, lastname, isJobEmployee)
     if firstname or lastname then
         local src = source
         local Player = ESX.GetPlayerFromId(src)
@@ -948,7 +947,6 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname
 					end
 					
 				end
-				--print(json.encode(data, { indent = true }))
                 TriggerClientEvent('mdt:client:incidentSearchPerson', src, data)
             end
         end
