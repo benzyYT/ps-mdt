@@ -13,15 +13,15 @@ local FullJobList = ESX.GetJobs()
 --------------------------------
 -- SET YOUR WEHBOOKS IN HERE
 -- Images for mug shots will be uploaded here. Add a Discord webhook. 
-local MugShotWebhook = 'https://discord.com/api/webhooks/1168287405569220708/RfZo2y02-EpeRzfztoOi9ZZw3xuGtBOb7Yo5OBErAmoZBdLlmD_rgHUprNVmJPqCgG46'
+local MugShotWebhook = 'https://discord.com/api/webhooks/1184428490989260871/tjvAfTwAl7IeYXQ_2f4LkS0u47vchLNscvrmSWFnMZzD7q_S4X3XivFvo7pL4rAEIo9g'
 
 -- Clock-in notifications for duty. Add a Discord webhook.
 -- Command /mdtleaderboard, will display top players per clock-in hours.
-local ClockinWebhook = 'https://discord.com/api/webhooks/1168287405569220708/RfZo2y02-EpeRzfztoOi9ZZw3xuGtBOb7Yo5OBErAmoZBdLlmD_rgHUprNVmJPqCgG46'
+local ClockinWebhook = 'https://discord.com/api/webhooks/1184427504962908161/NwmVhkK4Yw2wNgAH3HjbuuMlAagbPK59jbS3KfE4VipalR-bNahcJ7lHquJcrjFxf4SR'
 
 -- Incident and Incident editting. Add a Discord webhook.
 -- Incident Author, Title, and Report will display in webhook post.
-local IncidentWebhook = 'https://discord.com/api/webhooks/1168287405569220708/RfZo2y02-EpeRzfztoOi9ZZw3xuGtBOb7Yo5OBErAmoZBdLlmD_rgHUprNVmJPqCgG46'
+local IncidentWebhook = 'https://discord.com/api/webhooks/1184427565344096316/0am5TxvlVoMlZWs-wxswXt_2FNLppcP50_6CuU5ctQa60UyNjxOIScOkW8baLkq1kcTt'
 --------------------------------
 
 lib.callback.register('ps-mdt:server:MugShotWebhook', function(source)
