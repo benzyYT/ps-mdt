@@ -4958,15 +4958,15 @@ window.addEventListener("message", function (event) {
     } else if (eventData.type == "incidentSearchPerson") {
       let table = eventData.data;
       $(".incidents-person-search-holder").empty();
-      $.each(table, function (index, value) {
-        let name = value.firstname + " " + value.lastname;
+      $.each(table, function (index, searchPerson) {
+        let name = searchPerson.firstname + " " + searchPerson.lastname;
         $(".incidents-person-search-holder").prepend(
           `
-            <div class="incidents-person-search-item" data-info="${name} (#${value.id})" data-identifier="${value.id}" data-name="${name}" data-callsign="${value.callsign}">
-                <img src="${value.pp}" class="incidents-person-search-item-pfp">
+            <div class="incidents-person-search-item" data-info="${name} (#${searchPerson.id})" data-identifier="${searchPerson.id}" data-name="${name}" data-callsign="${searchPerson.callsign}">
+                <img src="${searchPerson.pfp}" class="incidents-person-search-item-pfp">
                 <div class="incidents-person-search-item-right">
                     <div class="incidents-person-search-item-right-identifier-title">N° Citoyen</div>
-                    <div class="incidents-person-search-item-right-identifier-input"><span class="fas fa-id-card"></span> ${value.id}</div>
+                    <div class="incidents-person-search-item-right-identifier-input"><span class="fas fa-id-card"></span> ${searchPerson.id}</div>
                     <div class="incidents-person-search-item-right-name-title">Prénom Nom</div>
                     <div class="incidents-person-search-item-right-name-input"><span class="fas fa-user"></span> ${name}</div>
                 </div>

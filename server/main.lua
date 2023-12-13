@@ -808,7 +808,6 @@ end)
 
 RegisterNetEvent('mdt:server:deleteWeapons', function(id)
 	if id then
-		print(id)
 		local src = source
 		local xPlayer = ESX.GetPlayerFromId(src)
 		if Config.RemoveWeaponsPerms[xPlayer.job.name] then
@@ -891,6 +890,7 @@ RegisterNetEvent('mdt:server:deleteICU', function(id)
 end)
 
 RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname, isJobEmployee)
+	print(firstname, lastname, isJobEmployee)
     if firstname or lastname then
         local src = source
         local Player = ESX.GetPlayerFromId(src)
@@ -905,18 +905,18 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname
 				
 				local result = nil
 				if firstname ~= "" and lastname ~= "" then
-					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.sex, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
 						firstname = string.lower('%' .. firstname .. '%'),
 						lastname = string.lower('%' .. lastname .. '%'),
 						jobtype = JobType
 					})
 				elseif firstname ~= "" and lastname == "" then
-					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND `jobtype` = :jobtype LIMIT 50", {
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.sex, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND `jobtype` = :jobtype LIMIT 50", {
 						firstname = string.lower('%' .. firstname .. '%'),
 						jobtype = JobType
 					})
 				elseif firstname == "" and lastname ~= "" then
-					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.sex, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
 						lastname = string.lower('%' .. lastname .. '%'),
 						jobtype = JobType
 					})
@@ -930,25 +930,25 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname
 									id = person.identifier,
 									firstname = person.firstname,
 									lastname = person.lastname,
-									profilepic = ProfPic(person.sex, person.pfp),
+									pfp = ProfPic(person.sex, person.pfp),
 									callsign = person.callsign
 								}
 							end							
 						end
-					else
+					elseif isJobEmployee == false then
 						for k, person in pairs(result) do
 							data[k] = {
 								id = person.identifier,
 								firstname = person.firstname,
 								lastname = person.lastname,
-								profilepic = ProfPic(person.sex, person.pfp),
+								pfp = ProfPic(person.sex, person.pfp),
 								callsign = person.callsign
 							}
 						end
 					end
 					
 				end
-				print(json.encode(data, { indent = true }))
+				--print(json.encode(data, { indent = true }))
                 TriggerClientEvent('mdt:client:incidentSearchPerson', src, data)
             end
         end
