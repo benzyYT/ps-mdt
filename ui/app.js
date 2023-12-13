@@ -3438,13 +3438,13 @@ $(document).ready(() => {
           info: identifier,
           status: "",
         },
-        {
+        /* {
           className: "set-waypoint",
           icon: "fas fa-map-marker-alt",
           text: "Définir Marqueur",
           info: identifier,
           status: "",
-        },
+        }, */
       ];
       openContextMenu(e, args);
     }

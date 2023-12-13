@@ -824,6 +824,11 @@ RegisterNUICallback("removeCallBlip", function(data, cb)
     cb(true)
 end)
 
+RegisterNUICallback("callDetach", function(data, cb)
+    TriggerServerEvent('mdt:server:callDetach', data.callid or data.id)
+    cb(true)
+end)
+
 RegisterNUICallback("callAttach", function(data, cb)
     TriggerServerEvent('mdt:server:callAttach', data.callid or data.id)
     cb(true)
