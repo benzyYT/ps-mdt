@@ -81,14 +81,14 @@ function getFormattedDate(date, prefomattedDate = false, hideYear = false) {
   }
 
   if (prefomattedDate) {
-    return `${prefomattedDate} at ${hours}:${minutes}`;
+    return `${prefomattedDate} à ${hours}:${minutes}`;
   }
 
   if (hideYear) {
-    return `${day}. ${month} at ${hours}:${minutes}`;
+    return `${day} ${month} à ${hours}:${minutes}`;
   }
 
-  return `${day}. ${month} ${year}. at ${hours}:${minutes}`;
+  return `${day} ${month} ${year} à ${hours}:${minutes}`;
 }
 
 const quotes = [
@@ -772,7 +772,7 @@ $(document).ready(() => {
           <p>-----</p>
           <p><strong style="background-color: var(--color-1);">💸 Amende:</strong></p>
           <p>&nbsp;</p>
-          <p><strong>⌚ Peine:</strong></p>
+          <p><strong>⌚ Peine en UC:</strong></p>
           <p>-----</p>
       </div>
   `;
@@ -782,6 +782,7 @@ $(document).ready(() => {
       $(".manage-incidents-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
         imageWidthModalEdit: true,
+        lang: "fr",
         btns: [
           ['foreColor', 'backColor','fontfamily','fontsize','indent', 'outdent'],
           ['strong', 'em',], ['insertImage'],
@@ -1410,6 +1411,7 @@ $(document).ready(() => {
       $(".manage-bolos-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
         imageWidthModalEdit: true,
+        lang: "fr",
         btns: [
           ['foreColor', 'backColor','fontfamily','fontsize','indent', 'outdent'],
           ['strong', 'em',], ['insertImage'],
@@ -1756,8 +1758,8 @@ $(document).ready(() => {
       let args = [
         {
           className: "add-charge",
-          icon: "fas fa-check",
-          text: "Modify Charges",
+          icon: "fas fa-pen-to-square",
+          text: "Modifier Charges",
           info: $(this).data("name"),
           status: "",
         },
@@ -1988,6 +1990,8 @@ $(document).ready(() => {
     const identifier = $(this).data("id");
     const fine = $(".fine-amount").filter(`[data-id=${identifier}]`).val();
     const recommendFine = $(".fine-recommended-amount").filter(`[data-id=${identifier}]`).val();
+    $(".control-button").filter(`[data-id=${identifier}]`).prop("disabled", true);
+    $(".control-button").filter(`[data-id=${identifier}]`).css("background-color", "green");
     const incidentId = $(".manage-incidents-editing-title").data("id");
     sendFine(identifier, fine, recommendFine, incidentId);
   });
@@ -2087,10 +2091,10 @@ $(document).ready(() => {
             <div class="associated-incidents-user-container" data-id="${$(this).data("identifier")}">
                 <div class="associated-incidents-user-title">${$(this).data("info")}</div>
                 <div class="associated-incidents-user-tags-holder">
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Warrant</div>
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Guilty</div>
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Processed</div>
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Associated</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Recherché</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Coupable</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Traité</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Associé</div>
                 </div>
                 <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Clique droit pour ajouter / modifier les charges.</div>
                 <div class="associated-incidents-user-holder" data-name="${$(this).data("identifier")}"></div>
@@ -2100,7 +2104,7 @@ $(document).ready(() => {
                 <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input disabled placeholder="0" class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${$(this).data("identifier")}" type="number"></div>
                 <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Amende</div>
                 <div class="associated-incidents-fine-input" data-id="${$(this).data("identifier")}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${$(this).data("identifier")}" type="number"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Peine</div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Peine en UC</div>
                 <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez mois here..." value="0" class="sentence-amount" data-id="${$(this).data("identifier")}" type="number"></div>
                 <div class="associated-incidents-controls" data-id="${$(this).data("identifier")}">                    
                     <div id="fine-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Amender</div>
@@ -2483,6 +2487,7 @@ $(document).ready(() => {
       $(".manage-reports-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
         imageWidthModalEdit: true,
+        lang: "fr",
         btns: [
           ['foreColor', 'backColor','fontfamily','fontsize','indent', 'outdent'],
           ['strong', 'em',], ['insertImage'],
@@ -4705,7 +4710,7 @@ window.addEventListener("message", function (event) {
           `<div class="incidents-item" data-id="${value.id}">
                     <div class="incidents-top-holder">
                         <div class="incidents-item-title">${value.title}</div>
-                        <div class="incedent-report-name">Incident Report</div>
+                        <div class="incedent-report-name">Rapport Incident</div>
                     </div>
                     <div class="incidents-bottom-holder">
                         <div class="incedent-report-id">ID: ${value.id}</div>
@@ -4776,7 +4781,7 @@ window.addEventListener("message", function (event) {
       $(".associated-incidents-tags-holder").html("");
 
       $(".manage-incidents-editing-title").html(
-        "You are currently editing incident " + table["id"]
+        "Vous êtes entrain de modifier l'incident " + table["id"]
       );
       $(".manage-incidents-editing-title").data(
         "id",
@@ -4810,6 +4815,7 @@ window.addEventListener("message", function (event) {
       $(".manage-incidents-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
         imageWidthModalEdit: true,
+        lang: "fr",
         btns: [
           ['foreColor', 'backColor','fontfamily','fontsize','indent', 'outdent'],
           ['strong', 'em',], ['insertImage'],
@@ -4877,7 +4883,6 @@ window.addEventListener("message", function (event) {
         $(".associated-incidents-tags-holder").prepend(
           `<div class="associated-incidents-tag" data-id="${value.identifier}">${value.name}</div>`
         );
-        console.log(value)
         var warrantTag = "red-tag";
         var guiltyTag = "red-tag";
         var processedTag = "red-tag";
@@ -4901,13 +4906,13 @@ window.addEventListener("message", function (event) {
         // If the associated field is not checked, then populate the recommended fine and sentence fields
         const associatedIncidentsContainer = (value.associated != 1) && `
           <div class="associated-incidents-user-holder" data-name="${identifier}" ></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Recommended Fine</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Amende Recommandée</div>
           <div class="associated-incidents-fine-input" data-id="${identifier}"><img src="img/h7S5f9J.webp"> <input placeholder="0" disabled class="fine-recommended-amount" id="fine-recommended-amount" data-id="${identifier}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Recommended Sentence</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Peine Recommandée</div>
           <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="0" disabled class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${identifier}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Fine</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Amende</div>
           <div class="associated-incidents-fine-input" data-id="${identifier}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${identifier}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Sentence</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Peine en UC</div>
           <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez months here..." value="0" class="sentence-amount" data-id="${identifier}" type="number"></div>
           <div class="associated-incidents-controls" data-id="${identifier}">            
             <div id="fine-button" class="control-button" data-id="${identifier}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Amender</div>
@@ -4919,12 +4924,12 @@ window.addEventListener("message", function (event) {
           `<div class="associated-incidents-user-container" data-id="${identifier}">
               <div class="associated-incidents-user-title">${value.name} (#${identifier})</div>
               <div class="associated-incidents-user-tags-holder">
-                  <div class="associated-incidents-user-tag ${warrantTag}" data-id="${identifier}">Warrant</div>
-                  <div class="associated-incidents-user-tag ${guiltyTag}" data-id="${identifier}">Guilty</div>
-                  <div class="associated-incidents-user-tag ${processedTag}" data-id="${identifier}">Processed</div>
-                  <div class="associated-incidents-user-tag ${associatedTag}" data-id="${identifier}">Associated</div>
+                  <div class="associated-incidents-user-tag ${warrantTag}" data-id="${identifier}">Recherché</div>
+                  <div class="associated-incidents-user-tag ${guiltyTag}" data-id="${identifier}">Coupable</div>
+                  <div class="associated-incidents-user-tag ${processedTag}" data-id="${identifier}">Traité</div>
+                  <div class="associated-incidents-user-tag ${associatedTag}" data-id="${identifier}">Associé</div>
               </div>
-              <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Right click below to add and/or modify charges.</div>
+              <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Clique droit pour ajouter / modifier des charges.</div>
               ${associatedIncidentsContainer}
           </div>`
         );
@@ -4977,12 +4982,12 @@ window.addEventListener("message", function (event) {
     } else if (eventData.type == "boloData") {
       let table = eventData.data;
       $(".manage-bolos-editing-title").html(
-        "You are currently editing Mandat " + table["id"]
+        "Vous êtes entrain de modifier le mandat " + table["id"]
       );
 
       if ($(".badge-logo").attr("src") == "img/ems_badge.webp") {
         $(".manage-bolos-editing-title").html(
-          "You are editing USI Check-in " + table["id"]
+          "Vous modifiez un dossier USI" + table["id"]
         );
       }
 
@@ -4996,6 +5001,7 @@ window.addEventListener("message", function (event) {
       $(".manage-bolos-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
         imageWidthModalEdit: true,
+        lang: "fr",        
         btns: [
           ['foreColor', 'backColor','fontfamily','fontsize','indent', 'outdent'],
           ['strong', 'em',], ['insertImage'],
@@ -5070,7 +5076,7 @@ window.addEventListener("message", function (event) {
         }, 1500);
       }
       $(".manage-bolos-editing-title").html(
-        "You are currently editing Mandat " + id
+        "Vous êtes entrain de modifier le mandat " + id
       );
       $(".manage-bolos-editing-title").data("id", Number(id));
     } else if (eventData.type == "reportComplete") {
@@ -5089,7 +5095,7 @@ window.addEventListener("message", function (event) {
         }, 1500);
       }
       $(".manage-reports-editing-title").html(
-        "You are currently editing report " + id
+        "Vous êtes entrain de modifier le rapport " + id
       );
       $(".manage-reports-editing-title").data("id", Number(id));
     } else if (eventData.type == "reports") {
@@ -5102,7 +5108,7 @@ window.addEventListener("message", function (event) {
                     <div class="reports-top-holder">
                         <div class="reports-item-title">${value.title}</div>
                         <div class="reports-report-name">${value.type
-          } Report</div>
+          } Rapport</div>
                     </div>
                     <div class="reports-bottom-holder">
                         <div class="reports-report-id">ID: ${value.id}</div>
@@ -5130,7 +5136,7 @@ window.addEventListener("message", function (event) {
           {
             className: "reports-delete",
             icon: "fas fa-times",
-            text: "Delete Report",
+            text: "Supprimer Rapport",
             info: $(this).data("id"),
             status: "",
           },
@@ -5141,7 +5147,7 @@ window.addEventListener("message", function (event) {
       let table = eventData.data;
 
       $(".manage-reports-editing-title").html(
-        "You are currently editing report " + table["id"]
+        "Vous êtes entrain de modifier le rapport " + table["id"]
       );
 
       $(".manage-reports-editing-title").data("id", Number(table["id"]));
@@ -5151,6 +5157,7 @@ window.addEventListener("message", function (event) {
       $(".manage-reports-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
         imageWidthModalEdit: true,
+        lang: "fr",
         btns: [
           ['foreColor', 'backColor','fontfamily','fontsize','indent', 'outdent'],
           ['strong', 'em',], ['insertImage'],

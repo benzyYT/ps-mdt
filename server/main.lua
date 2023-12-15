@@ -394,7 +394,7 @@ RegisterNetEvent('mdt:server:deleteBulletin', function(id, title)
 	local JobType = GetJobType(PlayerData.job.name)
 
 	MySQL.query.await('DELETE FROM `mdt_bulletin` where id = ?', {id})
-	AddLog("Bulletin with Title: "..title.." was deleted by " .. GetNameFromPlayerData(PlayerData) .. ".")
+	AddLog("Bulletin with Title: "..title.." a été supprimé par " .. GetNameFromPlayerData(PlayerData) .. ".")
 end)
 
 lib.callback.register('mdt:server:GetProfileData', function(source, sentId)
@@ -814,11 +814,11 @@ RegisterNetEvent('mdt:server:deleteWeapons', function(id)
 			if Config.RemoveWeaponsPerms[xPlayer.job.name][xPlayer.job.grade] then
 				local fullName = xPlayer.name
 				MySQL.update("DELETE FROM `mdt_weaponinfo` WHERE id=:id", { id = id })
-				TriggerEvent('mdt:server:AddLog', "A Weapon Info was deleted by "..fullName.." with the ID ("..id..")")
+				TriggerEvent('mdt:server:AddLog', "Le dossier de l'Arme ("..id..") a été supprimé par "..fullName)
 			else
 				local fullname = xPlayer.name
-				TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
-				TriggerEvent('mdt:server:AddLog', fullname.." tryed to delete a Weapon Info with the ID ("..id..")")
+				TriggerClientEvent('esx:showAdvancedNotification', src, "Vous n'avez pas la permission!", 'error')
+				TriggerEvent('mdt:server:AddLog', fullname.." a essayé de supprimer dossier de l'Arme avec l'ID ("..id..")")
 			end
 		end
 	end
@@ -832,11 +832,11 @@ RegisterNetEvent('mdt:server:deleteReports', function(id)
 			if Config.RemoveReportPerms[Player.job.name][Player.job.grade] then
 				local fullName = Player.name
 				MySQL.update("DELETE FROM `mdt_reports` WHERE id=:id", { id = id })
-				TriggerEvent('mdt:server:AddLog', "A Report was deleted by "..fullName.." with the ID ("..id..")")
+				TriggerEvent('mdt:server:AddLog', "Un rapport a été supprimé par "..fullName.." avec l'ID ("..id..")")
 			else
 				local fullname = Player.name
-				TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
-				TriggerEvent('mdt:server:AddLog', fullname.." tryed to delete a Report with the ID ("..id..")")
+				TriggerClientEvent('esx:showAdvancedNotification', src, "Vous n'avez pas la permission!", 'error')
+				TriggerEvent('mdt:server:AddLog', fullname.." a essayé de supprimer un rapport avec l'ID ("..id..")")
 			end
 		end
 	end
@@ -852,13 +852,13 @@ RegisterNetEvent('mdt:server:deleteIncidents', function(id)
             MySQL.update("UPDATE `mdt_convictions` SET `warrant` = '0' WHERE `linkedincident` = :id", {id = id}) -- Delete any outstanding warrants from incidents
             MySQL.update("DELETE FROM `mdt_incidents` WHERE id=:id", { id = id }, function(rowsChanged)
                 if rowsChanged > 0 then
-                    TriggerEvent('mdt:server:AddLog', "A Incident was deleted by "..fullName.." with the ID ("..id..")")
+                    TriggerEvent('mdt:server:AddLog', "Un incident a été supprimé par "..fullName.." avec l'ID ("..id..")")
                 end
             end)
         else
             local fullname = Player.name
-            TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
-            TriggerEvent('mdt:server:AddLog', fullname.." tried to delete an Incident with the ID ("..id..")")
+            TriggerClientEvent('esx:showAdvancedNotification', src, "Vous n'avez pas la permission!", 'error')
+            TriggerEvent('mdt:server:AddLog', fullname.." a essayé de supprimer un incident avec l'ID ("..id..")")
         end
     end
 end)
@@ -871,7 +871,7 @@ RegisterNetEvent('mdt:server:deleteBolo', function(id)
 		if JobType == 'police' then
 			local fullname = Player.name
 			MySQL.update("DELETE FROM `mdt_bolos` WHERE id=:id", { id = id, jobtype = JobType })
-			TriggerEvent('mdt:server:AddLog', "A BOLO was deleted by "..fullname.." with the ID ("..id..")")
+			TriggerEvent('mdt:server:AddLog', "Un Mandat Routier a été supprimé par "..fullname.." avec l'ID ("..id..")")
 		end
 	end
 end)
@@ -884,7 +884,7 @@ RegisterNetEvent('mdt:server:deleteICU', function(id)
 		if JobType == 'ambulance' then
 			local fullname = Player.name
 			MySQL.update("DELETE FROM `mdt_bolos` WHERE id=:id", { id = id, jobtype = JobType })
-			TriggerEvent('mdt:server:AddLog', "A ICU Check-in was deleted by "..fullname.." with the ID ("..id..")")
+			TriggerEvent('mdt:server:AddLog', "Une adhésion en USI a été supprimé par "..fullname.." avec l'ID ("..id..")")
 		end
 	end
 end)
@@ -2120,13 +2120,13 @@ function sendIncidentToDiscord(color, name, message, footer, associatedData)
     else
         if associatedData then
             message = message .. "\n\n--- Associated Data ---"
-            message = message .. "\nCID: " .. (associatedData.identifier or "Not Found")
+            message = message .. "\nCID: " .. (associatedData.identifier or "Non trouvé")
             
             if associatedData.guilty == false then
                 pingMessage = "**Guilty: Not Guilty - Need Court Case** " .. rolePing
                 message = message .. "\n" .. pingMessage
             else
-                message = message .. "\nGuilty: " .. tostring(associatedData.guilty or "Not Found")
+                message = message .. "\nGuilty: " .. tostring(associatedData.guilty or "Non trouvé")
             end
 			
 			
@@ -2145,18 +2145,18 @@ function sendIncidentToDiscord(color, name, message, footer, associatedData)
             end
 
 
-            message = message .. "\nWarrant: " .. tostring(associatedData.warrant or "No Warrants")
-            message = message .. "\nReceived Fine: $" .. tostring(associatedData.fine or "Not Found")
-            message = message .. "\nReceived Sentence: " .. tostring(associatedData.sentence or "Not Found")
-            message = message .. "\nRecommended Fine: $" .. tostring(associatedData.recfine or "Not Found")
-            message = message .. "\nRecommended Sentence: " .. tostring(associatedData.recsentence or "Not Found")
+            message = message .. "\nMandat: " .. tostring(associatedData.warrant or "Aucun MandatNo Warrants")
+            message = message .. "\nAmende Reçue: $" .. tostring(associatedData.fine or "Non trouvé")
+            message = message .. "\nPeine Reçue: " .. tostring(associatedData.sentence or "Non trouvé")
+            message = message .. "\nRecommandée Amende: $" .. tostring(associatedData.recfine or "Non trouvé")
+            message = message .. "\nPeine Recommandée: " .. tostring(associatedData.recsentence or "Non trouvé")
 
             local chargesTable = json.decode(associatedData.charges)
             if chargesTable and #chargesTable > 0 then
                 local chargeList = table.concat(chargesTable, "\n")
                 message = message .. "\n**Charges:** \n" .. chargeList
             else
-                message = message .. "\n**Charges: No Charges**"
+                message = message .. "\n**Charges: Acunes Charges**"
             end
         end
 

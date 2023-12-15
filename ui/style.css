@@ -6775,3 +6775,9 @@ input[type="range"].vehicle-info-points-input::-moz-range-track {
 .leaflet-tooltip-right {
 	margin-left: 6px;
 }
+
+
+.trumbowyg-editor {
+    color: white;
+    padding: 2vh;
+}
