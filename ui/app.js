@@ -2464,22 +2464,22 @@ $(document).ready(() => {
       if ($(".badge-logo").attr("src") == "img/ems_badge.webp") {
         template = `
     <div style="color: white;">
-        <p><strong>Envoyé en USI ?: [Yes/No]</strong></p>
-        <p><strong>Incident Report:</strong></p>
-        <p><em>· [ Brief summary of what happened and who did what while on scene. Note anything that stood out about the scene as well as what was done to treat the patient ]</em></p>
-        <p><strong>List of Injuries:</strong></p>
-        <p><em>· [ State what injury or injuries occurred ]</em></p>
-        <p><strong>Surgical Report:</strong></p>
-        <p><em>· [ Full report on what was done in surgery, list any complications or anything that was found while in operation. Note who was attending and what they did during the surgery. At the end of the report be sure to note the state of the patient after ]</em></p>
+        <p><strong>Envoyé en USI ?: [Oui/Non]</strong></p>
+        <p><strong>Rapport d'incident:</strong></p>
+        <p><em>· [Un bref résumé de ce qui s'est passé et de qui a fait quoi sur place. Notez tout ce qui ressort de la scène et ce qui a été fait pour traiter le patient.]</em></p>
+        <p><strong>Liste des blessures:</strong></p>
+        <p><em>· [Indiquer la ou les lésions subies]</em></p>
+        <p><strong>Rapport chirurgical:</strong></p>
+        <p><em>· [Rapport complet sur ce qui a été fait pendant l'opération, liste des complications ou de tout ce qui a été découvert pendant l'opération. Notez qui était présent et ce qu'il a fait pendant l'opération. À la fin du rapport, veillez à noter l'état du patient après l'opération.]</em></p>
         <p>-----</p>
-        <p><strong>Attending:</strong></p>
-        <p><em>· [ List Any Attending Here ]</em></p>
-        <p><strong>Medications Applied:</strong></p>
-        <p><em>· [ List Any Attending Here ]</em></p>
+        <p><strong>Interventions subies:</strong></p>
+        <p><em>· [Liste des interventions (radio,IRM...) ]</em></p>
+        <p><strong>Médicaments utilisés:</strong></p>
+        <p><em>· [Liste des médicaments & traitements]</em></p>
         <p>-----</p>
         <br>
         <p><strong>Notes:</strong></p>
-        <p><em>[ Additional Notes Here ]</em></p>
+        <p><em>[Notes additionnelles]</em></p>
     </div>
 `;}
       $(".manage-reports-editing-title").html(
