@@ -5683,7 +5683,7 @@ function searchProfilesResults(result) {
       });
 
       if (hasNoLicence === true) {
-        licencesHTML += `<span class="license-tag red-tag">Aucun Permis</span>`;
+        licencesHTML = `<span class="license-tag red-tag">Aucun Permis</span>`;
       }
     }
 
