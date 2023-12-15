@@ -100,7 +100,6 @@ Config.RosterLink = {
 
 Config.PoliceJobs = {
     ['police'] = true,
-    ['lspd'] = false,
     ['bcso'] = true,
     ['sast'] = false,
     ['sasp'] = false,
@@ -117,8 +116,6 @@ Config.AmbulanceJobs = {
 
 Config.DojJobs = {
     ['gouv'] = true,
-    ['lawyer'] = false,
-    ['judge'] = false
 }
 
 -- This is a workaround solution because the qb-menu present in qb-policejob fills in an impound location and sends it to the event. 
@@ -143,25 +140,25 @@ Config.LogPerms = {
 		[4] = true,
 	},
 	['police'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['bcso'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['sast'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['sasp'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['sapr'] = {
-		[4] = true,
+		[5] = true,
 	},
-    ['doc'] = {
-		[4] = true,
+    ['gouv'] = {
+		[5] = true,
 	},
     ['lssd'] = {
-		[4] = true,
+		[5] = true,
 	},
 }
 
@@ -170,25 +167,25 @@ Config.RemoveIncidentPerms = {
 		[4] = true,
 	},
 	['police'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['bcso'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['sast'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['sasp'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['sapr'] = {
-		[4] = true,
+		[5] = true,
 	},
-    ['doc'] = {
-		[4] = true,
+    ['gouv'] = {
+		[5] = true,
 	},
     ['lssd'] = {
-		[4] = true,
+		[5] = true,
 	},
 }
 
@@ -197,52 +194,52 @@ Config.RemoveReportPerms = {
 		[4] = true,
 	},
 	['police'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['bcso'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['sast'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['sasp'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['sapr'] = {
-		[4] = true,
+		[5] = true,
 	},
-    ['doc'] = {
-		[4] = true,
+    ['gouv'] = {
+		[5] = true,
 	},
     ['lssd'] = {
-		[4] = true,
+		[5] = true,
 	},
 }
 
 Config.RemoveWeaponsPerms = {
 	['ambulance'] = {
-		[4] = true,
+		[3] = true,
 	},
 	['police'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['bcso'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['sast'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['sasp'] = {
-		[4] = true,
+		[5] = true,
 	},
     ['sapr'] = {
-		[4] = true,
+		[5] = true,
 	},
-    ['doc'] = {
-		[4] = true,
+    ['gouv'] = {
+		[5] = true,
 	},
     ['lssd'] = {
-		[4] = true,
+		[5] = true,
 	},
 }
 

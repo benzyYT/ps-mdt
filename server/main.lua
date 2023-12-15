@@ -792,7 +792,7 @@ RegisterNetEvent('mdt:server:newBolo', function(existing, id, title, plate, owne
 				}, function(r)
 					if r then
 						TriggerClientEvent('mdt:client:boloComplete', src, id)
-						TriggerEvent('mdt:server:AddLog', "A BOLO was updated by "..fullname.." with the title ("..title..") and ID ("..id..")")
+						TriggerEvent('mdt:server:AddLog', "Un Mandat Routier a été mise à jour par "..fullname.." ayant pour titre ("..title..") et l'ID ("..id..")")
 					end
 				end)
 			end
@@ -1052,7 +1052,7 @@ RegisterNetEvent('mdt:server:newReport', function(existing, id, title, reporttyp
 					}, function(affectedRows)
 						if affectedRows > 0 then
 							TriggerClientEvent('mdt:client:reportComplete', src, id)
-							TriggerEvent('mdt:server:AddLog', "A report was updated by "..fullname.." with the title ("..title..") and ID ("..id..")")
+							TriggerEvent('mdt:server:AddLog', "Un Rapport a été mis à jour par "..fullname.." ayant pour titre ("..title..") et l'ID ("..id..")")
 						end
 					end)
 				end
@@ -1193,12 +1193,12 @@ RegisterNetEvent('mdt:server:saveVehicleInfo', function(dbid, plate, imageurl, n
 			if GetJobType(Player.job.name) == 'police' then
 				if dbid == nil then dbid = 0 end;
 				local fullname = Player.name
-				TriggerEvent('mdt:server:AddLog', "A vehicle with the plate ("..plate..") has a new image ("..imageurl..") edited by "..fullname)
+				TriggerEvent('mdt:server:AddLog', "Le véhicule avec la plaque ("..plate..") a une nouvelle image ("..imageurl..") édité par "..fullname)
 				if tonumber(dbid) == 0 then
 					MySQL.insert('INSERT INTO `mdt_vehicleinfo` (`plate`, `information`, `image`, `code5`, `stolen`, `points`) VALUES (:plate, :information, :image, :code5, :stolen, :points)', { plate = string.gsub(plate, "^%s*(.-)%s*$", "%1"), information = notes, image = imageurl, code5 = code5, stolen = stolen, points = tonumber(points) }, function(infoResult)
 						if infoResult then
 							TriggerClientEvent('mdt:client:updateVehicleDbId', src, infoResult)
-							TriggerEvent('mdt:server:AddLog', "A vehicle with the plate ("..plate..") was added to the vehicle information database by "..fullname)
+							TriggerEvent('mdt:server:AddLog', "Le véhicule avec la plaque ("..plate..") a été ajouté dans la base de données par "..fullname)
 						end
 					end)
 				elseif tonumber(dbid) > 0 then
@@ -1269,7 +1269,6 @@ RegisterNetEvent('mdt:server:searchCalls', function(calls)
 	local JobType = GetJobType(Player.job.name)
 	if JobType == 'police' then
 		TriggerClientEvent('mdt:client:getCalls', src, calls)
-
 	end
 end)
 
@@ -1413,8 +1412,6 @@ RegisterNetEvent('mdt:server:getPenalCode', function()
 end)
 
 RegisterNetEvent('mdt:server:setCallsign', function(identifier, newcallsign)
-	-- local Player = ESX.GetPlayerFromIdentifier(identifier)
-	-- Player.Functions.SetMetaData("callsign", newcallsign)
 	local originSource = source
 	if identifier ~= nil and newcallsign ~= nil then
 		local xPlayer = ESX.GetPlayerFromIdentifier(identifier)
@@ -1467,7 +1464,7 @@ RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tag
                                         officersinvolved = officers,
                                         civsinvolved = civilians
                                     }
-                                    sendIncidentToDiscord(3989503, "MDT Incident Report", message, "ps-mdt | Edited by Lexinor", associatedData)                                
+                                    sendIncidentToDiscord(3989503, "Rapport d'incident mis à jour", message, "ps-mdt | Edited by Lexinor", associatedData)                                
                                 end
                             else
                                 print('No incident found in the mdt_incidents table with id: ' .. infoResult)
@@ -1517,7 +1514,7 @@ RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tag
                                 officersinvolved = officers,
                                 civsinvolved = civilians
                             }
-                            sendIncidentToDiscord(16711680, "MDT Incident Report has been Updated", message, "ps-mdt | Edited by Lexinor", associatedData)
+                            sendIncidentToDiscord(16711680, "Rapport d'incident mis à jour", message, "ps-mdt | Edited by Lexinor", associatedData)
                         end
                     else
                         print('No incident found in the mdt_incidents table with id: ' .. id)
@@ -2119,29 +2116,29 @@ function sendIncidentToDiscord(color, name, message, footer, associatedData)
         print("\27[31mA webhook is missing in: IncidentWebhook (server > main.lua > line 24)\27[0m")
     else
         if associatedData then
-            message = message .. "\n\n--- Associated Data ---"
-            message = message .. "\nCID: " .. (associatedData.identifier or "Non trouvé")
+            message = message .. "\n\n--- Informations ---"
+            message = message .. "\nID: " .. (associatedData.identifier or "Non trouvé")
             
             if associatedData.guilty == false then
-                pingMessage = "**Guilty: Not Guilty - Need Court Case** " .. rolePing
+                pingMessage = "**Coupable: Non coupable - Requiert procès** " .. rolePing
                 message = message .. "\n" .. pingMessage
             else
-                message = message .. "\nGuilty: " .. tostring(associatedData.guilty or "Non trouvé")
+                message = message .. "\nCoupable: " .. tostring(associatedData.guilty or "Non trouvé")
             end
 			
 			
             if associatedData.officersinvolved and #associatedData.officersinvolved > 0 then
                 local officersList = table.concat(associatedData.officersinvolved, ", ")
-                message = message .. "\nOfficers Involved: " .. officersList
+                message = message .. "\nOfficiers Impliqués: " .. officersList
             else
-                message = message .. "\nOfficers Involved: None"
+                message = message .. "\nOfficiers Impliqués: Aucun"
             end
 
             if associatedData.civsinvolved and #associatedData.civsinvolved > 0 then
                 local civsList = table.concat(associatedData.civsinvolved, ", ")
-                message = message .. "\nCivilians Involved: " .. civsList
+                message = message .. "\nCitoyens Impliqués: " .. civsList
             else
-                message = message .. "\nCivilians Involved: None"
+                message = message .. "\nCitoyens Impliqués: Aucun"
             end
 
 

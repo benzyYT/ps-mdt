@@ -186,7 +186,6 @@ $(document).ready(() => {
         id: id,
       })
     );
-      console.log(result)
     if (!canInputTag) {
       if ($(".tags-add-btn").hasClass("fa-minus")) {
         $(".tags-add-btn")
@@ -772,7 +771,7 @@ $(document).ready(() => {
           <p>-----</p>
           <p><strong style="background-color: var(--color-1);">💸 Amende:</strong></p>
           <p>&nbsp;</p>
-          <p><strong>⌚ Peine en UC:</strong></p>
+          <p><strong>⌚ Peine en UC (Unité Carcérale):</strong></p>
           <p>-----</p>
       </div>
   `;
@@ -1733,7 +1732,7 @@ $(document).ready(() => {
       {
         className: "bolo-delete",
         icon: "fas fa-times",
-        text: "Delete Bolo",
+        text: "Supprimer Mandat Routier",
         info: $(this).data("id"),
         status: "",
       },
@@ -1743,7 +1742,7 @@ $(document).ready(() => {
         {
           className: "bolo-delete",
           icon: "fas fa-times",
-          text: "Delete Check-In",
+          text: "Supprimer Admission",
           info: $(this).data("id"),
           status: "",
         },
@@ -2104,7 +2103,7 @@ $(document).ready(() => {
                 <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input disabled placeholder="0" class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${$(this).data("identifier")}" type="number"></div>
                 <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Amende</div>
                 <div class="associated-incidents-fine-input" data-id="${$(this).data("identifier")}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${$(this).data("identifier")}" type="number"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Peine en UC</div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Peine en UC (Unité Carcérale)</div>
                 <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez mois here..." value="0" class="sentence-amount" data-id="${$(this).data("identifier")}" type="number"></div>
                 <div class="associated-incidents-controls" data-id="${$(this).data("identifier")}">                    
                     <div id="fine-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Amender</div>
@@ -4082,7 +4081,7 @@ $(document).ready(() => {
         );
         $("#boloindividual").attr(
           "placeholder",
-          "Place invidivual here..."
+          "Insérez Individu..."
         );
         $("#home-warrants-container").fadeIn(0);
         $("#home-reports-container").fadeOut(0);
@@ -4738,7 +4737,7 @@ window.addEventListener("message", function (event) {
           {
             className: "incidents-delete",
             icon: "fas fa-times",
-            text: "Delete Incidents",
+            text: "Supprimer Incident",
             info: $(this).data("id"),
             status: "",
           },
@@ -4912,7 +4911,7 @@ window.addEventListener("message", function (event) {
           <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="0" disabled class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${identifier}" type="number"></div>
           <div class="manage-incidents-title-tag" data-id="${identifier}">Amende</div>
           <div class="associated-incidents-fine-input" data-id="${identifier}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${identifier}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Peine en UC</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Peine en UC (Unité Carcérale)</div>
           <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez months here..." value="0" class="sentence-amount" data-id="${identifier}" type="number"></div>
           <div class="associated-incidents-controls" data-id="${identifier}">            
             <div id="fine-button" class="control-button" data-id="${identifier}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Amender</div>
