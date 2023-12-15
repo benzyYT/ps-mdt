@@ -1642,7 +1642,6 @@ RegisterNetEvent('mdt:server:callAttach', function(callid)
 		callsign = Player(xPlayer.source).state?.callsign or "000",
 		radio = Radio
 	}
-	print(json.encode(playerdata))
 	local JobType = GetJobType(xPlayer.job.name)
 	if JobType == 'police' or JobType == 'ambulance' then
 		if callid then
