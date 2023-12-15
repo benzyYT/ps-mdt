@@ -326,6 +326,10 @@ RegisterNUICallback("updateLicence", function(data, cb)
     local type = data.type
     local status = data.status
     local identifier = data.identifier
+    print("updateLicence")
+    -- print(type)
+    -- print(status)
+    -- print(identifier)
     TriggerServerEvent('mdt:server:updateLicense', identifier, type, status)
     cb(true)
 end)

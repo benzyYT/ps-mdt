@@ -258,7 +258,7 @@ $(document).ready(() => {
       licenses.forEach(e => {
         if (e[1].status === true) {
           hasNoLicence = false
-          licencesHTML += `<span class="license-tag green-tag">${e[1].label}</span>`;
+          licencesHTML += `<span class="license-tag green-tag" data-type="${e[1].type}">${e[1].label}</span>`;
         }
       });
       if (hasNoLicence === true) {
@@ -979,7 +979,7 @@ $(document).ready(() => {
   $(".licenses-holder").on("contextmenu", ".license-tag", function (e) {
     const status = $(this).data("type");
     let type = $(this).html();
-
+    
     if (type == "Code") {
       info = "dmv";
     } else if (type == "Voiture") {
@@ -1001,13 +1001,12 @@ $(document).ready(() => {
     } else {
       info = type.toLowerCase();
     }
-
     if ($(this).hasClass("green-tag")) {
       openContextMenu(e, [
         {
           className: "revoke-licence",
           icon: "fas fa-times",
-          text: "Revoke License",
+          text: "Supprimer Licence",
           info: info,
           status: status,
         },
@@ -1017,7 +1016,7 @@ $(document).ready(() => {
         {
           className: "give-licence",
           icon: "fas fa-check",
-          text: "Give License",
+          text: "Attribuer Licence",
           info: info,
           status: status,
         },
@@ -1026,14 +1025,14 @@ $(document).ready(() => {
   });
 
   $(".contextmenu").on("click", ".revoke-licence", function () {
-    // $.post(
-    //   `https://${GetParentResourceName()}/updateLicence`,
-    //   JSON.stringify({
-    //     identifier: $(".manage-profile-identifier-input").val(),
-    //     type: $(this).data("status"),
-    //     status: "revoke",
-    //   })
-    // );
+    $.post(
+      `https://${GetParentResourceName()}/updateLicence`,
+      JSON.stringify({
+        identifier: $(".manage-profile-identifier-input").val(),
+        type: $(this).data("status"),
+        status: "revoke",
+      })
+    );
 
     const Elem = $(this).data("status");
     $(".license-tag")
@@ -5666,7 +5665,7 @@ function searchProfilesResults(result) {
       
       licenses.forEach(e => {
         if (e[1].status === true) {
-          licencesHTML += `<span class="license-tag green-tag">${e[1].label}</span>`;
+          licencesHTML += `<span class="license-tag green-tag" data-type="${e[1].type}">${e[1].label}</span>`;
         }
       });
     }

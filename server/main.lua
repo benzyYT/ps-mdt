@@ -382,7 +382,7 @@ RegisterNetEvent('mdt:server:NewBulletin', function(title, info, time)
 		jt = JobType
 	})
 
-	AddLog(("A new bulletin was added by %s with the title: %s!"):format(playerName, title))
+	AddLog(("Un noveau rapport a été créé par %s ayant pour titre : %s!"):format(playerName, title))
 	TriggerClientEvent('mdt:client:newBulletin', -1, src, {id = newBulletin, title = title, info = info, time = time, author = PlayerData.identifier}, JobType)
 end)
 
@@ -627,6 +627,7 @@ RegisterNetEvent("mdt:server:updateLicense", function(identifier, type, status)
 	local Player = ESX.GetPlayerFromId(src)
 	if Player then
 		if GetJobType(Player.job.name) == 'police' then
+			print(identifier, type, status)
 			ManageLicense(identifier, type, status)
 		end
 	end
