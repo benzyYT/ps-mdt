@@ -1035,7 +1035,12 @@ $(document).ready(() => {
     );
 
     const Elem = $(this).data("status");
-    $(".license-tag")
+    // $(".license-tag")
+    //   .filter(`[data-type="${Elem}"]`)
+    //   .removeClass("green-tag")
+    //   .addClass("red-tag");
+    
+    $("div.licenses-holder > span.license-tag")
       .filter(`[data-type="${Elem}"]`)
       .removeClass("green-tag")
       .addClass("red-tag");
@@ -4959,24 +4964,29 @@ window.addEventListener("message", function (event) {
         }
       });
     } else if (eventData.type == "incidentSearchPerson") {
-      let table = eventData.data;
       $(".incidents-person-search-holder").empty();
-      $.each(table, function (index, searchPerson) {
-        let name = searchPerson.firstname + " " + searchPerson.lastname;
-        $(".incidents-person-search-holder").prepend(
-          `
-            <div class="incidents-person-search-item" data-info="${name} (#${searchPerson.id})" data-identifier="${searchPerson.id}" data-name="${name}" data-callsign="${searchPerson.callsign}">
-                <img src="${searchPerson.pfp}" class="incidents-person-search-item-pfp">
-                <div class="incidents-person-search-item-right">
-                    <div class="incidents-person-search-item-right-identifier-title">N° Citoyen</div>
-                    <div class="incidents-person-search-item-right-identifier-input"><span class="fas fa-id-card"></span> ${searchPerson.id}</div>
-                    <div class="incidents-person-search-item-right-name-title">Prénom Nom</div>
-                    <div class="incidents-person-search-item-right-name-input"><span class="fas fa-user"></span> ${name}</div>
-                </div>
-            </div>
-          `
-        );
-      });
+      let table = eventData.data;
+      console.log(table.length)
+      if (table.length > 0) {
+        $.each(table, function (index, searchPerson) {
+          let name = searchPerson.firstname + " " + searchPerson.lastname;
+          $(".incidents-person-search-holder").prepend(
+            `
+              <div class="incidents-person-search-item" data-info="${name} (#${searchPerson.id})" data-identifier="${searchPerson.id}" data-name="${name}" data-callsign="${searchPerson.callsign}">
+                  <img src="${searchPerson.pfp}" class="incidents-person-search-item-pfp">
+                  <div class="incidents-person-search-item-right">
+                      <div class="incidents-person-search-item-right-identifier-title">N° Citoyen</div>
+                      <div class="incidents-person-search-item-right-identifier-input"><span class="fas fa-id-card"></span> ${searchPerson.id}</div>
+                      <div class="incidents-person-search-item-right-name-title">Prénom Nom</div>
+                      <div class="incidents-person-search-item-right-name-input"><span class="fas fa-user"></span> ${name}</div>
+                  </div>
+              </div>
+            `
+          );
+        });
+      } else {
+        $(".incidents-person-search-holder").prepend(`<div class="profile-item-title">Aucun Employés trouvés</div>`);
+      }
     } else if (eventData.type == "boloData") {
       let table = eventData.data;
       $(".manage-bolos-editing-title").html(
@@ -5662,12 +5672,19 @@ function searchProfilesResults(result) {
     }
 
     if (licenses.length > 0 && (PoliceJobs[playerJob] !== undefined || DojJobs[playerJob] !== undefined)) {
-      
+      licencesHTML = ""
+      let hasNoLicence = true
+
       licenses.forEach(e => {
         if (e[1].status === true) {
+          hasNoLicence = false
           licencesHTML += `<span class="license-tag green-tag" data-type="${e[1].type}">${e[1].label}</span>`;
         }
       });
+
+      if (hasNoLicence === true) {
+        licencesHTML += `<span class="license-tag red-tag">Aucun Permis</span>`;
+      }
     }
 
     if (profile.warrant == true) {

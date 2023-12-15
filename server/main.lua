@@ -578,7 +578,7 @@ lib.callback.register('mdt:server:GetProfileData', function(source, sentId)
 		person.tags = json.decode(mdtData.tags)
 		person.gallery = json.decode(mdtData.gallery)
 		person.fingerprint = mdtData.fingerprint
-		print("Fetched fingerprint from mdt_data:", mdtData.fingerprint)
+		--print("Fetched fingerprint from mdt_data:", mdtData.fingerprint)
 	end
 
 	return person
@@ -627,7 +627,6 @@ RegisterNetEvent("mdt:server:updateLicense", function(identifier, type, status)
 	local Player = ESX.GetPlayerFromId(src)
 	if Player then
 		if GetJobType(Player.job.name) == 'police' then
-			print(identifier, type, status)
 			ManageLicense(identifier, type, status)
 		end
 	end
@@ -885,7 +884,7 @@ RegisterNetEvent('mdt:server:deleteICU', function(id)
 		if JobType == 'ambulance' then
 			local fullname = Player.name
 			MySQL.update("DELETE FROM `mdt_bolos` WHERE id=:id", { id = id, jobtype = JobType })
-			TriggerEvent('mdt:server:AddLog', "Une adhésion en USI a été supprimé par "..fullname.." avec l'ID ("..id..")")
+			TriggerEvent('mdt:server:AddLog', "Une adhésion en USI a été supprimée par "..fullname.." avec l'ID ("..id..")")
 		end
 	end
 end)
@@ -921,23 +920,23 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname
 						jobtype = JobType
 					})
 				end
-                local data = {}
+				local data = {}
 				if result then
 					if isJobEmployee == true then
 						for k, person in pairs(result) do
 							if person.job == Player.job.name then
-								data[k] = {
+								data[#data+1] = {
 									id = person.identifier,
 									firstname = person.firstname,
 									lastname = person.lastname,
 									pfp = ProfPic(person.sex, person.pfp),
 									callsign = person.callsign
 								}
-							end							
+							end
 						end
 					elseif isJobEmployee == false then
 						for k, person in pairs(result) do
-							data[k] = {
+							data[#data+1] = {
 								id = person.identifier,
 								firstname = person.firstname,
 								lastname = person.lastname,
@@ -946,7 +945,7 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname
 							}
 						end
 					end
-					
+					--print(json.encode(data, { indent = true }))
 				end
                 TriggerClientEvent('mdt:client:incidentSearchPerson', src, data)
             end

@@ -122,8 +122,6 @@ function GetAllLicenses()
 end
 
 function ManageLicense(identifier, type, status)
-    
-    if status == "give" then licenseStatus = true elseif status == "revoke" then licenseStatus = false end
     local playerInfo = MySQL.single.await("SELECT * FROM users WHERE identifier = ?", {identifier})
     if status == "revoke" then
         
