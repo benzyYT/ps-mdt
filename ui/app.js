@@ -4639,7 +4639,7 @@ window.addEventListener("message", function (event) {
       const table = eventData.data;
       $(".active-calls-list").empty();
       $.each(table, function (index, call) {
-        if (call && call?.job?.includes(playerJob) || call?.jobs.includes(PlayerJobType)) {
+        if (call && call?.job?.includes(playerJob) || call?.job?.includes(PlayerJobType)) {
 
           const prio = call["priority"];
           let DispatchItem = `<div class="active-calls-item" data-id="${call.callId || call.id}" data-canrespond="false"><div class="active-call-inner-container"><div class="call-item-top"><div class="call-number">#${call.callId || call.id}</div><div class="call-code priority-${call.priority}">${call.dispatchCode || call.code}</div><div class="call-title">${call.dispatchMessage || call.message}</div><div class="call-radio">${call.units.length}</div></div><div class="call-item-bottom">`;
