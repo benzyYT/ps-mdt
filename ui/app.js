@@ -660,16 +660,16 @@ $(document).ready(() => {
             .each(function (index) {
               if ($(this).data("id") == identifier) {
                 if ($(this).hasClass("green-tag")) {
-                  if ($(this).text() == "Guilty") {
+                  if ($(this).text() == "Coupable") {
                     guilty = true;
                   }
-                  if ($(this).text() == "Warrant") {
+                  if ($(this).text() == "Recherché") {
                     warrant = true;
                   }
-                  if ($(this).text() == "Processed") {
+                  if ($(this).text() == "Traité") {
                     processed = true;
                   }
-                  if ($(this).text() == "Associated") {
+                  if ($(this).text() == "Associé") {
                     isassociated = true;
                   }
                 }
