@@ -24,7 +24,20 @@ var DispatchNum = 0;
 var playerJob = "";
 let rosterLink  = "";
 let sopLink = "";
+let PlayerJobType = "";
 const licenseTypesGlobal = ['dmv', 'drive', 'drive_bike', 'drive_truck', 'weapon_a', 'weapon_b', 'weapon_c'];
+
+function getPlayerJobType(job) {
+  if (PoliceJobs[job] !== null || PoliceJobs[job] !== "undefined") {
+    return "police";
+  } else if (AmbulanceJobs[job] !== null || AmbulanceJobs[job] !== "undefined") {
+    return "ambulance";
+  } else if (DojJobs[job] !== null || DojJobs[job] !== "undefined") {
+    return "doj";
+  } else {
+    return false;
+  }
+}
 
 //Set this to false if you don't want to show the send to community service button on the incidents page
 const canSendToCommunityService = false
@@ -4487,15 +4500,14 @@ window.addEventListener("message", function (event) {
       );
     } else if (eventData.type == "call") {
       const value = eventData.data;
+      PlayerJobType = getPlayerJobType(playerJob)
+      console.log(value)
       DispatchMAP(value);
-      if (value && value?.job?.includes(playerJob) || value?.jobs.includes(PlayerJobType)) {
+      if (value && value?.job?.includes(playerJob) || value?.job?.includes(PlayerJobType)) {
         const prio = value["priority"];
         let DispatchItem = `<div class="active-calls-item" data-id="${value.callId || value.id}" data-canrespond="false"><div class="active-call-inner-container"><div class="call-item-top"><div class="call-number">#${value.callId || value.id}</div><div class="call-code priority-${value.priority}">${value.dispatchCode || value.code}</div><div class="call-title">${value.dispatchMessage || value.message}</div><div class="call-radio">${value.units.length}</div></div><div class="call-item-bottom">`;
 
-        if (
-          value.dispatchCode == "911" ||
-          value.dispatchCode == "311"
-        ) {
+        if (value.dispatchCode == "911" || value.dispatchCode == "311") {
           DispatchItem = `<div class="active-calls-item" data-id="${value.callId || value.id}" data-canrespond="true"><div class="active-call-inner-container"><div class="call-item-top"><div class="call-number">#${value.callId || value.id}</div><div class="call-code priority-${value.priority}">${value.dispatchCode || value.code}</div><div class="call-title">${value.dispatchMessage || value.message}</div><div class="call-radio">${value.units.length}</div></div><div class="call-item-bottom">`;
         }
 
