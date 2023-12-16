@@ -772,7 +772,7 @@ RegisterNetEvent('mdt:server:newBolo', function(existing, id, title, plate, owne
 				}, function(r)
 					if r then
 						TriggerClientEvent('mdt:client:boloComplete', src, r)
-						TriggerEvent('mdt:server:AddLog', "A new BOLO was created by "..fullname.." with the title ("..title..") and ID ("..id..")")
+						TriggerEvent('mdt:server:AddLog', "Un nouveau mandat routier a été créé par "..fullname.." ayant pour titre ("..title..") et l'ID ("..id..")")
 					end
 				end)
 			end
@@ -1033,7 +1033,7 @@ RegisterNetEvent('mdt:server:newReport', function(existing, id, title, reporttyp
 					}, function(r)
 						if r then
 							TriggerClientEvent('mdt:client:reportComplete', src, r)
-							TriggerEvent('mdt:server:AddLog', "A new report was created by "..fullname.." with the title ("..title..") and ID ("..id..")")
+							TriggerEvent('mdt:server:AddLog', "Un nouveau rapport a été créé par "..fullname.." ayant pour titre ("..title..") et l'ID ("..id..")")
 						end
 					end)
 				end
@@ -1310,9 +1310,9 @@ RegisterNetEvent('mdt:server:saveWeaponInfo', function(serial, imageurl, notes, 
 				})
 
 				if result then
-					TriggerEvent('mdt:server:AddLog', "A weapon with the serial number ("..serial..") was added to the weapon information database by "..fullname)
+					TriggerEvent('mdt:server:AddLog', "Une arme avec le n° de serie ("..serial..") a été ajouté aux registre des armes par "..fullname)
 				else
-					TriggerEvent('mdt:server:AddLog', "A weapon with the serial number ("..serial..") failed to be added to the weapon information database by "..fullname)
+					TriggerEvent('mdt:server:AddLog', "Une arme avec le n° de serie ("..serial..") n'a été ajouté aux registre des armes par "..fullname)
 				end
 			end
 		end
@@ -1359,10 +1359,8 @@ RegisterNetEvent('mdt:server:getAllLogs', function()
 	if Player then
 		if Config.LogPerms[Player.job.name] then
 			if Config.LogPerms[Player.job.name][Player.job.grade] then
-
 				local JobType = GetJobType(Player.job.name)
 				local infoResult = MySQL.query.await('SELECT * FROM mdt_logs WHERE `jobtype` = :jobtype ORDER BY `id` DESC LIMIT 250', {jobtype = JobType})
-
 				TriggerLatentClientEvent('mdt:client:getAllLogs', src, 30000, infoResult)
 			end
 		end
