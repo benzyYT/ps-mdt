@@ -4501,7 +4501,6 @@ window.addEventListener("message", function (event) {
     } else if (eventData.type == "call") {
       const value = eventData.data;
       PlayerJobType = getPlayerJobType(playerJob)
-      console.log(value)
       DispatchMAP(value);
       if (value && value?.job?.includes(playerJob) || value?.job?.includes(PlayerJobType)) {
         const prio = value["priority"];
