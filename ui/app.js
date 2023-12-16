@@ -105,7 +105,7 @@ function getFormattedDate(date, prefomattedDate = false, hideYear = false) {
 }
 
 const quotes = [
-  'lez gooooo, Lexinor da best',
+  'Gouvernement Kriegen : pour un état plus sûr',
 ]
 
 function randomizeQuote() {
