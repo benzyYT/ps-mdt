@@ -73,9 +73,9 @@ Config.Licenses = {
 
 -- Google Docs Link
 Config.sopLink = {
-    ['police'] = '',
+    ['police'] = 'https://docs.google.com/document/d/1Zr_NGx56xJLEdWqe4RPy3-Syb8dmnlS_iD7BWUg-ltA/edit?usp=sharing',
     ['ambulance'] = '',
-    ['bcso'] = '',
+    ['bcso'] = 'https://docs.google.com/document/d/1Zr_NGx56xJLEdWqe4RPy3-Syb8dmnlS_iD7BWUg-ltA/edit?usp=sharing',
     ['doj'] = '',
     ['sast'] = '',
     ['sasp'] = '',
@@ -88,7 +88,7 @@ Config.sopLink = {
 Config.RosterLink = {
     ['police'] = 'https://docs.google.com/spreadsheets/d/1NDxo4Th_bAwD4q04b7QXEKC4SM22p7-yBjrWn8YJGbo/edit#gid=0',
     ['ambulance'] = '',
-    ['bcso'] = '',
+    ['bcso'] = 'https://docs.google.com/spreadsheets/d/1VK8kXQhHIfVrWOZy2fAS0pSonTdTRk0UW35mr88-D2o/edit?usp=sharing',
     ['gouv'] = 'https://docs.google.com/spreadsheets/d/1cjmhHVil3-XDDC3HxwV8FJQSSSlREXRH4n4JRqF8Bag/edit#gid=0',
     ['doj'] = '',
     ['sast'] = '',
