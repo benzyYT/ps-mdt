@@ -106,6 +106,14 @@ function GetPlayerApartment(identifier, cb)
     return result
 end
 
+function GetAllPlayerDataFromDb(identifier)
+    return MySQL.single.await("SELECT * FROM users WHERE identifier = ?", {identifier})
+end
+
+function GetPlayerFirstNameAndLastName(identifier)
+    return MySQL.single.await("SELECT firstname, lastname FROM users WHERE identifier = ?", {identifier})
+end
+
 function GetPlayerLicenses(identifier)
     return MySQL.query.await('SELECT user_licenses.type, licenses.label FROM user_licenses LEFT JOIN licenses ON user_licenses.type = licenses.type WHERE owner = ?', {identifier})
 end
@@ -121,47 +129,21 @@ function GetAllLicenses()
     return formattedLicences
 end
 
--- function GetPlayerLicenses(identifier)
---     local response = false
---     local Player = ESX.GetPlayerFromIdentifier(identifier)
---     if Player ~= nil then
---         return Player.PlayerData.metadata.licences
---     else
---         local result = MySQL.scalar.await('SELECT metadata FROM players WHERE identifier = @identifier', {['@identifier'] = identifier})
---         if result ~= nil then
---             local metadata = json.decode(result)
---             if metadata["licences"] ~= nil and metadata["licences"] then
---                 return metadata["licences"]
---             else
---                 return {
---                     ['driver'] = false,
---                     ['business'] = false,
---                     ['weapon'] = false,
---                     ['pilot'] = false
---                 }
---             end
---         end
---     end
--- end
-
 function ManageLicense(identifier, type, status)
-    local Player = ESX.GetPlayerFromIdentifier(identifier)
-    local licenseStatus = nil
-    if status == "give" then licenseStatus = true elseif status == "revoke" then licenseStatus = false end
-    if Player ~= nil then
-        local licences = Player.PlayerData.metadata["licences"]
-        local newLicenses = {}
-        for k, v in pairs(licences) do
-            local status = v
-            if k == type then
-                status = licenseStatus
-            end
-            newLicenses[k] = status
+    local playerInfo = MySQL.single.await("SELECT * FROM users WHERE identifier = ?", {identifier})
+    if status == "revoke" then
+        
+        local license = MySQL.single.await("SELECT type, owner FROM user_licenses WHERE owner = ? AND type = ?", {identifier, type})
+        if license then
+            local response = MySQL.single.await("DELETE FROM user_licenses WHERE owner = ? AND type = ?", {identifier, type})
+            AddLog(("La licence %s a été retirée à %s %s !"):format(type, playerInfo.firstname, playerInfo.lastname))
         end
-        Player.Functions.SetMetaData("licences", newLicenses)
-    else
-        local licenseType = '$.licences.'..type
-        local result = MySQL.query.await('UPDATE `players` SET `metadata` = JSON_REPLACE(`metadata`, ?, ?) WHERE `identifier` = ?', {licenseType, licenseStatus, identifier}) --seems to not work on older MYSQL versions, think about alternative
+    elseif status == "give" then
+        local license = MySQL.single.await("SELECT type, owner FROM user_licenses WHERE owner = ? AND type = ?", {identifier, type})
+        if not license then
+            local response = MySQL.insert.await("INSERT INTO `user_licenses` (owner, type) VALUES (?, ?)", {identifier, type})
+            AddLog(("La licence %s a été ajoutée à %s %s !"):format(type, playerInfo.firstname, playerInfo.lastname))
+        end
     end
 end
 

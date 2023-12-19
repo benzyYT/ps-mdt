@@ -487,7 +487,6 @@ end)
 
 RegisterNUICallback("deleteWeapons", function(data, cb)
     local id = data.id
-    print(json.encode(data))
     TriggerServerEvent('mdt:server:deleteWeapons', id)
     cb(true)
 end)
@@ -773,7 +772,7 @@ RegisterNetEvent('mdt:client:setRadio', function(radio)
     if type(tonumber(radio)) == "number" then
         exports["pma-voice"]:setVoiceProperty("radioEnabled", true)
         exports["pma-voice"]:setRadioChannel(tonumber(radio))
-        ESX.ShowNotification("You have set your radio frequency to "..radio..".", "success")
+        ESX.ShowNotification("Vous êtes maintenant sur la fréquence "..radio..".", "success")
     else
         ESX.ShowNotification("Invalid Station(Please enter a number)", "error")
     end
@@ -821,6 +820,11 @@ end)
 
 RegisterNUICallback("removeCallBlip", function(data, cb)
     TriggerEvent('ps-dispatch:client:removeCallBlip', data.callid or data.id)
+    cb(true)
+end)
+
+RegisterNUICallback("callDetach", function(data, cb)
+    TriggerServerEvent('mdt:server:callDetach', data.callid or data.id)
     cb(true)
 end)
 
@@ -958,35 +962,37 @@ function GetPlayerWeaponInfos(cb)
 end
 
 --3rd Eye Trigger Event
-RegisterNetEvent('ps-mdt:client:selfregister')
-AddEventHandler('ps-mdt:client:selfregister', function()
-    GetPlayerWeaponInfos(function(weaponInfos)
-        if weaponInfos and #weaponInfos > 0 then
-            for _, weaponInfo in ipairs(weaponInfos) do
-                TriggerServerEvent('mdt:server:registerweapon', weaponInfo.serialnumber, weaponInfo.weaponurl, weaponInfo.notes, weaponInfo.owner, weaponInfo.weapClass, weaponInfo.weaponmodel)
-                ESX.ShowNotification("L'arme " .. weaponInfo.weaponmodel .. " a été ajouté à la base de donnée SAPD.")
-                --print("Weapon added to database")
-            end
-        else
-           -- print("No weapons found")
-        end
-    end)
-end)
+-- RegisterNetEvent('ps-mdt:client:selfregister')
+-- AddEventHandler('ps-mdt:client:selfregister', function()
+--     GetPlayerWeaponInfos(function(weaponInfos)
+--         if weaponInfos and #weaponInfos > 0 then
+--             for _, weaponInfo in ipairs(weaponInfos) do
+--                 TriggerServerEvent('mdt:server:registerweapon', weaponInfo.serialnumber, weaponInfo.weaponurl, weaponInfo.notes, weaponInfo.owner, weaponInfo.weapClass, weaponInfo.weaponmodel)
+--                 ESX.ShowNotification("L'arme " .. weaponInfo.weaponmodel .. " a été ajouté à la base de donnée SAPD.")
+--                 --print("Weapon added to database")
+--             end
+--         else
+--            -- print("No weapons found")
+--         end
+--     end)
+-- end)
 
 -- Uncomment if you want to use this instead.
 
 RegisterCommand('registerweapon', function(source)
-    GetPlayerWeaponInfos(function(weaponInfos)
-        if weaponInfos and #weaponInfos > 0 then
-            for _, weaponInfo in ipairs(weaponInfos) do
-                TriggerServerEvent('mdt:server:registerweapon', weaponInfo.serialnumber, weaponInfo.weaponurl, weaponInfo.notes, weaponInfo.owner, weaponInfo.weapClass, weaponInfo.weaponmodel)
-                ESX.ShowNotification("L'arme " .. weaponInfo.weaponmodel .. " a été ajouté à la base de donnée SAPD.")
-                --print("Weapon added to database")
+    if GetJobType(ESX.PlayerData.job.name) == "police" then
+        GetPlayerWeaponInfos(function(weaponInfos)
+            if weaponInfos and #weaponInfos > 0 then
+                for _, weaponInfo in ipairs(weaponInfos) do
+                    TriggerServerEvent('mdt:server:registerweapon', weaponInfo.serialnumber, weaponInfo.weaponurl, weaponInfo.notes, weaponInfo.owner, weaponInfo.weapClass, weaponInfo.weaponmodel)
+                    ESX.ShowNotification("L'arme " .. weaponInfo.weaponmodel .. " a été ajouté à la base de donnée SAPD.")
+                    --print("Weapon added to database")
+                end
+            else
+                --print("No weapons found")
             end
-        else
-            --print("No weapons found")
-        end
-    end)
+        end)
+    end
 end, false)
 
 --====================================================================================

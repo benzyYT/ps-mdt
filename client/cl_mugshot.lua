@@ -159,7 +159,6 @@ end
 RegisterNetEvent('cqc-mugshot:client:trigger', function(spot)
     ped = PlayerPedId()
     pedcoords = GetEntityCoords(ped)
-    print(spot)
     if not spot then
         spot = Config.MugShotSpots["missionrow"]
     else

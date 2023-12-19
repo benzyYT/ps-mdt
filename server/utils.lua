@@ -34,7 +34,7 @@ function ProfPic(gender, profilepic)
 end
 
 function GetNameFromPlayerData(PlayerData)
-	return ('%s %s'):format(PlayerData.charinfo.firstname, PlayerData.charinfo.lastname)
+	return PlayerData.getName()
 end
 
 function GetVehicleHashByName(hash)

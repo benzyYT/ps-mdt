@@ -24,7 +24,20 @@ var DispatchNum = 0;
 var playerJob = "";
 let rosterLink  = "";
 let sopLink = "";
+let PlayerJobType = "";
 const licenseTypesGlobal = ['dmv', 'drive', 'drive_bike', 'drive_truck', 'weapon_a', 'weapon_b', 'weapon_c'];
+
+function getPlayerJobType(job) {
+  if (PoliceJobs[job] !== null || PoliceJobs[job] !== "undefined") {
+    return "police";
+  } else if (AmbulanceJobs[job] !== null || AmbulanceJobs[job] !== "undefined") {
+    return "ambulance";
+  } else if (DojJobs[job] !== null || DojJobs[job] !== "undefined") {
+    return "doj";
+  } else {
+    return false;
+  }
+}
 
 //Set this to false if you don't want to show the send to community service button on the incidents page
 const canSendToCommunityService = false
@@ -45,9 +58,11 @@ const PoliceJobs = {
 
 const AmbulanceJobs = {
   ['ambulance']: true,
+  ['pompier']: true,
 }
 
 const DojJobs = {
+  ['gouv']: true,
   ['lawyer']: true,
   ['judge']: true
 }
@@ -79,18 +94,18 @@ function getFormattedDate(date, prefomattedDate = false, hideYear = false) {
   }
 
   if (prefomattedDate) {
-    return `${prefomattedDate} at ${hours}:${minutes}`;
+    return `${prefomattedDate} à ${hours}:${minutes}`;
   }
 
   if (hideYear) {
-    return `${day}. ${month} at ${hours}:${minutes}`;
+    return `${day} ${month} à ${hours}:${minutes}`;
   }
 
-  return `${day}. ${month} ${year}. at ${hours}:${minutes}`;
+  return `${day} ${month} ${year} à ${hours}:${minutes}`;
 }
 
 const quotes = [
-  'lez gooooo, Lexinor da best',
+  'Gouvernement Kriegen : pour un état plus sûr',
 ]
 
 function randomizeQuote() {
@@ -184,7 +199,6 @@ $(document).ready(() => {
         id: id,
       })
     );
-      console.log(result)
     if (!canInputTag) {
       if ($(".tags-add-btn").hasClass("fa-minus")) {
         $(".tags-add-btn")
@@ -257,7 +271,7 @@ $(document).ready(() => {
       licenses.forEach(e => {
         if (e[1].status === true) {
           hasNoLicence = false
-          licencesHTML += `<span class="license-tag green-tag">${e[1].label}</span>`;
+          licencesHTML += `<span class="license-tag green-tag" data-type="${e[1].type}">${e[1].label}</span>`;
         }
       });
       if (hasNoLicence === true) {
@@ -659,16 +673,16 @@ $(document).ready(() => {
             .each(function (index) {
               if ($(this).data("id") == identifier) {
                 if ($(this).hasClass("green-tag")) {
-                  if ($(this).text() == "Guilty") {
+                  if ($(this).text() == "Coupable") {
                     guilty = true;
                   }
-                  if ($(this).text() == "Warrant") {
+                  if ($(this).text() == "Recherché") {
                     warrant = true;
                   }
-                  if ($(this).text() == "Processed") {
+                  if ($(this).text() == "Traité") {
                     processed = true;
                   }
-                  if ($(this).text() == "Associated") {
+                  if ($(this).text() == "Associé") {
                     isassociated = true;
                   }
                 }
@@ -770,7 +784,7 @@ $(document).ready(() => {
           <p>-----</p>
           <p><strong style="background-color: var(--color-1);">💸 Amende:</strong></p>
           <p>&nbsp;</p>
-          <p><strong>⌚ Peine:</strong></p>
+          <p><strong>⌚ Peine en UC (Unité Carcérale):</strong></p>
           <p>-----</p>
       </div>
   `;
@@ -780,6 +794,7 @@ $(document).ready(() => {
       $(".manage-incidents-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
         imageWidthModalEdit: true,
+        lang: "fr",
         btns: [
           ['foreColor', 'backColor','fontfamily','fontsize','indent', 'outdent'],
           ['strong', 'em',], ['insertImage'],
@@ -977,7 +992,7 @@ $(document).ready(() => {
   $(".licenses-holder").on("contextmenu", ".license-tag", function (e) {
     const status = $(this).data("type");
     let type = $(this).html();
-
+    
     if (type == "Code") {
       info = "dmv";
     } else if (type == "Voiture") {
@@ -999,13 +1014,12 @@ $(document).ready(() => {
     } else {
       info = type.toLowerCase();
     }
-
     if ($(this).hasClass("green-tag")) {
       openContextMenu(e, [
         {
           className: "revoke-licence",
           icon: "fas fa-times",
-          text: "Revoke License",
+          text: "Supprimer Licence",
           info: info,
           status: status,
         },
@@ -1015,7 +1029,7 @@ $(document).ready(() => {
         {
           className: "give-licence",
           icon: "fas fa-check",
-          text: "Give License",
+          text: "Attribuer Licence",
           info: info,
           status: status,
         },
@@ -1024,17 +1038,22 @@ $(document).ready(() => {
   });
 
   $(".contextmenu").on("click", ".revoke-licence", function () {
-    // $.post(
-    //   `https://${GetParentResourceName()}/updateLicence`,
-    //   JSON.stringify({
-    //     identifier: $(".manage-profile-identifier-input").val(),
-    //     type: $(this).data("status"),
-    //     status: "revoke",
-    //   })
-    // );
+    $.post(
+      `https://${GetParentResourceName()}/updateLicence`,
+      JSON.stringify({
+        identifier: $(".manage-profile-identifier-input").val(),
+        type: $(this).data("status"),
+        status: "revoke",
+      })
+    );
 
     const Elem = $(this).data("status");
-    $(".license-tag")
+    // $(".license-tag")
+    //   .filter(`[data-type="${Elem}"]`)
+    //   .removeClass("green-tag")
+    //   .addClass("red-tag");
+    
+    $("div.licenses-holder > span.license-tag")
       .filter(`[data-type="${Elem}"]`)
       .removeClass("green-tag")
       .addClass("red-tag");
@@ -1408,6 +1427,7 @@ $(document).ready(() => {
       $(".manage-bolos-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
         imageWidthModalEdit: true,
+        lang: "fr",
         btns: [
           ['foreColor', 'backColor','fontfamily','fontsize','indent', 'outdent'],
           ['strong', 'em',], ['insertImage'],
@@ -1729,7 +1749,7 @@ $(document).ready(() => {
       {
         className: "bolo-delete",
         icon: "fas fa-times",
-        text: "Delete Bolo",
+        text: "Supprimer Mandat Routier",
         info: $(this).data("id"),
         status: "",
       },
@@ -1739,7 +1759,7 @@ $(document).ready(() => {
         {
           className: "bolo-delete",
           icon: "fas fa-times",
-          text: "Delete Check-In",
+          text: "Supprimer Admission",
           info: $(this).data("id"),
           status: "",
         },
@@ -1754,8 +1774,8 @@ $(document).ready(() => {
       let args = [
         {
           className: "add-charge",
-          icon: "fas fa-check",
-          text: "Modify Charges",
+          icon: "fas fa-pen-to-square",
+          text: "Modifier Charges",
           info: $(this).data("name"),
           status: "",
         },
@@ -1986,6 +2006,8 @@ $(document).ready(() => {
     const identifier = $(this).data("id");
     const fine = $(".fine-amount").filter(`[data-id=${identifier}]`).val();
     const recommendFine = $(".fine-recommended-amount").filter(`[data-id=${identifier}]`).val();
+    $(".control-button").filter(`[data-id=${identifier}]`).prop("disabled", true);
+    $(".control-button").filter(`[data-id=${identifier}]`).css("background-color", "green");
     const incidentId = $(".manage-incidents-editing-title").data("id");
     sendFine(identifier, fine, recommendFine, incidentId);
   });
@@ -2085,10 +2107,10 @@ $(document).ready(() => {
             <div class="associated-incidents-user-container" data-id="${$(this).data("identifier")}">
                 <div class="associated-incidents-user-title">${$(this).data("info")}</div>
                 <div class="associated-incidents-user-tags-holder">
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Warrant</div>
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Guilty</div>
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Processed</div>
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Associated</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Recherché</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Coupable</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Traité</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Associé</div>
                 </div>
                 <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Clique droit pour ajouter / modifier les charges.</div>
                 <div class="associated-incidents-user-holder" data-name="${$(this).data("identifier")}"></div>
@@ -2098,7 +2120,7 @@ $(document).ready(() => {
                 <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input disabled placeholder="0" class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${$(this).data("identifier")}" type="number"></div>
                 <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Amende</div>
                 <div class="associated-incidents-fine-input" data-id="${$(this).data("identifier")}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${$(this).data("identifier")}" type="number"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Peine</div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Peine en UC (Unité Carcérale)</div>
                 <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez mois here..." value="0" class="sentence-amount" data-id="${$(this).data("identifier")}" type="number"></div>
                 <div class="associated-incidents-controls" data-id="${$(this).data("identifier")}">                    
                     <div id="fine-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Amender</div>
@@ -2455,22 +2477,22 @@ $(document).ready(() => {
       if ($(".badge-logo").attr("src") == "img/ems_badge.webp") {
         template = `
     <div style="color: white;">
-        <p><strong>Envoyé en USI ?: [Yes/No]</strong></p>
-        <p><strong>Incident Report:</strong></p>
-        <p><em>· [ Brief summary of what happened and who did what while on scene. Note anything that stood out about the scene as well as what was done to treat the patient ]</em></p>
-        <p><strong>List of Injuries:</strong></p>
-        <p><em>· [ State what injury or injuries occurred ]</em></p>
-        <p><strong>Surgical Report:</strong></p>
-        <p><em>· [ Full report on what was done in surgery, list any complications or anything that was found while in operation. Note who was attending and what they did during the surgery. At the end of the report be sure to note the state of the patient after ]</em></p>
+        <p><strong>Envoyé en USI ?: [Oui/Non]</strong></p>
+        <p><strong>Rapport d'incident:</strong></p>
+        <p><em>· [Un bref résumé de ce qui s'est passé et de qui a fait quoi sur place. Notez tout ce qui ressort de la scène et ce qui a été fait pour traiter le patient.]</em></p>
+        <p><strong>Liste des blessures:</strong></p>
+        <p><em>· [Indiquer la ou les lésions subies]</em></p>
+        <p><strong>Rapport chirurgical:</strong></p>
+        <p><em>· [Rapport complet sur ce qui a été fait pendant l'opération, liste des complications ou de tout ce qui a été découvert pendant l'opération. Notez qui était présent et ce qu'il a fait pendant l'opération. À la fin du rapport, veillez à noter l'état du patient après l'opération.]</em></p>
         <p>-----</p>
-        <p><strong>Attending:</strong></p>
-        <p><em>· [ List Any Attending Here ]</em></p>
-        <p><strong>Medications Applied:</strong></p>
-        <p><em>· [ List Any Attending Here ]</em></p>
+        <p><strong>Interventions subies:</strong></p>
+        <p><em>· [Liste des interventions (radio,IRM...) ]</em></p>
+        <p><strong>Médicaments utilisés:</strong></p>
+        <p><em>· [Liste des médicaments & traitements]</em></p>
         <p>-----</p>
         <br>
         <p><strong>Notes:</strong></p>
-        <p><em>[ Additional Notes Here ]</em></p>
+        <p><em>[Notes additionnelles]</em></p>
     </div>
 `;}
       $(".manage-reports-editing-title").html(
@@ -2481,6 +2503,7 @@ $(document).ready(() => {
       $(".manage-reports-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
         imageWidthModalEdit: true,
+        lang: "fr",
         btns: [
           ['foreColor', 'backColor','fontfamily','fontsize','indent', 'outdent'],
           ['strong', 'em',], ['insertImage'],
@@ -3029,23 +3052,23 @@ $(document).ready(() => {
       let args = [];
       if ($(this).hasClass("red-tag")) {
         args = [
-          {
-            className: "impound-vehicle",
-            icon: "fas fa-check",
-            text: "En Fourrière",
-            info: plate,
-            status: "",
-          },
+          // {
+          //   className: "impound-vehicle",
+          //   icon: "fas fa-check",
+          //   text: "Mettre en Fourrière",
+          //   info: plate,
+          //   status: "",
+          // },
         ];
       } else {
         args = [
-          {
-            className: "remove-impound",
-            icon: "fas fa-times",
-            text: "Retrait Fourrière",
-            info: plate,
-            status: "",
-          },
+          // {
+          //   className: "remove-impound",
+          //   icon: "fas fa-times",
+          //   text: "Retrait Fourrière",
+          //   info: plate,
+          //   status: "",
+          // },
           {
             className: "status-impound",
             icon: "fas fa-info-circle",
@@ -3436,13 +3459,13 @@ $(document).ready(() => {
           info: identifier,
           status: "",
         },
-        {
+        /* {
           className: "set-waypoint",
           icon: "fas fa-map-marker-alt",
           text: "Définir Marqueur",
           info: identifier,
           status: "",
-        },
+        }, */
       ];
       openContextMenu(e, args);
     }
@@ -4075,7 +4098,7 @@ $(document).ready(() => {
         );
         $("#boloindividual").attr(
           "placeholder",
-          "Place invidivual here..."
+          "Insérez Individu..."
         );
         $("#home-warrants-container").fadeIn(0);
         $("#home-reports-container").fadeOut(0);
@@ -4477,15 +4500,13 @@ window.addEventListener("message", function (event) {
       );
     } else if (eventData.type == "call") {
       const value = eventData.data;
+      PlayerJobType = getPlayerJobType(playerJob)
       DispatchMAP(value);
-      if (value && value?.job?.includes(playerJob) || value?.jobs.includes(PlayerJobType)) {
+      if (value && value?.job?.includes(playerJob) || value?.job?.includes(PlayerJobType)) {
         const prio = value["priority"];
         let DispatchItem = `<div class="active-calls-item" data-id="${value.callId || value.id}" data-canrespond="false"><div class="active-call-inner-container"><div class="call-item-top"><div class="call-number">#${value.callId || value.id}</div><div class="call-code priority-${value.priority}">${value.dispatchCode || value.code}</div><div class="call-title">${value.dispatchMessage || value.message}</div><div class="call-radio">${value.units.length}</div></div><div class="call-item-bottom">`;
 
-        if (
-          value.dispatchCode == "911" ||
-          value.dispatchCode == "311"
-        ) {
+        if (value.dispatchCode == "911" || value.dispatchCode == "311") {
           DispatchItem = `<div class="active-calls-item" data-id="${value.callId || value.id}" data-canrespond="true"><div class="active-call-inner-container"><div class="call-item-top"><div class="call-number">#${value.callId || value.id}</div><div class="call-code priority-${value.priority}">${value.dispatchCode || value.code}</div><div class="call-title">${value.dispatchMessage || value.message}</div><div class="call-radio">${value.units.length}</div></div><div class="call-item-bottom">`;
         }
 
@@ -4618,7 +4639,7 @@ window.addEventListener("message", function (event) {
       const table = eventData.data;
       $(".active-calls-list").empty();
       $.each(table, function (index, call) {
-        if (call && call?.job?.includes(playerJob) || call?.jobs.includes(PlayerJobType)) {
+        if (call && call?.job?.includes(playerJob) || call?.job?.includes(PlayerJobType)) {
 
           const prio = call["priority"];
           let DispatchItem = `<div class="active-calls-item" data-id="${call.callId || call.id}" data-canrespond="false"><div class="active-call-inner-container"><div class="call-item-top"><div class="call-number">#${call.callId || call.id}</div><div class="call-code priority-${call.priority}">${call.dispatchCode || call.code}</div><div class="call-title">${call.dispatchMessage || call.message}</div><div class="call-radio">${call.units.length}</div></div><div class="call-item-bottom">`;
@@ -4703,7 +4724,7 @@ window.addEventListener("message", function (event) {
           `<div class="incidents-item" data-id="${value.id}">
                     <div class="incidents-top-holder">
                         <div class="incidents-item-title">${value.title}</div>
-                        <div class="incedent-report-name">Incident Report</div>
+                        <div class="incedent-report-name">Rapport Incident</div>
                     </div>
                     <div class="incidents-bottom-holder">
                         <div class="incedent-report-id">ID: ${value.id}</div>
@@ -4731,7 +4752,7 @@ window.addEventListener("message", function (event) {
           {
             className: "incidents-delete",
             icon: "fas fa-times",
-            text: "Delete Incidents",
+            text: "Supprimer Incident",
             info: $(this).data("id"),
             status: "",
           },
@@ -4774,7 +4795,7 @@ window.addEventListener("message", function (event) {
       $(".associated-incidents-tags-holder").html("");
 
       $(".manage-incidents-editing-title").html(
-        "You are currently editing incident " + table["id"]
+        "Vous êtes entrain de modifier l'incident " + table["id"]
       );
       $(".manage-incidents-editing-title").data(
         "id",
@@ -4808,6 +4829,7 @@ window.addEventListener("message", function (event) {
       $(".manage-incidents-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
         imageWidthModalEdit: true,
+        lang: "fr",
         btns: [
           ['foreColor', 'backColor','fontfamily','fontsize','indent', 'outdent'],
           ['strong', 'em',], ['insertImage'],
@@ -4875,7 +4897,6 @@ window.addEventListener("message", function (event) {
         $(".associated-incidents-tags-holder").prepend(
           `<div class="associated-incidents-tag" data-id="${value.identifier}">${value.name}</div>`
         );
-        console.log(value)
         var warrantTag = "red-tag";
         var guiltyTag = "red-tag";
         var processedTag = "red-tag";
@@ -4899,13 +4920,13 @@ window.addEventListener("message", function (event) {
         // If the associated field is not checked, then populate the recommended fine and sentence fields
         const associatedIncidentsContainer = (value.associated != 1) && `
           <div class="associated-incidents-user-holder" data-name="${identifier}" ></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Recommended Fine</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Amende Recommandée</div>
           <div class="associated-incidents-fine-input" data-id="${identifier}"><img src="img/h7S5f9J.webp"> <input placeholder="0" disabled class="fine-recommended-amount" id="fine-recommended-amount" data-id="${identifier}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Recommended Sentence</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Peine Recommandée</div>
           <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="0" disabled class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${identifier}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Fine</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Amende</div>
           <div class="associated-incidents-fine-input" data-id="${identifier}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${identifier}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Sentence</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Peine en UC (Unité Carcérale)</div>
           <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez months here..." value="0" class="sentence-amount" data-id="${identifier}" type="number"></div>
           <div class="associated-incidents-controls" data-id="${identifier}">            
             <div id="fine-button" class="control-button" data-id="${identifier}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Amender</div>
@@ -4917,12 +4938,12 @@ window.addEventListener("message", function (event) {
           `<div class="associated-incidents-user-container" data-id="${identifier}">
               <div class="associated-incidents-user-title">${value.name} (#${identifier})</div>
               <div class="associated-incidents-user-tags-holder">
-                  <div class="associated-incidents-user-tag ${warrantTag}" data-id="${identifier}">Warrant</div>
-                  <div class="associated-incidents-user-tag ${guiltyTag}" data-id="${identifier}">Guilty</div>
-                  <div class="associated-incidents-user-tag ${processedTag}" data-id="${identifier}">Processed</div>
-                  <div class="associated-incidents-user-tag ${associatedTag}" data-id="${identifier}">Associated</div>
+                  <div class="associated-incidents-user-tag ${warrantTag}" data-id="${identifier}">Recherché</div>
+                  <div class="associated-incidents-user-tag ${guiltyTag}" data-id="${identifier}">Coupable</div>
+                  <div class="associated-incidents-user-tag ${processedTag}" data-id="${identifier}">Traité</div>
+                  <div class="associated-incidents-user-tag ${associatedTag}" data-id="${identifier}">Associé</div>
               </div>
-              <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Right click below to add and/or modify charges.</div>
+              <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Clique droit pour ajouter / modifier des charges.</div>
               ${associatedIncidentsContainer}
           </div>`
         );
@@ -4954,33 +4975,38 @@ window.addEventListener("message", function (event) {
         }
       });
     } else if (eventData.type == "incidentSearchPerson") {
-      let table = eventData.data;
       $(".incidents-person-search-holder").empty();
-      $.each(table, function (index, value) {
-        let name = value.firstname + " " + value.lastname;
-        $(".incidents-person-search-holder").prepend(
-          `
-            <div class="incidents-person-search-item" data-info="${name} (#${value.id})" data-identifier="${value.id}" data-name="${name}" data-callsign="${value.callsign}">
-                <img src="${value.pp}" class="incidents-person-search-item-pfp">
-                <div class="incidents-person-search-item-right">
-                    <div class="incidents-person-search-item-right-identifier-title">N° Citoyen</div>
-                    <div class="incidents-person-search-item-right-identifier-input"><span class="fas fa-id-card"></span> ${value.id}</div>
-                    <div class="incidents-person-search-item-right-name-title">Prénom Nom</div>
-                    <div class="incidents-person-search-item-right-name-input"><span class="fas fa-user"></span> ${name}</div>
-                </div>
-            </div>
-          `
-        );
-      });
+      let table = eventData.data;
+      console.log(table.length)
+      if (table.length > 0) {
+        $.each(table, function (index, searchPerson) {
+          let name = searchPerson.firstname + " " + searchPerson.lastname;
+          $(".incidents-person-search-holder").prepend(
+            `
+              <div class="incidents-person-search-item" data-info="${name} (#${searchPerson.id})" data-identifier="${searchPerson.id}" data-name="${name}" data-callsign="${searchPerson.callsign}">
+                  <img src="${searchPerson.pfp}" class="incidents-person-search-item-pfp">
+                  <div class="incidents-person-search-item-right">
+                      <div class="incidents-person-search-item-right-identifier-title">N° Citoyen</div>
+                      <div class="incidents-person-search-item-right-identifier-input"><span class="fas fa-id-card"></span> ${searchPerson.id}</div>
+                      <div class="incidents-person-search-item-right-name-title">Prénom Nom</div>
+                      <div class="incidents-person-search-item-right-name-input"><span class="fas fa-user"></span> ${name}</div>
+                  </div>
+              </div>
+            `
+          );
+        });
+      } else {
+        $(".incidents-person-search-holder").prepend(`<div class="profile-item-title">Aucun Employés trouvés</div>`);
+      }
     } else if (eventData.type == "boloData") {
       let table = eventData.data;
       $(".manage-bolos-editing-title").html(
-        "You are currently editing Mandat " + table["id"]
+        "Vous êtes entrain de modifier le mandat " + table["id"]
       );
 
       if ($(".badge-logo").attr("src") == "img/ems_badge.webp") {
         $(".manage-bolos-editing-title").html(
-          "You are editing USI Check-in " + table["id"]
+          "Vous modifiez un dossier USI" + table["id"]
         );
       }
 
@@ -4994,6 +5020,7 @@ window.addEventListener("message", function (event) {
       $(".manage-bolos-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
         imageWidthModalEdit: true,
+        lang: "fr",        
         btns: [
           ['foreColor', 'backColor','fontfamily','fontsize','indent', 'outdent'],
           ['strong', 'em',], ['insertImage'],
@@ -5068,7 +5095,7 @@ window.addEventListener("message", function (event) {
         }, 1500);
       }
       $(".manage-bolos-editing-title").html(
-        "You are currently editing Mandat " + id
+        "Vous êtes entrain de modifier le mandat " + id
       );
       $(".manage-bolos-editing-title").data("id", Number(id));
     } else if (eventData.type == "reportComplete") {
@@ -5087,7 +5114,7 @@ window.addEventListener("message", function (event) {
         }, 1500);
       }
       $(".manage-reports-editing-title").html(
-        "You are currently editing report " + id
+        "Vous êtes entrain de modifier le rapport " + id
       );
       $(".manage-reports-editing-title").data("id", Number(id));
     } else if (eventData.type == "reports") {
@@ -5100,7 +5127,7 @@ window.addEventListener("message", function (event) {
                     <div class="reports-top-holder">
                         <div class="reports-item-title">${value.title}</div>
                         <div class="reports-report-name">${value.type
-          } Report</div>
+          } Rapport</div>
                     </div>
                     <div class="reports-bottom-holder">
                         <div class="reports-report-id">ID: ${value.id}</div>
@@ -5128,7 +5155,7 @@ window.addEventListener("message", function (event) {
           {
             className: "reports-delete",
             icon: "fas fa-times",
-            text: "Delete Report",
+            text: "Supprimer Rapport",
             info: $(this).data("id"),
             status: "",
           },
@@ -5139,7 +5166,7 @@ window.addEventListener("message", function (event) {
       let table = eventData.data;
 
       $(".manage-reports-editing-title").html(
-        "You are currently editing report " + table["id"]
+        "Vous êtes entrain de modifier le rapport " + table["id"]
       );
 
       $(".manage-reports-editing-title").data("id", Number(table["id"]));
@@ -5149,6 +5176,7 @@ window.addEventListener("message", function (event) {
       $(".manage-reports-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
         imageWidthModalEdit: true,
+        lang: "fr",
         btns: [
           ['foreColor', 'backColor','fontfamily','fontsize','indent', 'outdent'],
           ['strong', 'em',], ['insertImage'],
@@ -5249,10 +5277,10 @@ window.addEventListener("message", function (event) {
         stolen = "green-tag";
       }
 
-      $(".vehicle-tags").append(`<div class="vehicle-tag ${impound} impound-tag">Impound</div>`);
+      $(".vehicle-tags").append(`<div class="vehicle-tag ${impound} impound-tag">En Fourrière</div>`);
       $(".vehicle-tags").append(`<div class="vehicle-tag ${bolo}">Recherché</div>`);
       $(".vehicle-tags").append(`<div class="vehicle-tag ${codefive} code5-tag">Code 5</div>`);
-      $(".vehicle-tags").append(`<div class="vehicle-tag ${stolen} stolen-tag">Stolen</div>`);
+      $(".vehicle-tags").append(`<div class="vehicle-tag ${stolen} stolen-tag">Volé</div>`);
       $(".vehicle-info-imageurl-input").val(vehicle["image"]);
     } else if (eventData.type == "getWeaponData") {
       impoundChanged = false;
@@ -5655,12 +5683,19 @@ function searchProfilesResults(result) {
     }
 
     if (licenses.length > 0 && (PoliceJobs[playerJob] !== undefined || DojJobs[playerJob] !== undefined)) {
-      
+      licencesHTML = ""
+      let hasNoLicence = true
+
       licenses.forEach(e => {
         if (e[1].status === true) {
-          licencesHTML += `<span class="license-tag green-tag">${e[1].label}</span>`;
+          hasNoLicence = false
+          licencesHTML += `<span class="license-tag green-tag" data-type="${e[1].type}">${e[1].label}</span>`;
         }
       });
+
+      if (hasNoLicence === true) {
+        licencesHTML = `<span class="license-tag red-tag">Aucun Permis</span>`;
+      }
     }
 
     if (profile.warrant == true) {

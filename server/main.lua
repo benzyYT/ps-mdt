@@ -345,15 +345,15 @@ end)
 
 lib.callback.register("mdt:server:getWarrants", function(source)
     local WarrantData = {}
-    local data = MySQL.query.await("SELECT * FROM mdt_convictions", {})
-    for _, conviction in pairs(data) do
+    local convictions = MySQL.query.await("SELECT * FROM mdt_convictions", {})
+    for _, conviction in pairs(convictions) do
         if conviction.warrant == "1" then
-			local xPlayer = ESX.GetPlayerFromIdentifier(conviction.identifier)
+			local playerData = GetPlayerFirstNameAndLastName(conviction.identifier)
 			WarrantData[#WarrantData+1] = {
                 identifier = conviction.identifier,
                 linkedincident = conviction.linkedincident,
-                name = xPlayer.name,
-                time = conviction.time
+                name = ("%s %s"):format(playerData.firstname, playerData.lastname),
+                time = conviction.time,
             }
         end
     end
@@ -382,7 +382,7 @@ RegisterNetEvent('mdt:server:NewBulletin', function(title, info, time)
 		jt = JobType
 	})
 
-	AddLog(("A new bulletin was added by %s with the title: %s!"):format(playerName, title))
+	AddLog(("Un noveau rapport a été créé par %s ayant pour titre : %s!"):format(playerName, title))
 	TriggerClientEvent('mdt:client:newBulletin', -1, src, {id = newBulletin, title = title, info = info, time = time, author = PlayerData.identifier}, JobType)
 end)
 
@@ -394,7 +394,7 @@ RegisterNetEvent('mdt:server:deleteBulletin', function(id, title)
 	local JobType = GetJobType(PlayerData.job.name)
 
 	MySQL.query.await('DELETE FROM `mdt_bulletin` where id = ?', {id})
-	AddLog("Bulletin with Title: "..title.." was deleted by " .. GetNameFromPlayerData(PlayerData) .. ".")
+	AddLog("Bulletin with Title: "..title.." a été supprimé par " .. GetNameFromPlayerData(PlayerData) .. ".")
 end)
 
 lib.callback.register('mdt:server:GetProfileData', function(source, sentId)
@@ -578,7 +578,7 @@ lib.callback.register('mdt:server:GetProfileData', function(source, sentId)
 		person.tags = json.decode(mdtData.tags)
 		person.gallery = json.decode(mdtData.gallery)
 		person.fingerprint = mdtData.fingerprint
-		print("Fetched fingerprint from mdt_data:", mdtData.fingerprint)
+		--print("Fetched fingerprint from mdt_data:", mdtData.fingerprint)
 	end
 
 	return person
@@ -772,7 +772,7 @@ RegisterNetEvent('mdt:server:newBolo', function(existing, id, title, plate, owne
 				}, function(r)
 					if r then
 						TriggerClientEvent('mdt:client:boloComplete', src, r)
-						TriggerEvent('mdt:server:AddLog', "A new BOLO was created by "..fullname.." with the title ("..title..") and ID ("..id..")")
+						TriggerEvent('mdt:server:AddLog', "Un nouveau mandat routier a été créé par "..fullname.." ayant pour titre ("..title..") et l'ID ("..id..")")
 					end
 				end)
 			end
@@ -792,7 +792,7 @@ RegisterNetEvent('mdt:server:newBolo', function(existing, id, title, plate, owne
 				}, function(r)
 					if r then
 						TriggerClientEvent('mdt:client:boloComplete', src, id)
-						TriggerEvent('mdt:server:AddLog', "A BOLO was updated by "..fullname.." with the title ("..title..") and ID ("..id..")")
+						TriggerEvent('mdt:server:AddLog', "Un Mandat Routier a été mise à jour par "..fullname.." ayant pour titre ("..title..") et l'ID ("..id..")")
 					end
 				end)
 			end
@@ -808,18 +808,17 @@ end)
 
 RegisterNetEvent('mdt:server:deleteWeapons', function(id)
 	if id then
-		print(id)
 		local src = source
 		local xPlayer = ESX.GetPlayerFromId(src)
 		if Config.RemoveWeaponsPerms[xPlayer.job.name] then
 			if Config.RemoveWeaponsPerms[xPlayer.job.name][xPlayer.job.grade] then
 				local fullName = xPlayer.name
 				MySQL.update("DELETE FROM `mdt_weaponinfo` WHERE id=:id", { id = id })
-				TriggerEvent('mdt:server:AddLog', "A Weapon Info was deleted by "..fullName.." with the ID ("..id..")")
+				TriggerEvent('mdt:server:AddLog', "Le dossier de l'Arme ("..id..") a été supprimé par "..fullName)
 			else
 				local fullname = xPlayer.name
-				TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
-				TriggerEvent('mdt:server:AddLog', fullname.." tryed to delete a Weapon Info with the ID ("..id..")")
+				TriggerClientEvent('esx:showAdvancedNotification', src, "Vous n'avez pas la permission!", 'error')
+				TriggerEvent('mdt:server:AddLog', fullname.." a essayé de supprimer dossier de l'Arme avec l'ID ("..id..")")
 			end
 		end
 	end
@@ -833,11 +832,11 @@ RegisterNetEvent('mdt:server:deleteReports', function(id)
 			if Config.RemoveReportPerms[Player.job.name][Player.job.grade] then
 				local fullName = Player.name
 				MySQL.update("DELETE FROM `mdt_reports` WHERE id=:id", { id = id })
-				TriggerEvent('mdt:server:AddLog', "A Report was deleted by "..fullName.." with the ID ("..id..")")
+				TriggerEvent('mdt:server:AddLog', "Un rapport a été supprimé par "..fullName.." avec l'ID ("..id..")")
 			else
 				local fullname = Player.name
-				TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
-				TriggerEvent('mdt:server:AddLog', fullname.." tryed to delete a Report with the ID ("..id..")")
+				TriggerClientEvent('esx:showAdvancedNotification', src, "Vous n'avez pas la permission!", 'error')
+				TriggerEvent('mdt:server:AddLog', fullname.." a essayé de supprimer un rapport avec l'ID ("..id..")")
 			end
 		end
 	end
@@ -853,13 +852,13 @@ RegisterNetEvent('mdt:server:deleteIncidents', function(id)
             MySQL.update("UPDATE `mdt_convictions` SET `warrant` = '0' WHERE `linkedincident` = :id", {id = id}) -- Delete any outstanding warrants from incidents
             MySQL.update("DELETE FROM `mdt_incidents` WHERE id=:id", { id = id }, function(rowsChanged)
                 if rowsChanged > 0 then
-                    TriggerEvent('mdt:server:AddLog', "A Incident was deleted by "..fullName.." with the ID ("..id..")")
+                    TriggerEvent('mdt:server:AddLog', "Un incident a été supprimé par "..fullName.." avec l'ID ("..id..")")
                 end
             end)
         else
             local fullname = Player.name
-            TriggerClientEvent('esx:showAdvancedNotification', src, 'No Permissions to do that!', 'error')
-            TriggerEvent('mdt:server:AddLog', fullname.." tried to delete an Incident with the ID ("..id..")")
+            TriggerClientEvent('esx:showAdvancedNotification', src, "Vous n'avez pas la permission!", 'error')
+            TriggerEvent('mdt:server:AddLog', fullname.." a essayé de supprimer un incident avec l'ID ("..id..")")
         end
     end
 end)
@@ -872,7 +871,7 @@ RegisterNetEvent('mdt:server:deleteBolo', function(id)
 		if JobType == 'police' then
 			local fullname = Player.name
 			MySQL.update("DELETE FROM `mdt_bolos` WHERE id=:id", { id = id, jobtype = JobType })
-			TriggerEvent('mdt:server:AddLog', "A BOLO was deleted by "..fullname.." with the ID ("..id..")")
+			TriggerEvent('mdt:server:AddLog', "Un Mandat Routier a été supprimé par "..fullname.." avec l'ID ("..id..")")
 		end
 	end
 end)
@@ -885,7 +884,7 @@ RegisterNetEvent('mdt:server:deleteICU', function(id)
 		if JobType == 'ambulance' then
 			local fullname = Player.name
 			MySQL.update("DELETE FROM `mdt_bolos` WHERE id=:id", { id = id, jobtype = JobType })
-			TriggerEvent('mdt:server:AddLog', "A ICU Check-in was deleted by "..fullname.." with the ID ("..id..")")
+			TriggerEvent('mdt:server:AddLog', "Une adhésion en USI a été supprimée par "..fullname.." avec l'ID ("..id..")")
 		end
 	end
 end)
@@ -905,50 +904,49 @@ RegisterNetEvent('mdt:server:incidentSearchPerson', function(firstname, lastname
 				
 				local result = nil
 				if firstname ~= "" and lastname ~= "" then
-					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.sex, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
 						firstname = string.lower('%' .. firstname .. '%'),
 						lastname = string.lower('%' .. lastname .. '%'),
 						jobtype = JobType
 					})
 				elseif firstname ~= "" and lastname == "" then
-					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND `jobtype` = :jobtype LIMIT 50", {
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.sex, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.firstname) LIKE :firstname AND `jobtype` = :jobtype LIMIT 50", {
 						firstname = string.lower('%' .. firstname .. '%'),
 						jobtype = JobType
 					})
 				elseif firstname == "" and lastname ~= "" then
-					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
+					result = MySQL.query.await("SELECT u.identifier, u.firstname, u.lastname, u.callsign, u.sex, u.job, md.pfp, u.metadata FROM users u LEFT JOIN mdt_data md on u.identifier = md.identifier WHERE LOWER(u.lastname) LIKE :lastname AND `jobtype` = :jobtype LIMIT 50", {
 						lastname = string.lower('%' .. lastname .. '%'),
 						jobtype = JobType
 					})
 				end
-                local data = {}
+				local data = {}
 				if result then
 					if isJobEmployee == true then
 						for k, person in pairs(result) do
 							if person.job == Player.job.name then
-								data[k] = {
+								data[#data+1] = {
 									id = person.identifier,
 									firstname = person.firstname,
 									lastname = person.lastname,
-									profilepic = ProfPic(person.sex, person.pfp),
+									pfp = ProfPic(person.sex, person.pfp),
 									callsign = person.callsign
 								}
-							end							
+							end
 						end
-					else
+					elseif isJobEmployee == false then
 						for k, person in pairs(result) do
-							data[k] = {
+							data[#data+1] = {
 								id = person.identifier,
 								firstname = person.firstname,
 								lastname = person.lastname,
-								profilepic = ProfPic(person.sex, person.pfp),
+								pfp = ProfPic(person.sex, person.pfp),
 								callsign = person.callsign
 							}
 						end
 					end
-					
+					--print(json.encode(data, { indent = true }))
 				end
-				print(json.encode(data, { indent = true }))
                 TriggerClientEvent('mdt:client:incidentSearchPerson', src, data)
             end
         end
@@ -1035,7 +1033,7 @@ RegisterNetEvent('mdt:server:newReport', function(existing, id, title, reporttyp
 					}, function(r)
 						if r then
 							TriggerClientEvent('mdt:client:reportComplete', src, r)
-							TriggerEvent('mdt:server:AddLog', "A new report was created by "..fullname.." with the title ("..title..") and ID ("..id..")")
+							TriggerEvent('mdt:server:AddLog', "Un nouveau rapport a été créé par "..fullname.." ayant pour titre ("..title..") et l'ID ("..id..")")
 						end
 					end)
 				end
@@ -1054,7 +1052,7 @@ RegisterNetEvent('mdt:server:newReport', function(existing, id, title, reporttyp
 					}, function(affectedRows)
 						if affectedRows > 0 then
 							TriggerClientEvent('mdt:client:reportComplete', src, id)
-							TriggerEvent('mdt:server:AddLog', "A report was updated by "..fullname.." with the title ("..title..") and ID ("..id..")")
+							TriggerEvent('mdt:server:AddLog', "Un Rapport a été mis à jour par "..fullname.." ayant pour titre ("..title..") et l'ID ("..id..")")
 						end
 					end)
 				end
@@ -1195,12 +1193,12 @@ RegisterNetEvent('mdt:server:saveVehicleInfo', function(dbid, plate, imageurl, n
 			if GetJobType(Player.job.name) == 'police' then
 				if dbid == nil then dbid = 0 end;
 				local fullname = Player.name
-				TriggerEvent('mdt:server:AddLog', "A vehicle with the plate ("..plate..") has a new image ("..imageurl..") edited by "..fullname)
+				TriggerEvent('mdt:server:AddLog', "Le véhicule avec la plaque ("..plate..") a une nouvelle image ("..imageurl..") édité par "..fullname)
 				if tonumber(dbid) == 0 then
 					MySQL.insert('INSERT INTO `mdt_vehicleinfo` (`plate`, `information`, `image`, `code5`, `stolen`, `points`) VALUES (:plate, :information, :image, :code5, :stolen, :points)', { plate = string.gsub(plate, "^%s*(.-)%s*$", "%1"), information = notes, image = imageurl, code5 = code5, stolen = stolen, points = tonumber(points) }, function(infoResult)
 						if infoResult then
 							TriggerClientEvent('mdt:client:updateVehicleDbId', src, infoResult)
-							TriggerEvent('mdt:server:AddLog', "A vehicle with the plate ("..plate..") was added to the vehicle information database by "..fullname)
+							TriggerEvent('mdt:server:AddLog', "Le véhicule avec la plaque ("..plate..") a été ajouté dans la base de données par "..fullname)
 						end
 					end)
 				elseif tonumber(dbid) > 0 then
@@ -1271,7 +1269,6 @@ RegisterNetEvent('mdt:server:searchCalls', function(calls)
 	local JobType = GetJobType(Player.job.name)
 	if JobType == 'police' then
 		TriggerClientEvent('mdt:client:getCalls', src, calls)
-
 	end
 end)
 
@@ -1313,9 +1310,9 @@ RegisterNetEvent('mdt:server:saveWeaponInfo', function(serial, imageurl, notes, 
 				})
 
 				if result then
-					TriggerEvent('mdt:server:AddLog', "A weapon with the serial number ("..serial..") was added to the weapon information database by "..fullname)
+					TriggerEvent('mdt:server:AddLog', "Une arme avec le n° de serie ("..serial..") a été ajouté aux registre des armes par "..fullname)
 				else
-					TriggerEvent('mdt:server:AddLog', "A weapon with the serial number ("..serial..") failed to be added to the weapon information database by "..fullname)
+					TriggerEvent('mdt:server:AddLog', "Une arme avec le n° de serie ("..serial..") n'a été ajouté aux registre des armes par "..fullname)
 				end
 			end
 		end
@@ -1362,10 +1359,8 @@ RegisterNetEvent('mdt:server:getAllLogs', function()
 	if Player then
 		if Config.LogPerms[Player.job.name] then
 			if Config.LogPerms[Player.job.name][Player.job.grade] then
-
 				local JobType = GetJobType(Player.job.name)
 				local infoResult = MySQL.query.await('SELECT * FROM mdt_logs WHERE `jobtype` = :jobtype ORDER BY `id` DESC LIMIT 250', {jobtype = JobType})
-
 				TriggerLatentClientEvent('mdt:client:getAllLogs', src, 30000, infoResult)
 			end
 		end
@@ -1415,8 +1410,6 @@ RegisterNetEvent('mdt:server:getPenalCode', function()
 end)
 
 RegisterNetEvent('mdt:server:setCallsign', function(identifier, newcallsign)
-	-- local Player = ESX.GetPlayerFromIdentifier(identifier)
-	-- Player.Functions.SetMetaData("callsign", newcallsign)
 	local originSource = source
 	if identifier ~= nil and newcallsign ~= nil then
 		local xPlayer = ESX.GetPlayerFromIdentifier(identifier)
@@ -1469,7 +1462,7 @@ RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tag
                                         officersinvolved = officers,
                                         civsinvolved = civilians
                                     }
-                                    sendIncidentToDiscord(3989503, "MDT Incident Report", message, "ps-mdt | Edited by Lexinor", associatedData)                                
+                                    sendIncidentToDiscord(3989503, "Rapport d'incident mis à jour", message, "ps-mdt | Edited by Lexinor", associatedData)                                
                                 end
                             else
                                 print('No incident found in the mdt_incidents table with id: ' .. infoResult)
@@ -1519,7 +1512,7 @@ RegisterNetEvent('mdt:server:saveIncident', function(id, title, information, tag
                                 officersinvolved = officers,
                                 civsinvolved = civilians
                             }
-                            sendIncidentToDiscord(16711680, "MDT Incident Report has been Updated", message, "ps-mdt | Edited by Lexinor", associatedData)
+                            sendIncidentToDiscord(16711680, "Rapport d'incident mis à jour", message, "ps-mdt | Edited by Lexinor", associatedData)
                         end
                     else
                         print('No incident found in the mdt_incidents table with id: ' .. id)
@@ -1647,7 +1640,6 @@ RegisterNetEvent('mdt:server:callAttach', function(callid)
 		callsign = Player(xPlayer.source).state?.callsign or "000",
 		radio = Radio
 	}
-	print(json.encode(playerdata))
 	local JobType = GetJobType(xPlayer.job.name)
 	if JobType == 'police' or JobType == 'ambulance' then
 		if callid then
@@ -1803,11 +1795,11 @@ RegisterNetEvent('mdt:server:setRadio', function(identifier, newRadio)
 	local src = source
 	local targetPlayer = ESX.GetPlayerFromIdentifier(identifier)
 
-	local radio = targetPlayer.Functions.GetItemByName("radio")
+	local radio = exports.ox_inventory:GetItemCount(targetPlayer.source, "radio")
 	if radio ~= nil then
 		TriggerClientEvent('mdt:client:setRadio', targetPlayer.source, newRadio)
 	else
-		TriggerClientEvent('esx:showAdvancedNotification', src, targetPlayer.name..' does not have a radio!', 'error')
+		TriggerClientEvent('esx:showAdvancedNotification', src, targetPlayer.name.." ne possède pas de radio !", 'error')
 	end
 end)
 
@@ -1962,7 +1954,6 @@ lib.callback.register('mdt:server:GetPlayerSourceId', function(source, targetCit
 end)
 
 lib.callback.register('getWeaponInfo', function(source)
-	print("GET WEAPON INFOS")
     local xPlayer = ESX.GetPlayerFromId(source)
     local weaponInfos = {}
 	if Config.InventoryForWeaponsImages == "ox_inventory" then
@@ -2122,44 +2113,44 @@ function sendIncidentToDiscord(color, name, message, footer, associatedData)
         print("\27[31mA webhook is missing in: IncidentWebhook (server > main.lua > line 24)\27[0m")
     else
         if associatedData then
-            message = message .. "\n\n--- Associated Data ---"
-            message = message .. "\nCID: " .. (associatedData.identifier or "Not Found")
+            message = message .. "\n\n--- Informations ---"
+            message = message .. "\nID: " .. (associatedData.identifier or "Non trouvé")
             
             if associatedData.guilty == false then
-                pingMessage = "**Guilty: Not Guilty - Need Court Case** " .. rolePing
+                pingMessage = "**Coupable: Non coupable - Requiert procès** " .. rolePing
                 message = message .. "\n" .. pingMessage
             else
-                message = message .. "\nGuilty: " .. tostring(associatedData.guilty or "Not Found")
+                message = message .. "\nCoupable: " .. tostring(associatedData.guilty or "Non trouvé")
             end
 			
 			
             if associatedData.officersinvolved and #associatedData.officersinvolved > 0 then
                 local officersList = table.concat(associatedData.officersinvolved, ", ")
-                message = message .. "\nOfficers Involved: " .. officersList
+                message = message .. "\nOfficiers Impliqués: " .. officersList
             else
-                message = message .. "\nOfficers Involved: None"
+                message = message .. "\nOfficiers Impliqués: Aucun"
             end
 
             if associatedData.civsinvolved and #associatedData.civsinvolved > 0 then
                 local civsList = table.concat(associatedData.civsinvolved, ", ")
-                message = message .. "\nCivilians Involved: " .. civsList
+                message = message .. "\nCitoyens Impliqués: " .. civsList
             else
-                message = message .. "\nCivilians Involved: None"
+                message = message .. "\nCitoyens Impliqués: Aucun"
             end
 
 
-            message = message .. "\nWarrant: " .. tostring(associatedData.warrant or "No Warrants")
-            message = message .. "\nReceived Fine: $" .. tostring(associatedData.fine or "Not Found")
-            message = message .. "\nReceived Sentence: " .. tostring(associatedData.sentence or "Not Found")
-            message = message .. "\nRecommended Fine: $" .. tostring(associatedData.recfine or "Not Found")
-            message = message .. "\nRecommended Sentence: " .. tostring(associatedData.recsentence or "Not Found")
+            message = message .. "\nMandat: " .. tostring(associatedData.warrant or "Aucun MandatNo Warrants")
+            message = message .. "\nAmende Reçue: $" .. tostring(associatedData.fine or "Non trouvé")
+            message = message .. "\nPeine Reçue: " .. tostring(associatedData.sentence or "Non trouvé")
+            message = message .. "\nRecommandée Amende: $" .. tostring(associatedData.recfine or "Non trouvé")
+            message = message .. "\nPeine Recommandée: " .. tostring(associatedData.recsentence or "Non trouvé")
 
             local chargesTable = json.decode(associatedData.charges)
             if chargesTable and #chargesTable > 0 then
                 local chargeList = table.concat(chargesTable, "\n")
                 message = message .. "\n**Charges:** \n" .. chargeList
             else
-                message = message .. "\n**Charges: No Charges**"
+                message = message .. "\n**Charges: Acunes Charges**"
             end
         end
 

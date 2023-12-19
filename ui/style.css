@@ -1683,9 +1683,9 @@ span.tag-input[contenteditable]:empty::before {
     overflow: scroll;
     max-height: 87%;
     margin: auto;
-    margin-top: 5px;
+    margin-top: 2vh;
     width: 95%;
-    user-select: none;
+    user-select: none;    
 }
 
 .incident-number {
@@ -6774,4 +6774,10 @@ input[type="range"].vehicle-info-points-input::-moz-range-track {
 
 .leaflet-tooltip-right {
 	margin-left: 6px;
+}
+
+
+.trumbowyg-editor {
+    color: white;
+    padding: 2vh;
 }
