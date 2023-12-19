@@ -106,6 +106,14 @@ function GetPlayerApartment(identifier, cb)
     return result
 end
 
+function GetAllPlayerDataFromDb(identifier)
+    return MySQL.single.await("SELECT * FROM users WHERE identifier = ?", {identifier})
+end
+
+function GetPlayerFirstNameAndLastName(identifier)
+    return MySQL.single.await("SELECT firstname, lastname FROM users WHERE identifier = ?", {identifier})
+end
+
 function GetPlayerLicenses(identifier)
     return MySQL.query.await('SELECT user_licenses.type, licenses.label FROM user_licenses LEFT JOIN licenses ON user_licenses.type = licenses.type WHERE owner = ?', {identifier})
 end

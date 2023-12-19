@@ -345,15 +345,15 @@ end)
 
 lib.callback.register("mdt:server:getWarrants", function(source)
     local WarrantData = {}
-    local data = MySQL.query.await("SELECT * FROM mdt_convictions", {})
-    for _, conviction in pairs(data) do
+    local convictions = MySQL.query.await("SELECT * FROM mdt_convictions", {})
+    for _, conviction in pairs(convictions) do
         if conviction.warrant == "1" then
-			local xPlayer = ESX.GetPlayerFromIdentifier(conviction.identifier)
+			local playerData = GetPlayerFirstNameAndLastName(conviction.identifier)
 			WarrantData[#WarrantData+1] = {
                 identifier = conviction.identifier,
                 linkedincident = conviction.linkedincident,
-                name = xPlayer.name,
-                time = conviction.time
+                name = ("%s %s"):format(playerData.firstname, playerData.lastname),
+                time = conviction.time,
             }
         end
     end
