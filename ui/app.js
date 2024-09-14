@@ -105,8 +105,17 @@ function getFormattedDate(date, prefomattedDate = false, hideYear = false) {
 }
 
 const quotes = [
-  'Gouvernement Kriegen : pour un état plus sûr',
-]
+  'To Protect and to Serve',
+  'Law and Order, Every Day',
+  'Justice, Integrity, Service',
+  'Courage Under Fire',
+  'In Valor, There is Hope',
+  'We Stand for Justice',
+  'Strength in Unity',
+  'Honor, Duty, Respect',
+  'For the Safety of All',
+  'Committed to Serve',
+];
 
 function randomizeQuote() {
   return randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
@@ -129,13 +138,13 @@ function timeAgo(dateParam) {
   const isThisYear = today.getFullYear() === date.getFullYear();
 
   if (seconds < 5) {
-    return "A l'instant";
+    return "Gerade jetzt";
   } else if (seconds < 60) {
-    return `Il y a ${seconds} secondes`;
+    return `Vor ${seconds} Sekunden`;
   } else if (seconds < 90) {
-    return "Il y a une minute";
+    return "Vor einer Minute";
   } else if (minutes < 60) {
-    return `Il y a ${minutes} minutes`;
+    return `Vor ${minutes} Minuten`;
   } else if (isToday) {
     return getFormattedDate(date, "Aujourd'hui");
   } else if (isYesterday) {
@@ -224,7 +233,7 @@ $(document).ready(() => {
 
     const { vehicles, tags, gallery, convictions, incidents, properties, fingerprint } = result;
     
-    $(".manage-profile-editing-title").html(`Vous modifiez le profile: ${result["firstname"]} ${result["lastname"]}`);
+    $(".manage-profile-editing-title").html(`Sie bearbeiten: ${result["firstname"]} ${result["lastname"]}`);
     $(".manage-profile-identifier-input").val(result['identifier']);
     $(".manage-profile-name-input-1").val(result["firstname"]);
     $(".manage-profile-name-input-2").val(result["lastname"]);
@@ -249,13 +258,13 @@ $(document).ready(() => {
     $(".convictions-holder").empty();
     $(".profile-incidents-holder").empty();
 
-    let licencesHTML = '<div style="color: #fff; text-align:center;">Aucun Permis</div>';
-    let tagsHTML = '<div style="color: #fff; text-align:center;">Aucun Tags</div>';
-    let convHTML = '<div style="color: #fff; text-align:center;">Vider Registre ?</div>';
-    let incidentsHTML = '<div style="color: #fff; text-align:center;">Aucun Incidents</div>';
-    let vehHTML = '<div style="color: #fff; text-align:center;">Aucun véhicules</div>';
-    let galleryHTML = '<div style="color: #fff; text-align:center;">Aucunes photos</div>';
-    let propertyHTML = '<div style="color: #fff; text-align:center;">Aucunes propriétés</div>';
+    let licencesHTML = '<div style="color: #fff; text-align:center;">Keine Lizenzen</div>';
+    let tagsHTML = '<div style="color: #fff; text-align:center;">Keine Tags</div>';
+    let convHTML = '<div style="color: #fff; text-align:center;">Leeres Register</div>';
+    let incidentsHTML = '<div style="color: #fff; text-align:center;">Keine verwandten Fälle</div>';
+    let vehHTML = '<div style="color: #fff; text-align:center;">Keine Fahrzeuge</div>';
+    let galleryHTML = '<div style="color: #fff; text-align:center;">Keine Bilder</div>';
+    let propertyHTML = '<div style="color: #fff; text-align:center;">Keine Grundstücke</div>';
 
     // convert key value pair object of licenses to array
     let licenses = Object.entries(result.licences);
@@ -275,7 +284,7 @@ $(document).ready(() => {
         }
       });
       if (hasNoLicence === true) {
-        licencesHTML += `<span class="license-tag red-tag">Aucun Permis</span>`;
+        licencesHTML += `<span class="license-tag red-tag">Keine Lizenzen</span>`;
       }
 
       if (vehicles && vehicles.length > 0) {
@@ -366,7 +375,7 @@ $(document).ready(() => {
                 <span contenteditable="true" class="bulletin-item-title"></span>
                 <span contenteditable="true" class="bulletin-item-info"></span>
                 <div class="bulletin-bottom-info">
-                <div class="bulletin-date">${MyName} - A l'instant</div>
+                <div class="bulletin-date">${MyName} - Gerade jetzt</div>
                 </div>
             </div>`);
     } else {
@@ -419,7 +428,7 @@ $(document).ready(() => {
         {
           className: "remove-bulletin",
           icon: "fas fa-times",
-          text: "Retirer élément",
+          text: "Information löschen",
           info: $(this).data("id"),
           status: $(this).data("title"),
         },
@@ -673,16 +682,16 @@ $(document).ready(() => {
             .each(function (index) {
               if ($(this).data("id") == identifier) {
                 if ($(this).hasClass("green-tag")) {
-                  if ($(this).text() == "Coupable") {
+                  if ($(this).text() == "Schuldig") {
                     guilty = true;
                   }
-                  if ($(this).text() == "Recherché") {
+                  if ($(this).text() == "Gesucht") {
                     warrant = true;
                   }
-                  if ($(this).text() == "Traité") {
+                  if ($(this).text() == "Abgearbeitet") {
                     processed = true;
                   }
-                  if ($(this).text() == "Associé") {
+                  if ($(this).text() == "Verbunden") {
                     isassociated = true;
                   }
                 }
@@ -753,7 +762,7 @@ $(document).ready(() => {
             );
             setTimeout(() => {
               $(".incidents-search-refresh").empty();
-              $(".incidents-search-refresh").html("Refresh");
+              $(".incidents-search-refresh").html("<i class='fa-solid fa-arrows-rotate'></i>");
               canRefreshIncidents = true;
               $.post(
                 `https://${GetParentResourceName()}/getAllIncidents`,
@@ -771,25 +780,11 @@ $(document).ready(() => {
     function () {
       let template = `
       <div style="color: white;">
-          <p><strong>📝 Résumé:</strong></p>
-          <p><em>[Insérez résumé du rapport]</em></p>
-          <p>&nbsp;</p>
-          <p><strong>🧍 Otage:</strong> [Name Here]</p>
-          <p>&nbsp;</p>
-          <p><strong>🗄️ N° Casier de Preuve:</strong> Stash # | Drawer #</p>
-          <p>&nbsp;</p>
-          <p><strong>🔪 Armes / Objets Saisis:</strong></p>
-          <p><em>· [Insérez la liste]</em></p>
-          <p>&nbsp;</p>
-          <p>-----</p>
-          <p><strong style="background-color: var(--color-1);">💸 Amende:</strong></p>
-          <p>&nbsp;</p>
-          <p><strong>⌚ Peine en UC (Unité Carcérale):</strong></p>
           <p>-----</p>
       </div>
   `;
       $("#manage-incidents-title-input").val(
-        "Nom - Charges - " + $(".date").html()
+        ""
       );
       $(".manage-incidents-reports-content").trumbowyg({
         changeActiveDropdownIcon: true,
@@ -816,7 +811,7 @@ $(document).ready(() => {
       $(".manage-incidents-title-holder").empty();
       $(".manage-incidents-title-holder").prepend(
         `
-            <div class="manage-incidents-title">Gestion Incident</div>
+            <div class="manage-incidents-title">Fall</div>
             <div class="manage-incidents-create"> <span class="fas fa-plus" style="margin-top: 3.5px;"></span></div>
             <div class="manage-incidents-save"><i class="fa-regular fa-floppy-disk"></i></div>
             `
@@ -828,7 +823,7 @@ $(document).ready(() => {
       $(".associated-incidents-tags-holder").html("");
 
       $(".manage-incidents-editing-title").html(
-        "Vous rédigez un nouveau Incident"
+        "Sie erstellen einen neuen Fall"
       );
       $(".manage-incidents-editing-title").data("id", 0);
 
@@ -906,7 +901,7 @@ $(document).ready(() => {
       {
         className: "search-vehicle",
         icon: "fas fa-car",
-        text: "Rechercher Vehicule",
+        text: "Fahrzeug suchen",
         info: $(this).data("plate"),
         status: "",
       },
@@ -966,21 +961,21 @@ $(document).ready(() => {
         {
           className: "remove-image",
           icon: "fas fa-times",
-          text: "Retirer Image",
+          text: "Bild löschen",
           info: $(this).attr("src"),
           status: "",
         },
         {
           className: "expand-image",
           icon: "fas fa-expand",
-          text: "Expand Image",
+          text: "Bild vergrößern",
           info: $(this).attr("src"),
           status: $(this).css("filter"),
         },
         {
           className: "copy-image-link",
           icon: "fa-regular fa-copy",
-          text: "Copy Image Link",
+          text: "Bildlink kopieren",
           info: $(this).attr("src"),
           status: $(this).css("filter"),
         },
@@ -1019,7 +1014,7 @@ $(document).ready(() => {
         {
           className: "revoke-licence",
           icon: "fas fa-times",
-          text: "Supprimer Licence",
+          text: "Lizenz entziehen",
           info: info,
           status: status,
         },
@@ -1029,7 +1024,7 @@ $(document).ready(() => {
         {
           className: "give-licence",
           icon: "fas fa-check",
-          text: "Attribuer Licence",
+          text: "Lizenz erteilen",
           info: info,
           status: status,
         },
@@ -1418,7 +1413,7 @@ $(document).ready(() => {
     `;
       }
       $(".manage-bolos-editing-title").html(
-        "Vous rédigez un nouveau Mandat"
+        "Sie erstellen einen neuen BOLO Eintrag"
       );
       $(".manage-bolos-input-title").val("");
       $(".manage-bolos-input-plate").val("");
@@ -1478,9 +1473,10 @@ $(document).ready(() => {
     "click",
     ".manage-bolos-save",
     function () {
+      console.log("hey")
       let existing = !(
         $(".manage-bolos-editing-title").html() ==
-        "Vous rédigez un nouveau Mandat"
+        "Sie erstellen einen neuen BOLO Eintrag"
       );
       let id = $(".manage-bolos-editing-title").data("id");
       let title = $("#bolotitle").val();
@@ -1544,21 +1540,21 @@ $(document).ready(() => {
         {
           className: "remove-image-incident",
           icon: "fas fa-times",
-          text: "Retirer Image",
+          text: "Bild löschen",
           info: $(this).attr("src"),
           status: "",
         },
         {
           className: "expand-image",
           icon: "fas fa-expand",
-          text: "Expand Image",
+          text: "Bild vergrößern",
           info: $(this).attr("src"),
           status: $(this).css("filter"),
         },
         {
           className: "copy-image-link",
           icon: "fa-regular fa-copy",
-          text: "Copy Image Link",
+          text: "Bildlink kopieren",
           info: $(this).attr("src"),
           status: $(this).css("filter"),
         },
@@ -1607,7 +1603,7 @@ $(document).ready(() => {
       );
       setTimeout(() => {
         $(".bolos-search-refresh").empty();
-        $(".bolos-search-refresh").html("Refresh");
+        $(".bolos-search-refresh").html("<i class='fa-solid fa-arrows-rotate'></i>");
         canRefreshBolo = true;
         $.post(`https://${GetParentResourceName()}/getAllBolos`, JSON.stringify({}));
       }, 1500);
@@ -1749,7 +1745,7 @@ $(document).ready(() => {
       {
         className: "bolo-delete",
         icon: "fas fa-times",
-        text: "Supprimer Mandat Routier",
+        text: "BOLO Eintrag löschen",
         info: $(this).data("id"),
         status: "",
       },
@@ -1759,7 +1755,7 @@ $(document).ready(() => {
         {
           className: "bolo-delete",
           icon: "fas fa-times",
-          text: "Supprimer Admission",
+          text: "Zulassung zurückziehen",
           info: $(this).data("id"),
           status: "",
         },
@@ -1775,7 +1771,7 @@ $(document).ready(() => {
         {
           className: "add-charge",
           icon: "fas fa-pen-to-square",
-          text: "Modifier Charges",
+          text: "Einträge bearbeiten",
           info: $(this).data("name"),
           status: "",
         },
@@ -1887,7 +1883,7 @@ $(document).ready(() => {
       let args = [
           {
             className: "incidents-remove-tag",
-            text: "Retirer Tag",
+            text: "Tag entfernen",
             info: descr,
             status: "",
           },
@@ -1921,21 +1917,21 @@ $(document).ready(() => {
         {
           className: "bolo-remove-image",
           icon: "fas fa-times",
-          text: "Retirer Image",
+          text: "Bild löschen",
           info: $(this).attr("src"),
           status: "",
         },
         {
           className: "expand-image",
           icon: "fas fa-expand",
-          text: "Aggrandir Image",
+          text: "Bild vergrößern",
           info: $(this).attr("src"),
           status: $(this).css("filter"),
         },
         {
           className: "copy-image-link",
           icon: "fa-regular fa-copy",
-          text: "Copier lien image",
+          text: "Bildlink kopieren",
           info: $(this).attr("src"),
           status: $(this).css("filter"),
         },
@@ -2002,15 +1998,25 @@ $(document).ready(() => {
   );
 
   $('.incidents-ghost-holder').on('click', '#fine-button', function() {
-    // Get the current fine and recommended fine values
     const identifier = $(this).data("id");
-    const fine = $(".fine-amount").filter(`[data-id=${identifier}]`).val();
-    const recommendFine = $(".fine-recommended-amount").filter(`[data-id=${identifier}]`).val();
-    $(".control-button").filter(`[data-id=${identifier}]`).prop("disabled", true);
-    $(".control-button").filter(`[data-id=${identifier}]`).css("background-color", "green");
+    
+    // Holen der Werte für fine und recommendFine mit find anstatt filter
+    const fine = $(".fine-amount[data-id='" + identifier + "']").val();
+    const recommendFine = $(".fine-recommended-amount[data-id='" + identifier + "']").val();
+    
+    // Hier eine Zuweisung, falls du den Wert ändern möchtest
+    // const fine = 1; // Dies überschreibt den obigen Wert, falls du dies wirklich brauchst
+    
+    // Ändern der Eigenschaften für die Kontroll-Schaltfläche
+    $(".control-button[data-id='" + identifier + "']").prop("disabled", true);
+    $(".control-button[data-id='" + identifier + "']").css("background-color", "green");
+  
+    // Holen der incidentId
     const incidentId = $(".manage-incidents-editing-title").data("id");
+    
+    // Senden des Bußgelds
     sendFine(identifier, fine, recommendFine, incidentId);
-  });
+  });  
 
   $('.incidents-ghost-holder').on('click', '#community-service-button', function() {
     // Get the current sentence and recommended sentence values
@@ -2054,7 +2060,7 @@ $(document).ready(() => {
         {
           className: "associated-incidents-remove-tag",
           icon: "fas fa-times",
-          text: "Retirer Tag",
+          text: "Tag entfernen",
           info: $(this).html(),
           status: $(this).data("id"),
         },
@@ -2107,23 +2113,22 @@ $(document).ready(() => {
             <div class="associated-incidents-user-container" data-id="${$(this).data("identifier")}">
                 <div class="associated-incidents-user-title">${$(this).data("info")}</div>
                 <div class="associated-incidents-user-tags-holder">
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Recherché</div>
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Coupable</div>
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Traité</div>
-                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Associé</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Gesucht</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Schuldig</div>
+                    <div class="associated-incidents-user-tag red-tag" data-id="${$(this).data("identifier")}">Abgearbeitet</div>
                 </div>
-                <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Clique droit pour ajouter / modifier les charges.</div>
+                <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Rechtsklick in den Bereich für Optionen.</div>
                 <div class="associated-incidents-user-holder" data-name="${$(this).data("identifier")}"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Amende Recommandée</div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Empfohlene Geldstrafe</div>
                 <div class="associated-incidents-fine-input" data-id="${$(this).data("identifier")}"><img src="img/h7S5f9J.webp"> <input disabled placeholder="0" class="fine-recommended-amount" id="fine-recommended-amount" data-id="${$(this).data("identifier")}" type="number"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Peine Recommandée</div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Empfohlene Hafteinheiten</div>
                 <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input disabled placeholder="0" class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${$(this).data("identifier")}" type="number"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Amende</div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Geldstrafe</div>
                 <div class="associated-incidents-fine-input" data-id="${$(this).data("identifier")}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${$(this).data("identifier")}" type="number"></div>
-                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Peine en UC (Unité Carcérale)</div>
+                <div class="manage-incidents-title-tag" data-id="${$(this).data("identifier")}">Hafteinheiten</div>
                 <div class="associated-incidents-sentence-input" data-id="${$(this).data("identifier")}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez mois here..." value="0" class="sentence-amount" data-id="${$(this).data("identifier")}" type="number"></div>
                 <div class="associated-incidents-controls" data-id="${$(this).data("identifier")}">                    
-                    <div id="fine-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Amender</div>
+                    <div id="fine-button" class="control-button" data-id="${$(this).data("identifier")}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Abrechnen</div>
                     ${canSendToCommunityService ? `<div id="community-service-button" class="control-button" data-id="${$(this).data("identifier")}"> <span class="fa-solid fa-person-digging" style="margin-top: 3.5px;"></span>Community Service</div>` : ''}
                 </div>
             </div>
@@ -2149,7 +2154,7 @@ $(document).ready(() => {
       {
         className: "incidents-remove-tag",
         icon: "fas fa-times",
-        text: "Retirer Tag",
+        text: "Tag entfernen",
         info: $(this).html(),
         status: "",
       },
@@ -2174,7 +2179,7 @@ $(document).ready(() => {
         {
           className: "remove-tag",
           icon: "fas fa-times",
-          text: "Retirer Tag",
+          text: "Tag entfernen",
           info: $(this).html(),
           status: "",
         },
@@ -2192,7 +2197,7 @@ $(document).ready(() => {
       );
       setTimeout(() => {
         $(".incidents-search-refresh").empty();
-        $(".incidents-search-refresh").html("Refresh");
+        $(".incidents-search-refresh").html("<i class='fa-solid fa-arrows-rotate'></i>");
         canRefreshIncidents = true;
         $.post(`https://${GetParentResourceName()}/getAllIncidents`, JSON.stringify({}));
       }, 1500);
@@ -2217,7 +2222,7 @@ $(document).ready(() => {
       {
         className: "incidents-remove-normal-tag",
         icon: "fas fa-times",
-        text: "Retirer Tag",
+        text: "Tag entfernen",
         info: $(this).html(),
         status: "",
       },
@@ -2274,7 +2279,7 @@ $(document).ready(() => {
       );
       setTimeout(() => {
         $(".reports-search-refresh").empty();
-        $(".reports-search-refresh").html("Refresh");
+        $(".reports-search-refresh").html("<i class='fa-solid fa-arrows-rotate'></i>");
         canRefreshReports = true;
         $.post(`https://${GetParentResourceName()}/getAllReports`, JSON.stringify({}));
       }, 1500);
@@ -2288,7 +2293,7 @@ $(document).ready(() => {
     );
     setTimeout(() => {
       $(".dispatch-comms-refresh").empty();
-      $(".dispatch-comms-refresh").html("Refresh");
+      $(".dispatch-comms-refresh").html("<i class='fa-solid fa-arrows-rotate'></i>");
       canRefreshReports = true;
       $.post(`https://${GetParentResourceName()}/refreshDispatchMsgs`, JSON.stringify({}));
     }, 1500);
@@ -2428,21 +2433,21 @@ $(document).ready(() => {
         {
           className: "reports-remove-image",
           icon: "fas fa-times",
-          text: "Retirer Image",
+          text: "Bild löschen",
           info: $(this).attr("src"),
           status: "",
         },
         {
           className: "expand-image",
           icon: "fas fa-expand",
-          text: "Aggrandir Image",
+          text: "Bild vergrößern",
           info: $(this).attr("src"),
           status: $(this).css("filter"),
         },
         {
           className: "copy-image-link",
           icon: "fa-regular fa-copy",
-          text: "Copier lien Image",
+          text: "Bildlink kopieren",
           info: $(this).attr("src"),
           status: $(this).css("filter"),
         },
@@ -2496,7 +2501,7 @@ $(document).ready(() => {
     </div>
 `;}
       $(".manage-reports-editing-title").html(
-        "Vous rédigez un nouveau report"
+        "Sie erstellen einen neuen Bericht"
       );
       $(".manage-reports-input-title").val("");
       $(".manage-reports-input-type").val("");
@@ -2576,7 +2581,7 @@ $(document).ready(() => {
     function () {
       let existing = !(
         $(".manage-reports-editing-title").html() ==
-        "Vous rédigez un nouveau report"
+        "Sie erstellen einen neuen Bericht"
       );
       let id = $(".manage-reports-editing-title").data("id");
       let title = $("#reporttitle").val();
@@ -2674,7 +2679,7 @@ $(document).ready(() => {
 
                                 <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
                                 <div style="display: flex; flex-direction: column;">
-                                    <div class="profile-item-title">Aucun vehicule trouvé, essayez autre chose</div>
+                                    <div class="profile-item-title">Kein Fahrzeug gefunden</div>
                                     </div>
                                     <div class="profile-bottom-info">
                                     </div>
@@ -2724,14 +2729,14 @@ $(document).ready(() => {
                             <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
                             <div style="display: flex; flex-direction: column;">
                                 <div class="dmv-item-title">
-                                  <div class="dmv-id">Modèle: ${vehicle.model} Plaque: ${vehicle.plate} · Propriétaire: ${vehicle.owner}</div>
+                                  <div class="dmv-id">Modell: ${vehicle.model} · Kennzeichen: ${vehicle.plate} · Fahrzeughalter: ${vehicle.owner}</div>
                                 </div>
                                     <div class="dmv-tags">
                                         ${vehiclePaintHtml}
-                                        <div class="dmv-tag ${impound}">En fourrière</div>
-                                        <div class="dmv-tag ${bolo}">Recherché</div>
-                                        <div class="dmv-tag ${stolen}">Volé</div>
-                                        <div class="dmv-tag ${codefive}">Code 5</div>
+                                        <div class="dmv-tag ${impound}">Beschlagnahmt</div>
+                                        <div class="dmv-tag ${bolo}">Gesucht</div>
+                                        <div class="dmv-tag ${stolen}">Gestohlen</div>
+                                        <div class="dmv-tag ${codefive}">Undercover</div>
                                     </div>
                                 </div>
                             </div>
@@ -3148,7 +3153,7 @@ $(document).ready(() => {
 
                                 <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
                                 <div style="display: flex; flex-direction: column;">
-                                    <div class="profile-item-title">Aucunes Armes trouvées</div>
+                                    <div class="profile-item-title">Keine Waffen gefunden</div>
                                     </div>
                                     <div class="profile-bottom-info">
                                     </div>
@@ -3174,7 +3179,7 @@ $(document).ready(() => {
 
                                 </div>
                                 <div class="weapons-bottom-info">
-                                  <div class="weapons-id">N° de Série: ${value.serial} · Propriétaire: ${value.owner} · ID: ${value.id}</div>
+                                  <div class="weapons-id">Seriennummer: ${value.serial} · Waffenhalter: ${value.owner} · ID: ${value.id}</div>
                                 </div>
                             </div>
                         </div>
@@ -3311,7 +3316,7 @@ $(document).ready(() => {
       {
         className: "view-incident2",
         icon: "fas fa-search",
-        text: `View Incident #${$(this).data("id")}`,
+        text: `Fall #${$(this).data("id")} ansehen`,
         info: $(this).data("id"),
         status: "",
       },
@@ -3358,14 +3363,14 @@ $(document).ready(() => {
       {
         className: "view-profile",
         icon: "far fa-eye",
-        text: "Voir Profile",
+        text: "Akte ansehen",
         info: $(this).data("identifier"),
         status: "",
       },
       {
         className: "view-incident",
         icon: "fas fa-search",
-        text: `Voir Incident #${$(this).data("id")}`,
+        text: `Fall #${$(this).data("id")} öffnen`,
         info: $(this).data("id"),
         status: "",
       },
@@ -3441,31 +3446,31 @@ $(document).ready(() => {
         {
           className: "toggle-duty",
           icon: "fas fa-thumbtack",
-          text: "Prise de service",
+          text: "10-8/10-7 wechseln",
           info: identifier,
           status: "",
         },
         {
           className: "set-callsign",
           icon: "far fa-id-badge",
-          text: "Définir Matricule",
+          text: "Callsign festlegen",
           info: identifier,
           status: "",
         },
         {
           className: "set-radio",
           icon: "fas fa-broadcast-tower",
-          text: "Définir Radio",
+          text: "Funkkanal festlegen",
           info: identifier,
           status: "",
         },
-        /* {
+        {
           className: "set-waypoint",
           icon: "fas fa-map-marker-alt",
-          text: "Définir Marqueur",
+          text: "Wegpunkt festlegen",
           info: identifier,
           status: "",
-        }, */
+        },
       ];
       openContextMenu(e, args);
     }
@@ -3899,7 +3904,7 @@ $(document).ready(() => {
       color9: "#6E707C",
       color10: "#8F741B",
       image: "img/LSPD.webp",
-      name: "LOS SANTOS POLICE",
+      name: "LOS ANGELES POLICE",
     },
     bcso: {
       color1: "#333333",
@@ -3969,7 +3974,7 @@ $(document).ready(() => {
       color9: "#6E707C",
       color10: "#8F741B",
       image: "img/LSSD.webp",
-      name: "LOS SANTOS SHERIFF DEPARTMENT",
+      name: "LOS ANGELES COUNTY SHERIFF DEPARTMENT",
     },
     doc: {
       color1: "#191919",
@@ -4077,28 +4082,28 @@ $(document).ready(() => {
           } else if (sentJob == "doc") {
             applyCustomTheme(customThemes.doc)
           }
-        $(".bolo-nav-item").html("Mandats Routiers");
-        $(".bolos-search-title").html("Mandats Routiers");
-        $("#bolos-search-input").attr("placeholder", "Rechercher Mandats Routiers...");
-        $(".manage-bolos-title").html("Gestion Mandats Routiers");
+        $(".bolo-nav-item").html("BOLO Einträge");
+        $(".bolos-search-title").html("BOLO Einträge suchen");
+        $("#bolos-search-input").attr("placeholder", "BOLO Eintrag suchen...");
+        $(".manage-bolos-title").html("BOLO Eintrag");
         $(".manage-bolos-editing-title").html(
-          "Vous rédigez un nouveau Mandat"
+          "Sie erstellen einen neuen BOLO Eintrag"
         );
-        $(".boloplate-title").html("Plaque");
-        $(".boloowner-title").html("Propriétaire");
-        $(".boloindividual-title").html("Individu");
-        $("#boloplate").attr("placeholder", "Insérez la plaque ici...");
+        $(".boloplate-title").html("Kennzeichen");
+        $(".boloowner-title").html("Fahrzeughalter");
+        $(".boloindividual-title").html("Fahrer");
+        $("#boloplate").attr("placeholder", "Kennzeichen Hier eingeben...");
         $("#bolodetail").attr(
           "placeholder",
-          "Insérez les détails du mandat ici..."
+          "Details zum BOLO Eintrag hier eingeben..."
         );
         $("#boloowner").attr(
           "placeholder",
-          "Propriétaire du véhicule..."
+          "Fahrzeughalter hier eingeben..."
         );
         $("#boloindividual").attr(
           "placeholder",
-          "Insérez Individu..."
+          "Fahrer eingeben..."
         );
         $("#home-warrants-container").fadeIn(0);
         $("#home-reports-container").fadeOut(0);
@@ -4114,10 +4119,10 @@ $(document).ready(() => {
         $(".manage-profile-name-input-1").attr("readonly", true);
         $(".manage-profile-name-input-2").attr("readonly", true);
         $("#reports-officers-involved-tag-title").html(
-          "Officiers Impliqués"
+          "Beteiligte Officer"
         );
         $("#bolos-officers-involved-tag-title").html(
-          "Officiers Impliqués"
+          "Beteiligte Officer"
         );
         $(".roster-iframe").attr("src", rosterLink);
         $(".sop-iframe").attr("src", sopLink);
@@ -4283,8 +4288,7 @@ window.addEventListener("message", function (event) {
                 <div class="bulletin-item-title">${value.title}</div>
                 <div class="bulletin-item-info">${value.desc}</div>
                 <div class="bulletin-bottom-info">
-                    <div class="bulletin-date">${value.author
-          } - ${timeAgo(Number(value.time))}</div>
+                    <div class="bulletin-date">${value.author} - ${timeAgo(Number(value.time))}</div>
                 </div>
                 </div>`);
       });
@@ -4312,14 +4316,14 @@ window.addEventListener("message", function (event) {
         let radioBack = unit.sig100 ? "#7b2c2c" : "var(--color-3)";
         let radio = unit.radio ? unit.radio : "0";
         let callSign = unit.callsign ? unit.callsign : "000";
-        let activeInfoJob = `<div class="unit-job active-info-job-unk">UNKNOWN</div>`;
+        let activeInfoJob = `<div class="unit-job active-info-job-unk">UNBEKANNT</div>`;
         if (PoliceJobs[unit.unitType] !== undefined) {
           if (unit.unitType == "police") { policeCount++;
-          activeInfoJob = `<div class="unit-job active-info-job-lspd">LSPD</div>`;
+          activeInfoJob = `<div class="unit-job active-info-job-lspd">LAPD</div>`;
           } else if(unit.unitType == "bcso")  { bcsoCount++;
             activeInfoJob = `<div class="unit-job active-info-job-bcso">BCSO</div>`;
           } else if(unit.unitType == "lssd")  { bcsoCount++;
-            activeInfoJob = `<div class="unit-job active-info-job-bcso">LSSD</div>`;
+            activeInfoJob = `<div class="unit-job active-info-job-bcso">LASD</div>`;
           } else if(unit.unitType == "sasp")  { saspCount++;
             activeInfoJob = `<div class="unit-job active-info-job-sasp">SASP</div>`;
           } else if(unit.unitType == "sast")  { saspCount++;
@@ -4383,7 +4387,7 @@ window.addEventListener("message", function (event) {
                 <div class="warrant-title">${value.name}</div>
             </div>
             <div class="warrant-bottom-info">
-                <div class="warrant-id">ID Incident: ${value.linkedincident}</div>
+                <div class="warrant-id">Fall #${value.linkedincident}</div>
             </div>
         </div></div>`)
     })
@@ -4724,7 +4728,7 @@ window.addEventListener("message", function (event) {
           `<div class="incidents-item" data-id="${value.id}">
                     <div class="incidents-top-holder">
                         <div class="incidents-item-title">${value.title}</div>
-                        <div class="incedent-report-name">Rapport Incident</div>
+                        <div class="incedent-report-name">Fallbericht</div>
                     </div>
                     <div class="incidents-bottom-holder">
                         <div class="incedent-report-id">ID: ${value.id}</div>
@@ -4752,7 +4756,7 @@ window.addEventListener("message", function (event) {
           {
             className: "incidents-delete",
             icon: "fas fa-times",
-            text: "Supprimer Incident",
+            text: "Fall löschen",
             info: $(this).data("id"),
             status: "",
           },
@@ -4795,7 +4799,7 @@ window.addEventListener("message", function (event) {
       $(".associated-incidents-tags-holder").html("");
 
       $(".manage-incidents-editing-title").html(
-        "Vous êtes entrain de modifier l'incident " + table["id"]
+        "Sie bearbeiten: Fall #" + table["id"]
       );
       $(".manage-incidents-editing-title").data(
         "id",
@@ -4876,7 +4880,7 @@ window.addEventListener("message", function (event) {
       if (PoliceJobs[playerJob] !== undefined || AmbulanceJobs[playerJob] !== undefined) {
         $(".manage-incidents-title-holder").prepend(
           `
-            <div class="manage-incidents-title">Gestion Incident</div>
+            <div class="manage-incidents-title">Fall</div>
             <div class="manage-incidents-create"> <span class="fas fa-plus" style="margin-top: 3.5px;"></span></div>
             <div class="manage-incidents-save"><i class="fa-regular fa-floppy-disk"></i></div>
             `
@@ -4886,7 +4890,7 @@ window.addEventListener("message", function (event) {
       } else if (DojJobs[playerJob] !== undefined) {
         $(".manage-incidents-title-holder").prepend(
           `
-            <div class="manage-incidents-title">Gestion Incident</div>
+            <div class="manage-incidents-title">Fall</div>
             `
         );
         $(".manage-incidents-title").css("width", "95%");
@@ -4920,16 +4924,16 @@ window.addEventListener("message", function (event) {
         // If the associated field is not checked, then populate the recommended fine and sentence fields
         const associatedIncidentsContainer = (value.associated != 1) && `
           <div class="associated-incidents-user-holder" data-name="${identifier}" ></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Amende Recommandée</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Empfohlene Geldstrafe</div>
           <div class="associated-incidents-fine-input" data-id="${identifier}"><img src="img/h7S5f9J.webp"> <input placeholder="0" disabled class="fine-recommended-amount" id="fine-recommended-amount" data-id="${identifier}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Peine Recommandée</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Empfohlene Hafteinheiten</div>
           <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="0" disabled class="sentence-recommended-amount" id="sentence-recommended-amount" data-id="${identifier}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Amende</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Geldstrafe</div>
           <div class="associated-incidents-fine-input" data-id="${identifier}"><img src="img/h7S5f9J.webp"> <input placeholder="Insérez fine here..." value="0" class="fine-amount" data-id="${identifier}" type="number"></div>
-          <div class="manage-incidents-title-tag" data-id="${identifier}">Peine en UC (Unité Carcérale)</div>
+          <div class="manage-incidents-title-tag" data-id="${identifier}">Hafteinheiten</div>
           <div class="associated-incidents-sentence-input" data-id="${identifier}"><img src="img/9Xn6xXK.webp"> <input placeholder="Insérez months here..." value="0" class="sentence-amount" data-id="${identifier}" type="number"></div>
           <div class="associated-incidents-controls" data-id="${identifier}">            
-            <div id="fine-button" class="control-button" data-id="${identifier}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Amender</div>
+            <div id="fine-button" class="control-button" data-id="${identifier}"><span class="fa-solid fa-file-invoice-dollar" style="margin-top: 3.5px;"></span> Abrechnen</div>
             ${canSendToCommunityService ? `<div id="community-service-button" class="control-button" data-id="${identifier}"> <span class="fa-solid fa-person-digging" style="margin-top: 3.5px;"></span>Community Service</div>` : ''}
           </div>
         `;
@@ -4938,12 +4942,11 @@ window.addEventListener("message", function (event) {
           `<div class="associated-incidents-user-container" data-id="${identifier}">
               <div class="associated-incidents-user-title">${value.name} (#${identifier})</div>
               <div class="associated-incidents-user-tags-holder">
-                  <div class="associated-incidents-user-tag ${warrantTag}" data-id="${identifier}">Recherché</div>
-                  <div class="associated-incidents-user-tag ${guiltyTag}" data-id="${identifier}">Coupable</div>
-                  <div class="associated-incidents-user-tag ${processedTag}" data-id="${identifier}">Traité</div>
-                  <div class="associated-incidents-user-tag ${associatedTag}" data-id="${identifier}">Associé</div>
+                  <div class="associated-incidents-user-tag ${warrantTag}" data-id="${identifier}">Gesucht</div>
+                  <div class="associated-incidents-user-tag ${guiltyTag}" data-id="${identifier}">Schuldig</div>
+                  <div class="associated-incidents-user-tag ${processedTag}" data-id="${identifier}">Abgearbeitet</div>
               </div>
-              <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Clique droit pour ajouter / modifier des charges.</div>
+              <div class="modify-charges-label"><span class="fas fa-solid fa-info"></span> Rechtsklick um die Einträge zu bearbeiten.</div>
               ${associatedIncidentsContainer}
           </div>`
         );
@@ -4986,9 +4989,9 @@ window.addEventListener("message", function (event) {
               <div class="incidents-person-search-item" data-info="${name} (#${searchPerson.id})" data-identifier="${searchPerson.id}" data-name="${name}" data-callsign="${searchPerson.callsign}">
                   <img src="${searchPerson.pfp}" class="incidents-person-search-item-pfp">
                   <div class="incidents-person-search-item-right">
-                      <div class="incidents-person-search-item-right-identifier-title">N° Citoyen</div>
+                      <div class="incidents-person-search-item-right-identifier-title">Bürger-Nr.</div>
                       <div class="incidents-person-search-item-right-identifier-input"><span class="fas fa-id-card"></span> ${searchPerson.id}</div>
-                      <div class="incidents-person-search-item-right-name-title">Prénom Nom</div>
+                      <div class="incidents-person-search-item-right-name-title">Vorname Nachname</div>
                       <div class="incidents-person-search-item-right-name-input"><span class="fas fa-user"></span> ${name}</div>
                   </div>
               </div>
@@ -5001,7 +5004,7 @@ window.addEventListener("message", function (event) {
     } else if (eventData.type == "boloData") {
       let table = eventData.data;
       $(".manage-bolos-editing-title").html(
-        "Vous êtes entrain de modifier le mandat " + table["id"]
+        "Sie bearbeiten: BOLO Eintrag " + table["id"]
       );
 
       if ($(".badge-logo").attr("src") == "img/ems_badge.webp") {
@@ -5089,13 +5092,13 @@ window.addEventListener("message", function (event) {
         );
         setTimeout(() => {
           $(".bolos-search-refresh").empty();
-          $(".bolos-search-refresh").html("Refresh");
+          $(".bolos-search-refresh").html("<i class='fa-solid fa-arrows-rotate'></i>");
           canRefreshBolo = true;
           $.post(`https://${GetParentResourceName()}/getAllBolos`, JSON.stringify({}));
         }, 1500);
       }
       $(".manage-bolos-editing-title").html(
-        "Vous êtes entrain de modifier le mandat " + id
+        "Sie bearbeiten: BOLO Eintrag " + id
       );
       $(".manage-bolos-editing-title").data("id", Number(id));
     } else if (eventData.type == "reportComplete") {
@@ -5108,13 +5111,13 @@ window.addEventListener("message", function (event) {
         );
         setTimeout(() => {
           $(".reports-search-refresh").empty();
-          $(".reports-search-refresh").html("Refresh");
+          $(".reports-search-refresh").html("<i class='fa-solid fa-arrows-rotate'></i>");
           canRefreshReports = true;
           $.post(`https://${GetParentResourceName()}/getAllReports`, JSON.stringify({}));
         }, 1500);
       }
       $(".manage-reports-editing-title").html(
-        "Vous êtes entrain de modifier le rapport " + id
+        "Sie bearbeiten: Bericht " + id
       );
       $(".manage-reports-editing-title").data("id", Number(id));
     } else if (eventData.type == "reports") {
@@ -5127,7 +5130,7 @@ window.addEventListener("message", function (event) {
                     <div class="reports-top-holder">
                         <div class="reports-item-title">${value.title}</div>
                         <div class="reports-report-name">${value.type
-          } Rapport</div>
+          }</div>
                     </div>
                     <div class="reports-bottom-holder">
                         <div class="reports-report-id">ID: ${value.id}</div>
@@ -5155,7 +5158,7 @@ window.addEventListener("message", function (event) {
           {
             className: "reports-delete",
             icon: "fas fa-times",
-            text: "Supprimer Rapport",
+            text: "Bericht löschen",
             info: $(this).data("id"),
             status: "",
           },
@@ -5166,7 +5169,7 @@ window.addEventListener("message", function (event) {
       let table = eventData.data;
 
       $(".manage-reports-editing-title").html(
-        "Vous êtes entrain de modifier le rapport " + table["id"]
+        "Sie bearbeiten: Bericht " + table["id"]
       );
 
       $(".manage-reports-editing-title").data("id", Number(table["id"]));
@@ -5277,10 +5280,10 @@ window.addEventListener("message", function (event) {
         stolen = "green-tag";
       }
 
-      $(".vehicle-tags").append(`<div class="vehicle-tag ${impound} impound-tag">En Fourrière</div>`);
-      $(".vehicle-tags").append(`<div class="vehicle-tag ${bolo}">Recherché</div>`);
-      $(".vehicle-tags").append(`<div class="vehicle-tag ${codefive} code5-tag">Code 5</div>`);
-      $(".vehicle-tags").append(`<div class="vehicle-tag ${stolen} stolen-tag">Volé</div>`);
+      $(".vehicle-tags").append(`<div class="vehicle-tag ${impound} impound-tag">Beschlagnahmt</div>`);
+      $(".vehicle-tags").append(`<div class="vehicle-tag ${bolo}">Gesucht</div>`);
+      $(".vehicle-tags").append(`<div class="vehicle-tag ${codefive} code5-tag">Undercover</div>`);
+      $(".vehicle-tags").append(`<div class="vehicle-tag ${stolen} stolen-tag">Gestohlen</div>`);
       $(".vehicle-info-imageurl-input").val(vehicle["image"]);
     } else if (eventData.type == "getWeaponData") {
       impoundChanged = false;
@@ -5506,6 +5509,8 @@ function sendToCommunityService(identifier, customSentence, recommendedSentence)
 function sendFine(identifier, customFine, recommendedFine, incidentId) {
   const fine = Number(customFine) || Number(recommendedFine);
 
+  console.log(fine)
+
   $.post(`https://${GetParentResourceName()}/sendFine`, JSON.stringify({
     identifier,
     fine,
@@ -5651,7 +5656,7 @@ function searchProfilesResults(result) {
 
                           <div style="display: flex; flex-direction: column; margin-top: 2.5px; margin-left: 5px; width: 100%; padding: 5px;">
                           <div style="display: flex; flex-direction: column;">
-                              <div class="profile-item-title">Aucun citoyen trouvés</div>
+                              <div class="profile-item-title">Keine Akten gefunden</div>
                               </div>
                               <div class="profile-bottom-info">
                               </div>
@@ -5694,7 +5699,7 @@ function searchProfilesResults(result) {
       });
 
       if (hasNoLicence === true) {
-        licencesHTML = `<span class="license-tag red-tag">Aucun Permis</span>`;
+        licencesHTML = `<span class="license-tag red-tag">Keine Lizenzen</span>`;
       }
     }
 
@@ -5725,12 +5730,12 @@ function searchProfilesResults(result) {
                 ${licencesHTML}
             </div>
             <div class="profile-criminal-tags">
-                <span class="license-tag ${warrant}">${profile.warrant ? "Recherché" : "Non Recherché"}</span>
-                <span class="license-tag ${convictions}">${profile.convictions} Condamnations </span>
+                <span class="license-tag ${warrant}">${profile.warrant ? "Gesucht" : "Nicht gesucht"}</span>
+                <span class="license-tag ${convictions}">${profile.convictions} Vorstrafen </span>
             </div>
         </div>
         <div class="profile-bottom-info">
-            <div class="profile-id"><span class="fas fa-id-card"></span> Citizen ID: ${profile.identifier}</div>&nbsp;
+            <div class="profile-id"><span class="fas fa-id-card"></span> Bürger-Nr.: ${profile.identifier}</div>&nbsp;
         </div>
         </div>
     </div>
@@ -5891,7 +5896,7 @@ center: [0, -1024],
 maxBoundsViscosity: 1.0
 });
 
-var customImageUrl = 'https://i.imgur.com/EdOZjzF.jpg';
+var customImageUrl = 'https://livepeak.de/img/EdOZjzF.jpeg';
 
 var sw = map.unproject([0, 1024], 3 - 1);
 var ne = map.unproject([1024, 0], 3 - 1);
@@ -5975,7 +5980,7 @@ $(".map-clear").on('click', function() {
     );
     setTimeout(() => {
       $(".map-clear").empty();
-      $(".map-clear").html("Clear");
+      $(".map-clear").html("Leeren");
       ClearMap();
     }, 1500);
 });

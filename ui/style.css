@@ -456,7 +456,7 @@ span.bulletin-item-title {
 }
 
 span.bulletin-item-title[contenteditable]:empty::before {
-    content: 'Enter Title';
+    content: 'Titel eingeben';
 }
 
 .bulletin-item-info {
@@ -475,7 +475,7 @@ span.bulletin-item-info {
 }
 
 span.bulletin-item-info[contenteditable]:empty::before {
-    content: 'Enter Bulletin Information';
+    content: 'Erstelle die Beschreibung';
 }
 
 .bulletin-bottom-info {
@@ -1402,7 +1402,7 @@ a {
 }
 
 span.tag-input[contenteditable]:empty::before {
-    content: 'Input Tag';
+    content: 'Tag hinzufügen';
 }
 
 .tag-input {
@@ -2486,7 +2486,7 @@ span.tag-input[contenteditable]:empty::before {
 }
 
 span.tag-incident-input[contenteditable]:empty::before {
-    content: 'Input Tag';
+    content: 'Tag hinzufügen';
 }
 
 .tag-incident-input {
@@ -3559,7 +3559,7 @@ span.tag-incident-input[contenteditable]:empty::before {
 }
 
 span.tag-bolo-input[contenteditable]:empty::before {
-    content: 'Input Tag';
+    content: 'Tag hinzufügen';
 }
 
 .tag-bolo-input {
@@ -3584,7 +3584,7 @@ span.tag-bolo-input[contenteditable]:empty::before {
 }
 
 span.officer-tag-bolo-input[contenteditable]:empty::before {
-    content: 'Input Tag';
+    content: 'Tag hinzufügen';
 }
 
 .officer-tag-bolo-input {
@@ -4543,7 +4543,7 @@ span.officer-tag-bolo-input[contenteditable]:empty::before {
 }
 
 span.tag-reports-input[contenteditable]:empty::before {
-    content: 'Input Tag';
+    content: 'Tag hinzufügen';
 }
 
 .tag-reports-input {
@@ -5741,7 +5741,7 @@ span.tag-reports-input[contenteditable]:empty::before {
     background-color: #1caa28;
 }
 
-.Set-Waypoint:hover {
+.set-waypoint:hover {
     background-color: #f18f1e;
 }
 

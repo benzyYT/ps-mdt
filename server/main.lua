@@ -1,4 +1,4 @@
-local Items = exports.ox_inventory.Items()
+local Items = {}
 local incidents = {}
 local convictions = {}
 local bolos = {}
@@ -13,15 +13,17 @@ local FullJobList = ESX.GetJobs()
 --------------------------------
 -- SET YOUR WEHBOOKS IN HERE
 -- Images for mug shots will be uploaded here. Add a Discord webhook. 
-local MugShotWebhook = 'https://discord.com/api/webhooks/1184428490989260871/tjvAfTwAl7IeYXQ_2f4LkS0u47vchLNscvrmSWFnMZzD7q_S4X3XivFvo7pL4rAEIo9g'
+local MugShotWebhook = 'https://discord.com/api/webhooks/1284604088318824581/k08tiSKGYdlUpEGCFJZz9LOivrEkIWVEeWb_LXWunKZMCbsxitZMSx10DcecMx95st7Y'
 
 -- Clock-in notifications for duty. Add a Discord webhook.
 -- Command /mdtleaderboard, will display top players per clock-in hours.
-local ClockinWebhook = 'https://discord.com/api/webhooks/1184427504962908161/NwmVhkK4Yw2wNgAH3HjbuuMlAagbPK59jbS3KfE4VipalR-bNahcJ7lHquJcrjFxf4SR'
+local ClockinWebhook = 'https://discord.com/api/webhooks/1284604227301281846/hnL5MFSneXHv4o7ndUN_dl72CicOKsbvHUWdG_w8HI787dKSXstJEFbD-oaNVBhntWZy'
 
 -- Incident and Incident editting. Add a Discord webhook.
 -- Incident Author, Title, and Report will display in webhook post.
-local IncidentWebhook = 'https://discord.com/api/webhooks/1184427565344096316/0am5TxvlVoMlZWs-wxswXt_2FNLppcP50_6CuU5ctQa60UyNjxOIScOkW8baLkq1kcTt'
+local IncidentWebhook = 'https://discord.com/api/webhooks/1284604296134131752/k30LnsFUvQJKey_-5GRAAipWwW8frGXVUQXu58X5UYHH1EfeuKF2rA7rkVh7zz93iTk_'
+
+local BadWebhook = 'https://discord.com/api/webhooks/1284604756115066880/pGkwAoZB5alFUQgRUciqj9OAHVZkp_T-HV6Yd5zEBxum5OmBBIRfx9ldOmqHzKOyffc2'
 --------------------------------
 
 lib.callback.register('ps-mdt:server:MugShotWebhook', function(source)
@@ -73,7 +75,7 @@ if Config.UseWolfknightRadar == true then
 		if bolo == true then
 			--TriggerClientEvent('esx:showNotification', src, 'BOLO ID: '..boloId..' | Title: '..title..' | Registered Owner: '..vehicleOwner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
 			TriggerClientEvent('ox_lib:notify', src, {
-				title = "Véhicule Recherché",
+				title = "Fahrzeug Gesucht",
 				description = ("#### Mandat Routier n°**%s**\n- Titre: **%s**\n- Propriétaire Enregistré: **%s**\n- Plaque: **%s**\n"):format(boloId, title, vehicleOwner, plate),
 				duration = Config.WolfknightNotifyTime,
 				position = "top",
@@ -84,7 +86,7 @@ if Config.UseWolfknightRadar == true then
 		elseif warrant == true then
 			--TriggerClientEvent('esx:showNotification', src, 'WANTED - INCIDENT ID: '..incidentId..' | Registered Owner: '..owner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
 			TriggerClientEvent('ox_lib:notify', src, {
-				title = "Véhicule Recherché",
+				title = "Fahrzeug Gesucht",
 				description = ("#### Incident n°%s\n- Propriétaire Enregistré: **%s**\n- Plaque: **%s**\n"):format(incidentId, vehicleOwner, plate),
 				duration = Config.WolfknightNotifyTime,
 				position = "top",
@@ -94,7 +96,7 @@ if Config.UseWolfknightRadar == true then
 		elseif Config.PlateScanForDriversLicense and driversLicense == false and vehicleOwner then
 			--TriggerClientEvent('esx:showNotification', src, 'NO DRIVERS LICENCE | Registered Owner: '..vehicleOwner..' | Plate: '..plate, 'error', Config.WolfknightNotifyTime)
 			TriggerClientEvent('ox_lib:notify', src, {
-				title = "Véhicule Recherché",
+				title = "Fahrzeug Gesucht",
 				description = ("#### Pas de permis !\n- Propriétaire Enregistré: **%s**\n- Plaque: **%s**\n"):format(vehicleOwner, plate),
 				duration = Config.WolfknightNotifyTime,
 				position = "top",
@@ -227,7 +229,7 @@ RegisterNetEvent("ps-mdt:server:ClockSystem", function()
     local lastName = PlayerData.get('lastName')
     if Player(PlayerData.source).state.onduty  then
         
-        TriggerClientEvent('esx:showNotification', source, "Vous êtes en service !", 'success')
+        TriggerClientEvent('esx:showNotification', source, "Dienst begonnen!", 'success')
 		MySQL.Async.insert('INSERT INTO mdt_clocking (user_id, firstname, lastname, clock_in_time) VALUES (:user_id, :firstname, :lastname, :clock_in_time) ON DUPLICATE KEY UPDATE user_id = :user_id, firstname = :firstname, lastname = :lastname, clock_in_time = :clock_in_time', {
 			user_id = PlayerData.identifier,
 			firstname = firstName,
@@ -241,7 +243,7 @@ RegisterNetEvent("ps-mdt:server:ClockSystem", function()
 		
 		sendToDiscord(65280, "MDT Prise de Service", log, "ps-mdt | Edited by Lexinor")
     else
-		TriggerClientEvent('esx:showNotification', source, "Vous n'êtes plus en service", 'success')
+		TriggerClientEvent('esx:showNotification', source, "Dienst abgeschlossen!", 'success')
 		MySQL.query.await('UPDATE mdt_clocking SET clock_out_time = NOW(), total_time = TIMESTAMPDIFF(SECOND, clock_in_time, NOW()) WHERE user_id = @user_id ORDER BY id DESC LIMIT 1', {
 			['@user_id'] = PlayerData.identifier
 		})
@@ -262,18 +264,30 @@ RegisterNetEvent('mdt:server:openMDT', function()
 	local PlayerData = ESX.GetPlayerFromId(src)
 	if not PermCheck(src, PlayerData) then return end
 	local Radio = Player(src).state.radioChannel or 0
-		
+
 	if GetResourceState(Config.dispatchName) == 'started' then
 		calls = exports[Config.dispatchName]:GetDispatchCalls()
 	end
-		
+
+	-- Job und UnitType bestimmen
+	local unitType = PlayerData.job.name
+	
+	-- Überprüfen, ob der Job "police" ist und ob der Rang mit "lasd" beginnt (case-insensitive)
+	if unitType == "police" then
+		if string.sub(string.lower(PlayerData.job.grade_name), 1, 4) == "lasd" then
+			unitType = "lssd" -- Setze unitType auf "lssd"
+		else
+			unitType = "police" -- Setze unitType auf "police", falls nicht "lasd"
+		end
+	end
+
 	activeUnits[PlayerData.identifier] = {
 		identifier = PlayerData.identifier,
 		callsign = Player(PlayerData.source).state.callsign,
 		firstName = PlayerData.get('firstName'),
 		lastName = PlayerData.get('lastName'),
 		radio = Radio,
-		unitType = PlayerData.job.name,
+		unitType = unitType, -- UnitType verwenden
 		duty = Player(PlayerData.source).state.onduty
 	}
 
@@ -281,6 +295,7 @@ RegisterNetEvent('mdt:server:openMDT', function()
 	local bulletin = GetBulletins(JobType)
 	TriggerClientEvent('mdt:client:open', src, bulletin, activeUnits, calls, PlayerData.identifier)
 end)
+
 
 lib.callback.register('mdt:server:SearchProfile', function(source, sentData)
     if not sentData then return {} end
@@ -382,7 +397,7 @@ RegisterNetEvent('mdt:server:NewBulletin', function(title, info, time)
 		jt = JobType
 	})
 
-	AddLog(("Un noveau rapport a été créé par %s ayant pour titre : %s!"):format(playerName, title))
+	AddLog(("Ein neuer Bericht wurde von %s mit dem Titel %s erstellt!"):format(playerName, title))
 	TriggerClientEvent('mdt:client:newBulletin', -1, src, {id = newBulletin, title = title, info = info, time = time, author = PlayerData.identifier}, JobType)
 end)
 
@@ -394,7 +409,7 @@ RegisterNetEvent('mdt:server:deleteBulletin', function(id, title)
 	local JobType = GetJobType(PlayerData.job.name)
 
 	MySQL.query.await('DELETE FROM `mdt_bulletin` where id = ?', {id})
-	AddLog("Bulletin with Title: "..title.." a été supprimé par " .. GetNameFromPlayerData(PlayerData) .. ".")
+	AddLog("Information mit Titel: "..title.." wurde von " .. GetNameFromPlayerData(PlayerData) .. " entfernt.")
 end)
 
 lib.callback.register('mdt:server:GetProfileData', function(source, sentId)
@@ -436,11 +451,11 @@ lib.callback.register('mdt:server:GetProfileData', function(source, sentId)
 			if #apartmentList > 0 then
 				apartmentData = table.concat(apartmentList, ', ')
 			else
-				TriggerClientEvent('esx:showAdvancedNotification', src, 'The citizen does not have an apartment.', 'error')
-				print('The citizen does not have an apartment. Set SVConfig.HousingScript to other than "ps".')
+				TriggerClientEvent('esx:showNotification', src, 'Der Bürger hat kein Apartment.', 'error')
+				-- print('The citizen does not have an apartment. Set SVConfig.HousingScript to other than "ps".')
 			end
 		else
-			TriggerClientEvent('esx:showAdvancedNotification', src, 'The citizen does not have a property.', 'error')
+			TriggerClientEvent('esx:showNotification', src, 'Der Bürger hat kein Grundstück.', 'error')
 			print('The citizen does not have a property. Set SVConfig.HousingScript to other than "ps".')
 		end	
     elseif SVConfig.HousingScript == "qb" then
@@ -449,11 +464,11 @@ lib.callback.register('mdt:server:GetProfileData', function(source, sentId)
             if apartmentData[1] then
                 apartmentData = apartmentData[1].label .. ' (' ..apartmentData[1].name..')'
             else
-                TriggerClientEvent('esx:showAdvancedNotification', src, 'The citizen does not have an apartment.', 'error')
+                TriggerClientEvent('esx:showNotification', src, 'Der Bürger hat kein Apartment.', 'error')
                 print('The citizen does not have an apartment. Set SVConfig.HousingScript to other than "qb".')
             end
         else
-            TriggerClientEvent('esx:showAdvancedNotification', src, 'The citizen does not have an apartment.', 'error')
+            TriggerClientEvent('esx:showNotification', src, 'Der Bürger hat kein Apartment.', 'error')
             print('The citizen does not have an apartment. Set SVConfig.HousingScript to other than "qb".')
         end
 	elseif SVConfig.HousingScript == "qs" then
@@ -772,7 +787,7 @@ RegisterNetEvent('mdt:server:newBolo', function(existing, id, title, plate, owne
 				}, function(r)
 					if r then
 						TriggerClientEvent('mdt:client:boloComplete', src, r)
-						TriggerEvent('mdt:server:AddLog', "Un nouveau mandat routier a été créé par "..fullname.." ayant pour titre ("..title..") et l'ID ("..id..")")
+						TriggerEvent('mdt:server:AddLog', "Ein neuer BOLO-Eintrag wurde von "..fullname.." erstellt, mit dem Titel ("..title..") und der ID ("..id..")")
 					end
 				end)
 			end
@@ -792,11 +807,12 @@ RegisterNetEvent('mdt:server:newBolo', function(existing, id, title, plate, owne
 				}, function(r)
 					if r then
 						TriggerClientEvent('mdt:client:boloComplete', src, id)
-						TriggerEvent('mdt:server:AddLog', "Un Mandat Routier a été mise à jour par "..fullname.." ayant pour titre ("..title..") et l'ID ("..id..")")
+						TriggerEvent('mdt:server:AddLog', "Ein BOLO-Eintrag wurde von "..fullname.." aktualisiert, mit dem Titel ("..title..") und der ID ("..id..")")
 					end
 				end)
 			end
 
+			print(existing)
 			if existing then
 				UpdateBolo()
 			elseif not existing then
@@ -814,11 +830,12 @@ RegisterNetEvent('mdt:server:deleteWeapons', function(id)
 			if Config.RemoveWeaponsPerms[xPlayer.job.name][xPlayer.job.grade] then
 				local fullName = xPlayer.name
 				MySQL.update("DELETE FROM `mdt_weaponinfo` WHERE id=:id", { id = id })
-				TriggerEvent('mdt:server:AddLog', "Le dossier de l'Arme ("..id..") a été supprimé par "..fullName)
+				TriggerEvent('mdt:server:AddLog', "Die Akte der Waffe ("..id..") wurde von "..fullName.." gelöscht")
 			else
 				local fullname = xPlayer.name
-				TriggerClientEvent('esx:showAdvancedNotification', src, "Vous n'avez pas la permission!", 'error')
-				TriggerEvent('mdt:server:AddLog', fullname.." a essayé de supprimer dossier de l'Arme avec l'ID ("..id..")")
+				TriggerClientEvent('esx:showNotification', src, "Vous n'avez pas la permission!", 'error')
+				TriggerEvent('mdt:server:AddLog', fullname.." hat versucht, die Akte der Waffe mit der ID ("..id..") zu löschen")
+				sendBadToDiscord(16711680, "Neuer Vorfall im CopNet", fullname.." hat versucht, die Akte der Waffe mit der ID ("..id..") zu löschen", "Vorfallmeldung")
 			end
 		end
 	end
@@ -832,11 +849,12 @@ RegisterNetEvent('mdt:server:deleteReports', function(id)
 			if Config.RemoveReportPerms[Player.job.name][Player.job.grade] then
 				local fullName = Player.name
 				MySQL.update("DELETE FROM `mdt_reports` WHERE id=:id", { id = id })
-				TriggerEvent('mdt:server:AddLog', "Un rapport a été supprimé par "..fullName.." avec l'ID ("..id..")")
+				TriggerEvent('mdt:server:AddLog', "Ein Bericht wurde von "..fullName.." gelöscht. ID: ("..id..")")
 			else
 				local fullname = Player.name
-				TriggerClientEvent('esx:showAdvancedNotification', src, "Vous n'avez pas la permission!", 'error')
-				TriggerEvent('mdt:server:AddLog', fullname.." a essayé de supprimer un rapport avec l'ID ("..id..")")
+				TriggerClientEvent('esx:showNotification', src, "Vous n'avez pas la permission!", 'error')
+				TriggerEvent('mdt:server:AddLog', fullname.." hat Versucht einen Bericht zu löschen. ID: ("..id..")")
+				sendBadToDiscord(16711680, "Neuer Vorfall im CopNet", fullname.." hat Versucht einen Bericht zu löschen. ID: ("..id..")", "Vorfallmeldung")
 			end
 		end
 	end
@@ -852,13 +870,14 @@ RegisterNetEvent('mdt:server:deleteIncidents', function(id)
             MySQL.update("UPDATE `mdt_convictions` SET `warrant` = '0' WHERE `linkedincident` = :id", {id = id}) -- Delete any outstanding warrants from incidents
             MySQL.update("DELETE FROM `mdt_incidents` WHERE id=:id", { id = id }, function(rowsChanged)
                 if rowsChanged > 0 then
-                    TriggerEvent('mdt:server:AddLog', "Un incident a été supprimé par "..fullName.." avec l'ID ("..id..")")
+                    TriggerEvent('mdt:server:AddLog', "Ein Fall wurde von "..fullName.." gelöscht mit der ID ("..id..")")
                 end
             end)
         else
             local fullname = Player.name
-            TriggerClientEvent('esx:showAdvancedNotification', src, "Vous n'avez pas la permission!", 'error')
-            TriggerEvent('mdt:server:AddLog', fullname.." a essayé de supprimer un incident avec l'ID ("..id..")")
+            TriggerClientEvent("esx:showNotification", src, "Dazu hast du keine Berechtigung!", "error")
+            TriggerEvent('mdt:server:AddLog', fullname.." hat versucht den Fall mit der ID ("..id..") zu löschen.")
+			sendBadToDiscord(16711680, "Neuer Vorfall im CopNet", fullname.." hat versucht den Fall mit der ID ("..id..") zu löschen.", "Vorfallmeldung")
         end
     end
 end)
@@ -871,7 +890,7 @@ RegisterNetEvent('mdt:server:deleteBolo', function(id)
 		if JobType == 'police' then
 			local fullname = Player.name
 			MySQL.update("DELETE FROM `mdt_bolos` WHERE id=:id", { id = id, jobtype = JobType })
-			TriggerEvent('mdt:server:AddLog', "Un Mandat Routier a été supprimé par "..fullname.." avec l'ID ("..id..")")
+			TriggerEvent('mdt:server:AddLog', "Ein BOLO-Eintrag wurde von "..fullname.." mit der ID ("..id..") gelöscht")
 		end
 	end
 end)
@@ -884,7 +903,7 @@ RegisterNetEvent('mdt:server:deleteICU', function(id)
 		if JobType == 'ambulance' then
 			local fullname = Player.name
 			MySQL.update("DELETE FROM `mdt_bolos` WHERE id=:id", { id = id, jobtype = JobType })
-			TriggerEvent('mdt:server:AddLog', "Une adhésion en USI a été supprimée par "..fullname.." avec l'ID ("..id..")")
+			TriggerEvent('mdt:server:AddLog', "Eine USI-Mitgliedschaft wurde von "..fullname.." mit der ID ("..id..") gelöscht")
 		end
 	end
 end)
@@ -1033,7 +1052,7 @@ RegisterNetEvent('mdt:server:newReport', function(existing, id, title, reporttyp
 					}, function(r)
 						if r then
 							TriggerClientEvent('mdt:client:reportComplete', src, r)
-							TriggerEvent('mdt:server:AddLog', "Un nouveau rapport a été créé par "..fullname.." ayant pour titre ("..title..") et l'ID ("..id..")")
+							TriggerEvent('mdt:server:AddLog', "Ein neuer Bericht wurde von "..fullname.." erstellt, mit dem Titel ("..title..") und der ID ("..id..")")
 						end
 					end)
 				end
@@ -1052,7 +1071,7 @@ RegisterNetEvent('mdt:server:newReport', function(existing, id, title, reporttyp
 					}, function(affectedRows)
 						if affectedRows > 0 then
 							TriggerClientEvent('mdt:client:reportComplete', src, id)
-							TriggerEvent('mdt:server:AddLog', "Un Rapport a été mis à jour par "..fullname.." ayant pour titre ("..title..") et l'ID ("..id..")")
+							TriggerEvent('mdt:server:AddLog', "Ein Bericht wurde von "..fullname.." aktualisiert, mit dem Titel ("..title..") und der ID ("..id..")")
 						end
 					end)
 				end
@@ -1193,12 +1212,12 @@ RegisterNetEvent('mdt:server:saveVehicleInfo', function(dbid, plate, imageurl, n
 			if GetJobType(Player.job.name) == 'police' then
 				if dbid == nil then dbid = 0 end;
 				local fullname = Player.name
-				TriggerEvent('mdt:server:AddLog', "Le véhicule avec la plaque ("..plate..") a une nouvelle image ("..imageurl..") édité par "..fullname)
+				TriggerEvent('mdt:server:AddLog', "Das Fahrzeug mit dem Kennzeichen ("..plate..") hat ein neues Bild ("..imageurl..") erhalten, bearbeitet von "..fullname)
 				if tonumber(dbid) == 0 then
 					MySQL.insert('INSERT INTO `mdt_vehicleinfo` (`plate`, `information`, `image`, `code5`, `stolen`, `points`) VALUES (:plate, :information, :image, :code5, :stolen, :points)', { plate = string.gsub(plate, "^%s*(.-)%s*$", "%1"), information = notes, image = imageurl, code5 = code5, stolen = stolen, points = tonumber(points) }, function(infoResult)
 						if infoResult then
 							TriggerClientEvent('mdt:client:updateVehicleDbId', src, infoResult)
-							TriggerEvent('mdt:server:AddLog', "Le véhicule avec la plaque ("..plate..") a été ajouté dans la base de données par "..fullname)
+							TriggerEvent('mdt:server:AddLog', "Das Fahrzeug mit dem Kennzeichen ("..plate..") wurde von "..fullname.." in die Datenbank eingetragen")
 						end
 					end)
 				elseif tonumber(dbid) > 0 then
@@ -1310,10 +1329,10 @@ RegisterNetEvent('mdt:server:saveWeaponInfo', function(serial, imageurl, notes, 
 				})
 
 				if result then
-					TriggerEvent('mdt:server:AddLog', "Une arme avec le n° de serie ("..serial..") a été ajouté aux registre des armes par "..fullname)
+					TriggerEvent('mdt:server:AddLog', "Eine Waffe mit der Seriennummer ("..serial..") wurde von "..fullname.." ins Waffenregister eingetragen")
 				else
-					TriggerEvent('mdt:server:AddLog', "Une arme avec le n° de serie ("..serial..") n'a été ajouté aux registre des armes par "..fullname)
-				end
+					TriggerEvent('mdt:server:AddLog', "Eine Waffe mit der Seriennummer ("..serial..") wurde von "..fullname.." nicht ins Waffenregister eingetragen")
+				end				
 			end
 		end
 	end
@@ -1799,7 +1818,7 @@ RegisterNetEvent('mdt:server:setRadio', function(identifier, newRadio)
 	if radio ~= nil then
 		TriggerClientEvent('mdt:client:setRadio', targetPlayer.source, newRadio)
 	else
-		TriggerClientEvent('esx:showAdvancedNotification', src, targetPlayer.name.." ne possède pas de radio !", 'error')
+		TriggerClientEvent('esx:showNotification', src, targetPlayer.name.." ne possède pas de radio !", 'error')
 	end
 end)
 
@@ -2032,7 +2051,7 @@ local function giveCitationItem(src, identifier, fine, incidentId)
 		exports['qb-management']:AddMoney(Officer.PlayerData.job.name, fine) 
 	end
 	TriggerClientEvent('inventory:client:ItemBox', Player.PlayerData.source, Items['mdtcitation'], "add")
-	TriggerEvent('mdt:server:AddLog', "A Fine was writen by "..OfficerFullName.." and was sent to "..PlayerName..", the Amount was $".. fine ..". (ID: "..incidentId.. ")")
+	TriggerEvent('mdt:server:AddLog', "Eine Geldstrafe wurde von "..OfficerFullName.." ausgestellt und an "..PlayerName.." geschickt. Der Betrag betrug $"..fine..". (ID: "..incidentId..")")
 end
 
 -- Removes money from the players bank and gives them a citation item
@@ -2086,6 +2105,25 @@ AddEventHandler("mdt:requestOfficerData", function()
     end)
 end)
 
+function sendBadToDiscord(color, name, message, footer)
+	if BadWebhook == '' then
+		print("\27[31mA webhook is missing in: BadWebhook (server > main.lua > line 20)\27[0m")
+	else
+		local embed = {
+			{
+				color = color,
+				title = "**".. name .."**",
+				description = message,
+				footer = {
+					text = footer,
+				},
+			}
+		}
+	
+		PerformHttpRequest(BadWebhook, function(err, text, headers) end, 'POST', json.encode({username = name, embeds = embed}), { ['Content-Type'] = 'application/json' })
+	end
+end
+
 function sendToDiscord(color, name, message, footer)
 	if ClockinWebhook == '' then
 		print("\27[31mA webhook is missing in: ClockinWebhook (server > main.lua > line 20)\27[0m")
@@ -2117,10 +2155,10 @@ function sendIncidentToDiscord(color, name, message, footer, associatedData)
             message = message .. "\nID: " .. (associatedData.identifier or "Non trouvé")
             
             if associatedData.guilty == false then
-                pingMessage = "**Coupable: Non coupable - Requiert procès** " .. rolePing
+                pingMessage = "**Schuldig: Non Schuldig - Requiert procès** " .. rolePing
                 message = message .. "\n" .. pingMessage
             else
-                message = message .. "\nCoupable: " .. tostring(associatedData.guilty or "Non trouvé")
+                message = message .. "\nSchuldig: " .. tostring(associatedData.guilty or "Non trouvé")
             end
 			
 			
@@ -2133,9 +2171,9 @@ function sendIncidentToDiscord(color, name, message, footer, associatedData)
 
             if associatedData.civsinvolved and #associatedData.civsinvolved > 0 then
                 local civsList = table.concat(associatedData.civsinvolved, ", ")
-                message = message .. "\nCitoyens Impliqués: " .. civsList
+                message = message .. "\nBeteiligte Brüger: " .. civsList
             else
-                message = message .. "\nCitoyens Impliqués: Aucun"
+                message = message .. "\nBeteiligte Bürger: Keine"
             end
 
 

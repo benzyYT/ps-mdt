@@ -79,7 +79,7 @@ RegisterCommand('mdt', function()
             TriggerServerEvent('mdt:requestOfficerData')
         end
     else
-        ESX.ShowNotification("Can't do that!", "error")
+        ESX.ShowNotification("Das geht gerade nicht!", "error")
     end
 end, false)
 
@@ -129,10 +129,35 @@ end
 
 local function EnableGUI(enable)
     SetNuiFocus(enable, enable)
-    SendNUIMessage({ type = "show", enable = enable, job = PlayerData.job.name, jobType = PlayerData.job.type, rosterLink = Config.RosterLink[PlayerData.job.name], sopLink = Config.sopLink[PlayerData.job.name] })
+
+    -- Standard job assignment
+    local job = PlayerData.job.name
+
+    -- Überprüfen, ob der Spieler den Job "police" hat
+    if job == "police" then
+        -- Überprüfen, ob der Rang (grade_name) mit "lasd" beginnt, Groß-/Kleinschreibung ignorieren
+        if string.sub(string.lower(PlayerData.job.grade_name), 1, 4) == "lasd" then
+            job = "lssd"
+        else
+            job = "police"
+        end
+    end
+
+    -- Sende die Nachricht mit den angepassten Informationen
+    SendNUIMessage({
+        type = "show",
+        enable = enable,
+        job = job,
+        jobType = PlayerData.job.type,
+        rosterLink = Config.RosterLink[PlayerData.job.name],
+        sopLink = Config.sopLink[PlayerData.job.name]
+    })
+    
     isOpen = enable
     doAnimation()
 end
+
+
 
 local function RefreshGUI()
     SetNuiFocus(false, false)
@@ -241,7 +266,7 @@ RegisterNetEvent('mdt:client:open', function(bulletin, activeUnits, calls, ident
 
     -- local grade = PlayerData.job.grade.name
 
-    SendNUIMessage({ type = "data", activeUnits = activeUnits, identifier = identifier, ondutyonly = Config.OnlyShowOnDuty, name = "Bienvenue, " ..ESX.PlayerData.job.grade_label..' '..ESX.PlayerData.lastName, location = playerStreetsLocation, fullname = ESX.PlayerData.name, bulletin = bulletin })
+    SendNUIMessage({ type = "data", activeUnits = activeUnits, identifier = identifier, ondutyonly = Config.OnlyShowOnDuty, name = "Willkommen, " ..ESX.PlayerData.job.grade_label..' '..ESX.PlayerData.lastName, location = playerStreetsLocation, fullname = ESX.PlayerData.name, bulletin = bulletin })
     SendNUIMessage({ type = "calls", data = calls })
     TriggerEvent("mdt:client:dashboardWarrants")
 end)
@@ -422,7 +447,7 @@ RegisterNUICallback('SetHouseLocation', function(data, cb)
         coords[#coords+1] = tonumber(word)
     end
     SetNewWaypoint(coords[1], coords[2])
-    ESX.ShowNotification('GPS has been set!', 'success')
+    ESX.ShowNotification('GPS wurde gesetzt!', 'success')
 end)
 
 --====================================================================================
@@ -499,6 +524,7 @@ end)
 
 RegisterNUICallback("deleteIncidents", function(data, cb)
     local id = data.id
+    print(id)
     TriggerServerEvent('mdt:server:deleteIncidents', id)
     cb(true)
 end)
@@ -644,7 +670,7 @@ RegisterNUICallback("saveVehicleInfo", function(data, cb)
             end
 
             if found == 0 then
-                ESX.ShowNotification('Vehicle not found!', 'error')
+                ESX.ShowNotification('Fahrzeug nicht gefunden!', 'error')
                 SendNUIMessage({ type = "redImpound" })
             end
         else
@@ -746,7 +772,12 @@ RegisterNetEvent('mdt:client:getVehicleData', function(veh)
         local mods = veh.vehicle
         veh.color = Config.ColorInformation[mods.color1] or mods.customPrimaryColor
         veh.colorName = Config.ColorNames[mods.color1] or Config.ColorNames[999]
-        veh.model = veh.infos.name
+        -- veh.model = veh.infos.name or "Undefiniert"
+        if veh.infos then
+            veh.model = veh.infos.name
+        else
+            veh.model = "Undefiniert"
+        end
         veh.class = Config.ClassList[GetVehicleClassFromName(mods.model)]
         SendNUIMessage({ type = "getVehicleData", data = veh })
     end
@@ -772,9 +803,9 @@ RegisterNetEvent('mdt:client:setRadio', function(radio)
     if type(tonumber(radio)) == "number" then
         exports["pma-voice"]:setVoiceProperty("radioEnabled", true)
         exports["pma-voice"]:setRadioChannel(tonumber(radio))
-        ESX.ShowNotification("Vous êtes maintenant sur la fréquence "..radio..".", "success")
+        ESX.ShowNotification("Frequenz festgelegt auf "..radio.." Mhz.", "success")
     else
-        ESX.ShowNotification("Invalid Station(Please enter a number)", "error")
+        ESX.ShowNotification("Fehlerhafte Frequenz.", "error")
     end
 end)
 

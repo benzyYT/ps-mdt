@@ -56,7 +56,7 @@ Config.QBManagementUse = false
 Config.InventoryForWeaponsImages = "ox_inventory"
 
 -- "LegacyFuel", "lj-fuel", "ps-fuel"
-Config.Fuel = "ps-fuel"
+Config.Fuel = "LegacyFuel"
 
 Config.dispatchName = "ps-dispatch-esx"
 
@@ -73,20 +73,20 @@ Config.Licenses = {
 
 -- Google Docs Link
 Config.sopLink = {
-    ['police'] = '',
+    ['police'] = 'https://docs.google.com/document/d/1kZIYEz9jr87fjMxfsU7-OH_ctcEv0v8c36xZOwLfxjk/preview',
     ['ambulance'] = '',
     ['bcso'] = '',
     ['doj'] = '',
     ['sast'] = '',
     ['sasp'] = '',
     ['doc'] = '',
-    ['lssd'] = '',
+    ['lssd'] = 'https://docs.google.com/document/d/1kZIYEz9jr87fjMxfsU7-OH_ctcEv0v8c36xZOwLfxjk/preview',
     ['sapr'] = '',
 }
 
 -- Google Docs Link
 Config.RosterLink = {
-    ['police'] = '',
+    ['police'] = 'https://docs.google.com/spreadsheets/d/1iinpXixrv7b_Cjs9y6WfcALzNhnpjdAXjrcNDJsaBH4/preview',
     ['ambulance'] = '',
     ['bcso'] = '',
     ['gouv'] = '',
@@ -94,7 +94,7 @@ Config.RosterLink = {
     ['sast'] = '',
     ['sasp'] = '',
     ['doc'] = '',
-    ['lssd'] = '',
+    ['lssd'] = 'https://docs.google.com/spreadsheets/d/1iinpXixrv7b_Cjs9y6WfcALzNhnpjdAXjrcNDJsaBH4/preview',
     ['sapr'] = '',	
 }
 
@@ -104,7 +104,7 @@ Config.PoliceJobs = {
     ['sast'] = false,
     ['sasp'] = false,
     ['doc'] = false,
-    ['lssd'] = false,
+    ['lssd'] = true,
     ['sapr'] = false,
     ['pa'] = false
 }
@@ -136,110 +136,110 @@ Config.PlateScanForDriversLicense = false -- If true, plate scanner will check i
 -- Enabling this setting will limit plate checks to only those vehicles that have been used by a player.
 
 Config.LogPerms = {
-	['ambulance'] = {
-		[4] = true,
-	},
 	['police'] = {
-		[5] = true,
-	},
-    ['bcso'] = {
-		[5] = true,
-	},
-    ['sast'] = {
-		[5] = true,
-	},
-    ['sasp'] = {
-		[5] = true,
-	},
-    ['sapr'] = {
-		[5] = true,
-	},
-    ['gouv'] = {
-		[5] = true,
+		[25] = true,
+        [26] = true,
+        [27] = true,
+        [28] = true,
+        [29] = true,
+        [30] = true,
+        [31] = true,
+        [32] = true,
+        [33] = true,
+        [34] = true,
 	},
     ['lssd'] = {
-		[5] = true,
+		[25] = true,
+        [26] = true,
+        [27] = true,
+        [28] = true,
+        [29] = true,
+        [30] = true,
+        [31] = true,
+        [32] = true,
+        [33] = true,
+        [34] = true,
 	},
 }
 
 Config.RemoveIncidentPerms = {
-	['ambulance'] = {
-		[4] = true,
-	},
 	['police'] = {
-		[5] = true,
-	},
-    ['bcso'] = {
-		[5] = true,
-	},
-    ['sast'] = {
-		[5] = true,
-	},
-    ['sasp'] = {
-		[5] = true,
-	},
-    ['sapr'] = {
-		[5] = true,
-	},
-    ['gouv'] = {
-		[5] = true,
+		[25] = true,
+        [26] = true,
+        [27] = true,
+        [28] = true,
+        [29] = true,
+        [30] = true,
+        [31] = true,
+        [32] = true,
+        [33] = true,
+        [34] = true,
 	},
     ['lssd'] = {
-		[5] = true,
+		[25] = true,
+        [26] = true,
+        [27] = true,
+        [28] = true,
+        [29] = true,
+        [30] = true,
+        [31] = true,
+        [32] = true,
+        [33] = true,
+        [34] = true,
 	},
 }
 
 Config.RemoveReportPerms = {
-	['ambulance'] = {
-		[4] = true,
-	},
 	['police'] = {
-		[5] = true,
-	},
-    ['bcso'] = {
-		[5] = true,
-	},
-    ['sast'] = {
-		[5] = true,
-	},
-    ['sasp'] = {
-		[5] = true,
-	},
-    ['sapr'] = {
-		[5] = true,
-	},
-    ['gouv'] = {
-		[5] = true,
+		[25] = true,
+        [26] = true,
+        [27] = true,
+        [28] = true,
+        [29] = true,
+        [30] = true,
+        [31] = true,
+        [32] = true,
+        [33] = true,
+        [34] = true,
 	},
     ['lssd'] = {
-		[5] = true,
+		[25] = true,
+        [26] = true,
+        [27] = true,
+        [28] = true,
+        [29] = true,
+        [30] = true,
+        [31] = true,
+        [32] = true,
+        [33] = true,
+        [34] = true,
 	},
 }
 
 Config.RemoveWeaponsPerms = {
-	['ambulance'] = {
-		[3] = true,
-	},
 	['police'] = {
-		[5] = true,
-	},
-    ['bcso'] = {
-		[5] = true,
-	},
-    ['sast'] = {
-		[5] = true,
-	},
-    ['sasp'] = {
-		[5] = true,
-	},
-    ['sapr'] = {
-		[5] = true,
-	},
-    ['gouv'] = {
-		[5] = true,
+		[25] = true,
+        [26] = true,
+        [27] = true,
+        [28] = true,
+        [29] = true,
+        [30] = true,
+        [31] = true,
+        [32] = true,
+        [33] = true,
+        [34] = true,
 	},
     ['lssd'] = {
-		[5] = true,
+		[25] = true,
+        [26] = true,
+        [27] = true,
+        [28] = true,
+        [29] = true,
+        [30] = true,
+        [31] = true,
+        [32] = true,
+        [33] = true,
+        [34] = true,
 	},
 }
 
@@ -283,7 +283,7 @@ Config.PenalCode = {
 	    [6] = {title = "Violence volontaire ayant entraînée la mort aggravée ", class = "Crime", id = "C.P. 2006", months = 30, fine = 25000, color = "red", description = "Le fait de commettre la violence volontaire ayant entraîné la mort dans les circonstances prévues par l’Article I du présent chapitre concernant l’homicide volontaire transforme cet acte en violence volontaire ayant entraîné la mort “aggravée”."},
 	    [7] = {title = "Mise en péril de la vie d'autrui", class = "Délit mineur", id = "C.P. 2007", months = 6, fine = 6000, color = "yellow", description = "Est qualifiée de délit de mise en péril de la vie d’autrui le fait pour toute personne de par ses actes délibérément de mettre en danger la vie d’une autre personne. La résultante n’étant ni la blessure ou la mort de cette dernière."},
 	    [8] = {title = "Incitation au suicide", class = "Délit mineur", id = "C.P. 2008", months = 2, fine = 2500, color = "yellow", description = "Est qualifié de délit d’incitation au suicide le fait d’inciter une personne à se donner la mort sans que cette dernière ne décède."},
-	    [9] = {title = "Non assistance à personne en danger", class = "Délit mineur", id = "C.P. 2009", months = 3, fine = 7500, color = "yellow", description = "Est qualifié de délit de non assistance à personne en danger le fait de ne pas porter secours volontairement à une personne en péril alors que cela était possible. Ne peut être considéré comme coupable de non assistance à personne en danger la personne qui a contacté les secours."},
+	    [9] = {title = "Non assistance à personne en danger", class = "Délit mineur", id = "C.P. 2009", months = 3, fine = 7500, color = "yellow", description = "Est qualifié de délit de non assistance à personne en danger le fait de ne pas porter secours volontairement à une personne en péril alors que cela était possible. Ne peut être considéré comme Schuldig de non assistance à personne en danger la personne qui a contacté les secours."},
 	    [10] = {title = "L'homicide involontaire'", class = "Crime", id = "C.P. 2010", months = 4, fine = 9500, color = "red", description = "Est qualifié de crime d’homicide involontaire le fait de donner la mort à autrui sans avoir eu l’intention de la donner. La mort peut résulter d’une acte d’imprudence, de négligence, de maladresse ou de manquement à une obligation de prudence ou de sécurité."},
 	    [11] = {title = "L'homicide involontaire aggravé", class = "Crime", id = "C.P. 2011", months = 8, fine = 12000, color = "red", description = "Le fait que l’acte ayant causé la mort a été commis volontairement transforme alors le présent crime en “homicide volontaire aggravée”."},
 	},
@@ -355,9 +355,9 @@ Config.PenalCode = {
         [17] = {title = 'Entrave à la justice', class = 'Délit mineur', id = 'P.C. 8017', months = 9, fine = 4000, color = 'yellow', description = "Est qualifiée de délit mineur d’entrave à la justice le fait de ralentir, entraver, compromettre, empêcher ou nuire de quelque manière que ce soit à l’exécution du mandat d’un juge."},
         [18] = {title = 'Entrave à la justice aggravée', class = 'Délit majeur', id = 'P.C. 8018', months = 24, fine = 8000, color = 'orange', description = "Le fait de commettre une entrave à la justice dans les circonstances prévues dans l’Article I de la présente section concernant l’évasion transforme cet acte en entrave à la justice “aggravée”."},
         [19] = {title = 'Altération de preuve', class = 'Délit mineur', id = 'P.C. 8019', months = 15, fine = 4000, color = 'yellow', description = "Est qualifié de délit mineur d’altération de preuve le fait d’altérer, corrompre, dissimuler, dégrader une preuve."},
-        [20] = {title = 'Altération de preuve aggravée', class = 'Délit majeur', id = 'P.C. 8020', months = 18, fine = 6000, color = 'orange', description = "Altération entraîne condamnation d’un innocent, conduit à la libération d’une personne coupable."},
+        [20] = {title = 'Altération de preuve aggravée', class = 'Délit majeur', id = 'P.C. 8020', months = 18, fine = 6000, color = 'orange', description = "Altération entraîne condamnation d’un innocent, conduit à la libération d’une personne Schuldig."},
         [21] = {title = 'Parjure', class = 'Délit mineur', id = 'P.C. 8021', months = 6, fine = 2000, color = 'yellow', description = "Est qualifié de délit mineur de parjure le fait au cours d’une audience civile ou pénale, devant un juge de déclarer volontairement un fait erroné en connaissance de cause, de s’abstenir volontairement de mentionner toute ou partie de la vérité."},
-        [22] = {title = 'Parjure aggravé', class = 'Délit majeur', id = 'P.C. 8022', months = 36, fine = 8000, color = 'orange', description = "Le parjure entraîne la libération d’une personne coupable, le parjure entraine la condamnation d’un innocent, le parjure entraîne un non lieu"},
+        [22] = {title = 'Parjure aggravé', class = 'Délit majeur', id = 'P.C. 8022', months = 36, fine = 8000, color = 'orange', description = "Le parjure entraîne la libération d’une personne Schuldig, le parjure entraine la condamnation d’un innocent, le parjure entraîne un non lieu"},
         [23] = {title = 'Outrage à la cour', class = 'Délit mineur', id = 'P.C. 8023', months = 1, fine = 2500, color = 'yellow', description = "Est qualifié de délit mineur d’outrage à la cour le fait pour une personne au cours d’une audience civile ou pénale de commettre un outrage dans les conditions fixées dans l’article III, section I, chapitre I concernant l’outrage orienté contre un juge."},
         [24] = {title = 'Refus d’obtempérer', class = 'Délit mineur', id = 'P.C. 8024', months = 3, fine = 4000, color = 'yellow', description = "Est qualifié de délit mineur de refus d’obtempérer le fait pour toute personne d’opposer une résistance active à la sommation d’un policier ayant annoncé sa qualité. Pour que l’infraction soit constituée, la résistance doit être active. Le simple fait de résister passivement n’est pas un refus d’obtempérer. Le fait de fuir, de se mouvoir, de résister même sans violence à l’action de la police est en revanche un refus d’obtempérer."},
         [25] = {title = 'Faux à une administration', class = 'Délit mineur', id = 'P.C. 8025', months = 6, fine = 3500, color = 'yellow', description = "Est qualifié de délit mineur de faux à une administration le fait pour toute personne, par une déclaration écrite notamment le remplissage d’un formulaire de faire malicieusement à une administration publique une fausse déclaration en connaissance de cause."},
@@ -386,7 +386,7 @@ Config.PenalCode = {
         [11] = {title = 'Proxénétisme aggravé', class = 'Crime', id = 'P.C. 9011', months = 36, fine = 25000, color = 'red', description = "Conditions : Mineur, Exercice de violences physiques, Séquestration ou menaces"},
     },
     [10] = {
-        [1] = {title = 'Trafic de stupéfiants', class = 'Délit mineur', id = 'P.C. 10001', months = 24, fine = 2000, color = 'yellow', description = "Est qualifié de délit mineur de trafic de stupéfiant le fait malicieusement, de distribuer ou vendre des stupéfiants, pour un médecin, de fournir une ordonnance pour une raison autre que la seule nécessité médicale, de produire des stupéfiants, ou bien de posséder les éléments ou produits spécifiquement déterminés à leur production (notamment des graines pour des pousses de cannabis), l’acquéreur ou le demandeur des stupéfiants est, dans les cas prévu au A. et au même titre que le cessionnaire, coupable du délit de trafic de stupéfiants."},
+        [1] = {title = 'Trafic de stupéfiants', class = 'Délit mineur', id = 'P.C. 10001', months = 24, fine = 2000, color = 'yellow', description = "Est qualifié de délit mineur de trafic de stupéfiant le fait malicieusement, de distribuer ou vendre des stupéfiants, pour un médecin, de fournir une ordonnance pour une raison autre que la seule nécessité médicale, de produire des stupéfiants, ou bien de posséder les éléments ou produits spécifiquement déterminés à leur production (notamment des graines pour des pousses de cannabis), l’acquéreur ou le demandeur des stupéfiants est, dans les cas prévu au A. et au même titre que le cessionnaire, Schuldig du délit de trafic de stupéfiants."},
         [2] = {title = 'Trafic de stupéfiants aggravé', class = 'Délit majeur', id = 'P.C. 10002', months = 120, fine = 3500, color = 'orange', description = "Quand le trafic concerne une quantité de substance illicite supérieure ou égale à 15 grammes, il est dit 'aggravé'. Il est également aggravé si l’acquéreur des stupéfiants est un mineur ou si la délivrance d’une ordonnance malhonnête est liée au trafic."},
         [3] = {title = 'Intention de vendre des stupéfiants', id = 'P.C. 10003', months = 12, fine = 1500, color = 'yellow', description = "Est qualifié de délit mineur le fait de stationner ou d’errer sur la voie publique ou dans un lieu ouvert au public, et par son attitude, ses actes, ses paroles ou son comportement, de laisser malicieusement croire à son désir d’entreprendre un trafic de stupéfiants. Sont notamment caractéristiques de ce délit: le stationnement à un angle de rue fréquenté en vue d’appeler par la voix ou par les gestes les véhicules afin de leur proposer cette vente."},
         [4] = {title = 'Possession de stupéfiants', class = 'Délit mineur', id = 'P.C. 10004', months = 16, fine = 2000, color = 'yellow', description = "Est qualifié délit mineur de possession de stupéfiant le fait, sans droit, de posséder sur soi, dans son véhicule, dans sa propriété (immobilière ou non) ou à quelque autre endroit, même sans titre de propriété, des stupéfiants de quelque nature que ce soit. Le délit est également constitué lorsque la personne a, volontairement et sans droit, consommer des stupéfiants."},
